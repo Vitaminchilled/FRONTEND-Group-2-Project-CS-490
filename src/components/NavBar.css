@@ -43,7 +43,7 @@
     color: #555;
 }
 
-.NavBar a.Register {
+.NavBar a.Square {
     background-color: #b98a59;
     color: #ffffff;
     border-radius: 8px;
@@ -51,7 +51,7 @@
     transition: all 0.3s ease;
 }
 
-.NavBar a.Register:hover {
+.NavBar a.Square:hover {
     background-color: #99744c;
 }
 
