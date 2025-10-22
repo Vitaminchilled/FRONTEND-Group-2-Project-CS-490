@@ -1,0 +1,116 @@
+.NavBar {
+    box-sizing: border-box;
+    display: flex;
+    position: fixed;
+    width: 100%;
+    height: 80px;
+    z-index: 10;
+    top: 0;
+    left: 0;
+    padding: 0;
+    background-color: #f7ede3;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.NavBar .NavLeft, .NavBar .NavRight {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    gap: 30px;
+    font-size: 20px;
+    font-weight: 600;
+    align-items: center;
+    height: 80px;
+    padding-right: 30px;
+    padding-left: 30px;
+}
+
+.NavBar .nav-item {
+    color: black;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    list-style-type: none;
+    border-radius: 25px;
+    padding: 0px;
+    transition: all 0.3s ease;
+    height: 80px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    color: black;
+    text-decoration: none;
+    height: 80px
+}
+
+.NavBar .nav-link:hover {
+    color: #555;
+}
+
+.NavBar .Square {
+    background-color:#b98a59; 
+    color:white;
+    border-radius: 8px;
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.NavBar .nav-link.Selected {
+    background-color: #b98a59;
+    color: #ffffff;
+    border-radius: 25px;
+    padding: 12px 18px;
+    transition: all 0.3s ease;
+    height: 25px;
+}
+
+.NavBar .nav-link.Selected:hover {
+    background-color: #99744c;
+}
+
+/*Dropdown styling in Navbar for customer and owner account types*/
+
+.nav-dropdown {
+    /*background: red;*/
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    width: 250px; /*maybe adjust this for appointments and rewards*/
+    position: absolute;
+    top: 80px;
+    right: 0px;
+    list-style: none;
+    text-align: end;
+}
+
+.nav-dropdown li {
+    background: #b98a59;
+    padding: 10px;
+    /*cursor: pointer;*/
+}
+
+.nav-dropdown li:hover {
+    background: #cdac89;
+    transition: all 0.3s ease;
+}
+
+.dropdown-link {
+    display: block;
+    height: 100%;
+    width: 100%;
+    text-decoration: none;
+    color: #fff;
+    text-decoration: none;
+    margin: 0;
+    cursor: pointer;
+}
+
+.dropdown-link.Selected {
+    color: #84694c;
+    pointer-events: none;
+    cursor: default;
+}
