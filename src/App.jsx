@@ -2,9 +2,19 @@ import NavBar from './components/NavBar.jsx'
 import Home from './pages/Home.jsx'
 import SearchSalons from './pages/SearchSalons.jsx'
 import Account from './pages/AccountDetails.jsx'
-import { Routes, Route } from "react-router-dom"
+import { Routes, Route, useLocation } from "react-router-dom"
+import { useEffect } from 'react'
 
 function App() {
+  const location = useLocation()
+  useEffect(() => {
+    if (location.pathname === '/' || location.pathname === '/search') {
+      document.body.style.backgroundColor = 'white'
+    } else {
+      document.body.style.backgroundColor = '#f0d9b9'
+    }
+  })
+
   return (
     <div>
         {/* Controls Links */}

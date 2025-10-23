@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { NavLink } from "react-router-dom";
 import { useUser } from "../context/UserContext";
+import emptyCart from "../assets/ShoppingCart.png"
+import fullCart from "../assets/FullShoppingCart.png"
 import './NavBar.css'
 
 function NavBar() {
@@ -153,6 +155,28 @@ function NavBar() {
                   </ul>
                 )
               }
+            </li>
+            <li
+              className='nav-item'
+            >
+              <NavLink
+                to="/shopping-cart"
+                end={false}
+                className={({ isActive }) => isActive ? "nav-link SelectedCart" : "nav-link"}
+              >
+                <img
+                  src={emptyCart}
+                  alt="Cart"
+                  style={{
+                    width: '50px',
+                    height: '50px',
+                    objectFit: 'contain',
+                    verticalAlign: 'middle',
+                    cursor: 'pointer'
+                  }}
+                />
+                {`(0)`}
+              </NavLink>
             </li>
           </>
         )}
