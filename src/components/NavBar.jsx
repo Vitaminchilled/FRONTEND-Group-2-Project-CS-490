@@ -165,17 +165,11 @@ function NavBar() {
                 className={({ isActive }) => isActive ? "nav-link SelectedCart" : "nav-link"}
               >
                 <img
+                  className='cart-image'
                   src={emptyCart}
                   alt="Cart"
-                  style={{
-                    width: '50px',
-                    height: '50px',
-                    objectFit: 'contain',
-                    verticalAlign: 'middle',
-                    cursor: 'pointer'
-                  }}
                 />
-                {`(0)`}
+                {`(0)`} {/* eventually add the number of cart items here and add if for when cart isnt empty for different icon*/}
               </NavLink>
             </li>
           </>
