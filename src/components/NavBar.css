@@ -68,6 +68,15 @@
     height: 25px;
 }
 
+.NavBar .nav-link.SelectedCart {
+    background-color: #614a30; /*we can remove this its meh*/
+    color: #ffffff;
+    border-radius: 25px;
+    padding: 12px 18px;
+    transition: all 0.3s ease;
+    height: 25px;
+}
+
 .NavBar .nav-link.Selected:hover {
     background-color: #99744c;
 }
@@ -113,4 +122,12 @@
     color: #84694c;
     pointer-events: none;
     cursor: default;
+}
+
+.cart-image {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    vertical-align: middle;
+    cursor: pointer;
 }

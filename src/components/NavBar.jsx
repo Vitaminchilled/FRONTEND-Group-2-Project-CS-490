@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { NavLink } from "react-router-dom";
 import { useUser } from "../context/UserContext";
+import emptyCart from "../assets/ShoppingCart.png"
+import fullCart from "../assets/FullShoppingCart.png"
 import './NavBar.css'
 
 function NavBar() {
@@ -153,6 +155,22 @@ function NavBar() {
                   </ul>
                 )
               }
+            </li>
+            <li
+              className='nav-item'
+            >
+              <NavLink
+                to="/shopping-cart"
+                end={false}
+                className={({ isActive }) => isActive ? "nav-link SelectedCart" : "nav-link"}
+              >
+                <img
+                  className='cart-image'
+                  src={emptyCart}
+                  alt="Cart"
+                />
+                {`(0)`} {/* eventually add the number of cart items here and add if for when cart isnt empty for different icon*/}
+              </NavLink>
             </li>
           </>
         )}
