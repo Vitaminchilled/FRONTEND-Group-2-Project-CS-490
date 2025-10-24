@@ -13,6 +13,16 @@
     align-items: center;
 }
 
+.NavLeft {
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.NavRight {
+    padding-left: 0;
+    padding-right: 30px;
+}
+
 .NavBar .NavLeft, .NavBar .NavRight {
     display: flex;
     list-style-type: none;
@@ -22,8 +32,6 @@
     font-weight: 600;
     align-items: center;
     height: 80px;
-    padding-right: 30px;
-    padding-left: 30px;
 }
 
 .NavBar .nav-item {
