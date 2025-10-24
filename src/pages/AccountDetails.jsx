@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useUser } from "../context/UserContext";
-import greyDivider from "../assets/GreyLineDivider.png"
 
 function AccountDetails() {
   const {user, setUser} = useUser();
@@ -17,10 +16,10 @@ function AccountDetails() {
             backgroundColor:'#fff1e8ff', 
             borderRadius:'10px',
             margin: '25px',
-            maxWidth: '900px',
+            width: '80vw',
+            maxWidth: '1000px',
             boxShadow: 'inset 0 0 4px #a69385ff',
-            padding: '20px',
-            minHeight:'500px'
+            padding: '20px 50px 80px 50px'
           }}
         >
           <h1 className="formal-title"
@@ -35,26 +34,13 @@ function AccountDetails() {
             Details
           </h1>
 
-          <div className="img-container crop"
+          <div className='grey-divider'
             style={{
-              margin:'10px auto',
-              width:'70%',
-              maxWidth:'800px',
-              overflow:'hidden'
+              width: '500px',
+              height:'1.5px',
+              backgroundColor: '#b6b6b6'
             }}
-          >
-            <img
-              className='grey-divider'
-              src={greyDivider}
-              alt="---"
-              style={{
-                transform: 'translateY(0px)',
-                objectFit: 'cover',
-                width:'100%',
-                display:'block'
-              }}
-            />
-          </div>
+          ></div>
           
           {(user.type === 'none' || user.type === 'admin') && (
             <>

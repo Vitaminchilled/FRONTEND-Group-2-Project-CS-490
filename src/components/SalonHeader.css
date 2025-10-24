@@ -45,9 +45,8 @@
 }
 
 .grey-divider {
-    object-fit: cover;
-    display: block;
-    width: 70vw;
-    min-width: 600px;
+    width: 80vw;
     max-width: 900px;
+    height: 2px;
+    background-color: #b6b6b6;
 }

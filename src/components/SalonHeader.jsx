@@ -1,4 +1,3 @@
-import greyDivider from '../assets/GreyLineDivider.png'
 import './SalonHeader.css'
 
 function SalonHeader() {
@@ -21,11 +20,7 @@ function SalonHeader() {
             Nails, Salon Hair Cut, Hair Dye, Hair Wash {/* customize tags */}
           </p>
 
-          <img
-            className='grey-divider'
-            src={greyDivider}
-            alt="---"
-          />
+          <div className='grey-divider'></div>
         </div>
     )
 }

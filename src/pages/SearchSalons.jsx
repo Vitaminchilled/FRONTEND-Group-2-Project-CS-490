@@ -62,35 +62,69 @@ function SearchSalons() {
                 </div>
                 <div className='results-selection'>
                   <div className='result-item'>
-                    Awesome Hair Salon | Hair | Rating: 4 stars
+                    <p className='item-title'>Awesome Hair Salon</p>
+                    <div className='white-divider'></div>
+                    <p className='item-category'>Hair</p>
+                    <div className='white-divider'></div>
+                    <p className='item-rating'>Rating: 4 stars</p>
                   </div>
                   <div className='result-item'>
-                    Barber Bros | Barber | Rating: 3 stars
+                    <p className='item-title'>Barber Bros Hair</p>
+                    <div className='white-divider'></div>
+                    <p className='item-category'>Barber</p>
+                    <div className='white-divider'></div>
+                    <p className='item-rating'>Rating: 3 stars</p>
                   </div>
                   <div className='result-item'>
-                    Brow Lifts | Brows | Rating: 5 stars
+                    <p className='item-title'>Brow Lifts</p>
+                    <div className='white-divider'></div>
+                    <p className='item-category'>Brows</p>
+                    <div className='white-divider'></div>
+                    <p className='item-rating'>Rating: 5 stars</p>
                   </div>
                   <div className='result-item'>
-                    Cool Nail Studio | Nails | Rating: 3.5 stars
+                    <p className='item-title'>Cool Nail Studio</p>
+                    <div className='white-divider'></div>
+                    <p className='item-category'>Nails</p>
+                    <div className='white-divider'></div>
+                    <p className='item-rating'>Rating: 3.5 stars</p>
                   </div>
                   <div className='result-item'>
-                    Awesome Hair Salon | Hair | Rating: 4 stars
+                    <p className='item-title'>Cutiecules</p>
+                    <div className='white-divider'></div>
+                    <p className='item-category'>Nails</p>
+                    <div className='white-divider'></div>
+                    <p className='item-rating'>Rating: 5 stars</p>
                   </div>
                   <div className='result-item'>
-                    Barber Bros | Barber | Rating: 3 stars
+                    <p className='item-title'>Even Better Hair Salon</p>
+                    <div className='white-divider'></div>
+                    <p className='item-category'>Hair</p>
+                    <div className='white-divider'></div>
+                    <p className='item-rating'>Rating: 4.5 stars</p>
                   </div>
                   <div className='result-item'>
-                    Brow Lifts | Brows | Rating: 5 stars
+                    <p className='item-title'>Nail Castle</p>
+                    <div className='white-divider'></div>
+                    <p className='item-category'>Nails</p>
+                    <div className='white-divider'></div>
+                    <p className='item-rating'>Rating: 4.5 stars</p>
                   </div>
                   <div className='result-item'>
-                    Cool Nail Studio | Nails | Rating: 3.5 stars
+                    <p className='item-title'>Ok Hair Salon</p>
+                    <div className='white-divider'></div>
+                    <p className='item-category'>Hair</p>
+                    <div className='white-divider'></div>
+                    <p className='item-rating'>Rating: 2.5 stars</p>
                   </div>
                   <div className='result-item'>
-                    Brow Lifts | Brows | Rating: 5 stars
+                    <p className='item-title'>Pedicures idk</p>
+                    <div className='white-divider'></div>
+                    <p className='item-category'>Pedi</p>
+                    <div className='white-divider'></div>
+                    <p className='item-rating'>Rating: 2 stars</p>
                   </div>
-                  <div className='result-item'>
-                    Cool Nail Studio | Nails | Rating: 3.5 stars
-                  </div>
+                  
                 </div>
                 <div className='pagination-section'>
                   <button className='prev-next'>{'<<'} Prev</button>

@@ -120,6 +120,7 @@
     text-align: center;
     align-items: center;
     width: 60vw;
+    max-width: 700px;
     box-shadow: 5px 5px 10px #b0b0b0ff;
     padding: 20px;
 }
@@ -153,13 +154,53 @@
 
 .results-selection .result-item {
     background-color: #f0d7bd;
-    padding: 15px;
     border-radius: 15px;
     width: 95%;
     box-shadow: 2px 5px 5px #989898ff;
     font-weight: 300;
     font-size: 20px;
     font-family: Kumbh Sans;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 95%;
+    justify-content: center;
+    padding: 4px 10px;
+}
+
+.item-title {
+    width: 30%;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    text-align: start;
+}
+
+.item-category {
+    width: 20%;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-rating {
+    width: 30%;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+    overflow-x: hidden;
+    text-overflow: ellipsis;
+    text-align: end;
+}
+
+.white-divider {
+    background-color: white;
+    width: 1px;
+    height: 40px;
 }
 
 .pagination-section {
