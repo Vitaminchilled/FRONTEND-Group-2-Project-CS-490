@@ -1,0 +1,53 @@
+.salon-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    margin-top: 80px;
+    justify-content: center;
+}
+
+.header-image {
+    box-shadow: inset 0 0 4px #a69385ff;
+    width: 90vw;
+    max-width: 1100px;
+    height: 220px;
+    background-color: #fff8f4ff; 
+    border-radius: 10px;
+    position: relative;
+    padding: 18px;
+}
+
+.header-btn {
+    background-color: #b98a59;
+    color: white;
+    border-radius: 50px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.formal-title {
+    font-family: Lateef;
+    font-weight: 500;
+    font-size: 70px;
+    height: 60px;
+    margin: 0;
+}
+
+.header-tags {
+    font-family: Kumbh Sans;
+    color: #4c4c4c;
+    font-size: 16px;
+}
+
+.grey-divider {
+    object-fit: cover;
+    display: block;
+    width: 70vw;
+    min-width: 600px;
+    max-width: 900px;
+}

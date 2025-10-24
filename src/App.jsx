@@ -2,18 +2,22 @@ import NavBar from './components/NavBar.jsx'
 import Home from './pages/Home.jsx'
 import SearchSalons from './pages/SearchSalons.jsx'
 import Account from './pages/AccountDetails.jsx'
+import SalonDashboard from './pages/SalonDashboard.jsx'
+import Services from './pages/Services.jsx'
+import Products from './pages/Products.jsx'
+import Gallery from './pages/Gallery.jsx'
 import { Routes, Route, useLocation } from "react-router-dom"
 import { useEffect } from 'react'
 
 function App() {
   const location = useLocation()
   useEffect(() => {
-    if (location.pathname === '/' || location.pathname === '/search') {
-      document.body.style.backgroundColor = 'white'
-    } else {
+    if (location.pathname === '/account') {
       document.body.style.backgroundColor = '#f0d9b9'
+    } else {
+      document.body.style.backgroundColor = 'white'
     }
-  })
+  }, [location])
 
   return (
     <div>
@@ -24,7 +28,11 @@ function App() {
         <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/search" element={<SearchSalons />} />
-            <Route path="/account" element={<Account/>}/>
+            <Route path="/salon/1" element={<SalonDashboard />} />
+            <Route path="/salon/1/services" element={<Services/>} />
+            <Route path="/salon/1/products" element={<Products/>} />
+            <Route path="/salon/1/gallery" element={<Gallery/>} />
+            <Route path="/account" element={<Account/>} />
             {/*
             Routes to include:
               /account is account details and should depend on the account type

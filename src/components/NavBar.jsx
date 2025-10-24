@@ -85,9 +85,9 @@ function NavBar() {
         {(user.type === 'owner') && (
           <>
             <li><NavLink  to="/" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Home</NavLink ></li>
-            <li><NavLink  to="/services" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Services</NavLink ></li>
-            <li><NavLink  to="/products" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Products</NavLink ></li>
-            <li><NavLink  to="/gallery" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Gallery</NavLink ></li>
+            <li><NavLink  to="/salon/1/services" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Services</NavLink ></li>
+            <li><NavLink  to="/salon/1/products" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Products</NavLink ></li>
+            <li><NavLink  to="/salon/1/gallery" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Gallery</NavLink ></li>
           </>
         )}
         {/* LEFT: Admin */}
