@@ -8,7 +8,6 @@ import { UserProvider } from './context/UserContext.jsx'
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      {/* Creates a Single User that all children can access */}
       <UserProvider>
         {/* Main Application built in App */}
         <App />
