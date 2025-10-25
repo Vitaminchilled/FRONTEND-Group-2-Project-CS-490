@@ -1,6 +1,7 @@
 import NavBar from './components/NavBar.jsx'
 import Home from './pages/Home.jsx'
 import { Routes, Route } from "react-router-dom"
+import './App.css'
 
 function App() {
   return (
@@ -9,9 +10,11 @@ function App() {
         <NavBar />
 
         {/* Controls Routing to Pages */}
-        <Routes>
+        <div className="AppContent"> 
+          <Routes >
             <Route path="/" element={<Home />} />
-        </Routes>
+          </Routes> 
+        </div>
     </div>
   )
 }
