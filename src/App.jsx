@@ -42,7 +42,8 @@ function App() {
               consider adding a path to view a specific salon dashboard as a customer
               /salons/:salon_id
             */}
-        </Routes>
+          </Routes>
+        </div>
     </div>
   )
 }
