@@ -1,8 +1,14 @@
+import React, { useState } from 'react'
 import './ServiceItem.css'
 
-function ServiceItem({ itemTitle, itemPrice, itemDesc }){
+function ServiceItem({ itemTitle, itemPrice, itemDesc, itemDuration, itemTags=[] }){
+    const [expanded, setExpanded] = useState(false)
+
     return (
-        <div className="service-item">
+        <div className={`service-item ${expanded ? "expanded" : ""}`}
+            onMouseEnter={() => setExpanded(true)}
+            onMouseLeave={() => setExpanded(false)}
+        >
             <div className="grid-layout">
                 <h3 className='item-title'>
                     {itemTitle}
@@ -16,6 +22,16 @@ function ServiceItem({ itemTitle, itemPrice, itemDesc }){
                 <button className='item-btn'>
                     Book
                 </button>
+                <p className='item-duration'>
+                    Duration: {itemDuration}
+                </p>
+                <div className='tag-section'>
+                    {Array.isArray(itemTags) && itemTags.map((tag, index) => (
+                        <div key={index} className='service-tag'>
+                            {tag}
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     )

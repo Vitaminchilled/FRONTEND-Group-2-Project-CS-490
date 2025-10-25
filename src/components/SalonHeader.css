@@ -31,9 +31,16 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 8px;
+    text-decoration: none;
 }
 
-.formal-title {
+.header-btn .image {
+    color: white;
+    text-decoration: none;
+    width: 20px;
+}
+
+.header-title {
     font-family: Lateef;
     font-weight: 500;
     font-size: 70px;
@@ -45,6 +52,12 @@
     font-family: Kumbh Sans;
     color: #4c4c4c;
     font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.rating-img {
+    height: 20px;
+    margin-bottom: 15px;
 }
 
 .grey-divider {
