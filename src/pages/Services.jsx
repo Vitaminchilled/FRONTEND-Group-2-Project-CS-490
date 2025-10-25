@@ -1,5 +1,6 @@
 import SalonHeader from '../components/SalonHeader.jsx'
 import stripeBackground from "../assets/stripeBackground.png"
+import ServiceItem from '../components/ServiceItem.jsx'
 
 function Services() {
   return (
@@ -62,86 +63,36 @@ function Services() {
             gap:'10px'
           }}
         >
-          <div className="service-item"
-            style={{
-              backgroundColor: 'white',
-              border: '1px solid #a4a4a4',
-              minWidth: '480px',
-              maxWidth: '740px',
-              width:'60vw',
-              height: '90px',
-              borderRadius: '10px',
-              padding: '20px',
-              boxShadow: '0 5px 5px #b0b0b0ff'
-            }}
-          >
-            Hair Cut
-          </div>
+          <ServiceItem
+            itemTitle='Hair Cut'
+            itemPrice='$60.00'
+            itemDesc='This standard haircut includes a trim and partial styling. Wash and Blow Out is not included.'
+          />
+
+          <ServiceItem
+            itemTitle='Wash & Blowout'
+            itemPrice='$30.00'
+            itemDesc='Our professionals will provide both...'
+          />
+
+          <ServiceItem
+            itemTitle='Highlights'
+            itemPrice='$100.00'
+            itemDesc='The highlights package will include...'
+          />
+
+          <ServiceItem
+            itemTitle='Partial Balayage'
+            itemPrice='$150.00'
+            itemDesc='Hand painted bleach and glaze...'
+          />
+
+          <ServiceItem
+            itemTitle='Braids and Styling'
+            itemPrice='$40.00'
+            itemDesc='Leave it to our professionals to...'
+          />
         
-          <div className="service-item"
-            style={{
-              backgroundColor: 'white',
-              border: '1px solid #a4a4a4',
-              minWidth: '480px',
-              maxWidth: '740px',
-              width:'60vw',
-              height: '90px',
-              borderRadius: '10px',
-              padding: '20px',
-              boxShadow: '0 5px 5px #b0b0b0ff'
-            }}
-          >
-            Wash and Blow Out
-          </div>
-
-          <div className="service-item"
-            style={{
-              backgroundColor: 'white',
-              border: '1px solid #a4a4a4',
-              minWidth: '480px',
-              maxWidth: '740px',
-              width:'60vw',
-              height: '90px',
-              borderRadius: '10px',
-              padding: '20px',
-              boxShadow: '0 5px 5px #b0b0b0ff'
-            }}
-          >
-            Highlights
-          </div>
-
-          <div className="service-item"
-            style={{
-              backgroundColor: 'white',
-              border: '1px solid #a4a4a4',
-              minWidth: '480px',
-              maxWidth: '740px',
-              width:'60vw',
-              height: '90px',
-              borderRadius: '10px',
-              padding: '20px',
-              boxShadow: '0 5px 5px #b0b0b0ff'
-            }}
-          >
-            Partial Balayage
-          </div>
-
-          <div className="service-item"
-            style={{
-              backgroundColor: 'white',
-              border: '1px solid #a4a4a4',
-              minWidth: '480px',
-              maxWidth: '740px',
-              width:'60vw',
-              height: '90px',
-              borderRadius: '10px',
-              padding: '20px',
-              boxShadow: '0 5px 5px #b0b0b0ff'
-            }}
-          >
-            Braids and Styling
-          </div>
-
         </div>
 
       </div>

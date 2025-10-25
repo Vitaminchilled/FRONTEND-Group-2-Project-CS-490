@@ -1,9 +1,15 @@
 import './SalonHeader.css'
+import headerImage from '../assets/HeaderImage.jpg'
 
+/* ({ headerImage, headerTitle, headerTags, headerRating? }) */
 function SalonHeader() {
     return (
         <div className="salon-header">
-          <div className="header-image">
+          <div className="header-image"
+            style={{
+              backgroundImage: `url(${headerImage})` /* {{headerImage}}? */
+            }}
+          >
             <div className="header-btn">
               {'<'}
             </div>
@@ -13,11 +19,11 @@ function SalonHeader() {
           </div>
           
           <h1 className="formal-title">
-            Awesome Hair Salon {/* customize title */}
+            Awesome Hair Salon {/* {headerTitle} */}
           </h1>
 
           <p className="header-tags">
-            Nails, Salon Hair Cut, Hair Dye, Hair Wash {/* customize tags */}
+            Nails, Salon Hair Cut, Hair Dye, Hair Wash {/* {headerTags} */}
           </p>
 
           <div className='grey-divider'></div>

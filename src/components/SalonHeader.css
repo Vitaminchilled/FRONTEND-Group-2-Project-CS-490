@@ -16,6 +16,9 @@
     border-radius: 10px;
     position: relative;
     padding: 18px;
+    background-size: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .header-btn {
