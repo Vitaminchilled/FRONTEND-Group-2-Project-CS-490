@@ -55,8 +55,7 @@
 }
 
 .NavBar a:hover {
-    color: #b98a59;
-    text-shadow: 0 0 8px #e5c9a1;
+    color: #555;
 }
 
 .NavBar .Square {
