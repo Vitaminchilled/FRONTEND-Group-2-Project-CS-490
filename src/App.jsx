@@ -3,6 +3,7 @@ import Home from './pages/Home.jsx'
 import SearchSalons from './pages/SearchSalons.jsx'
 import Account from './pages/AccountDetails.jsx'
 import { Routes, Route } from "react-router-dom"
+import './App.css'
 
 function App() {
   return (
@@ -11,7 +12,8 @@ function App() {
         <NavBar />
 
         {/* Controls Routing to Pages */}
-        <Routes>
+        <div className="AppContent"> 
+          <Routes >
             <Route path="/" element={<Home />} />
             <Route path="/search" element={<SearchSalons />} />
             <Route path="/account" element={<Account/>}/>
@@ -40,7 +42,8 @@ function App() {
               consider adding a path to view a specific salon dashboard as a customer
               /salons/:salon_id
             */}
-        </Routes>
+          </Routes>
+        </div>
     </div>
   )
 }
