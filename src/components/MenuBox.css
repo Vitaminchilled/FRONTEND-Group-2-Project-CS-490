@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Lateef:wght@200;300;400;500;600;700;800&display=swap');
+
+.MenuBox {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 23vw;
+  transition: all 0.3s ease;
+}
+
+.MenuBoxHeader {
+  padding: 15px 20px 0 20px;
+  text-align: left;
+}
+
+.MenuBoxHeader h2 {
+  font-family: "Lateef";
+  font-size: 1.6vw;
+  font-weight: 500;
+  margin: 0;
+}
+
+.MenuBoxHeader hr {
+  margin-top: 5px;
+  border: none;
+  border-top: 1.5px solid #b3b3b3;
+}
+
+.MenuBoxBody {
+  padding: 15px 20px;
+  flex: 1;
+  text-align: left;
+  font-size: 1.1vw;
+  color: #2e2e2e;
+}
+
+.MenuBoxFooter {
+  display: flex;
+  justify-content: center;
+  background-color: #f7efe3;
+  padding: 10px 20px;
+  border-top: 1px solid #e3d5be;
+  gap: 2vw;
+}
+
+.MenuBoxFooter button {
+  font-family: "Lateef";
+  font-size: 1.4vw;
+  padding: 4px 16px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.MenuBoxFooter .view {
+  background-color: #d6c3a1;
+}
+.MenuBoxFooter .verify {
+  background-color: #b7d3aa;
+}
+.MenuBoxFooter .reject {
+  background-color: #d4a9a9;
+}
+
+.MenuBoxFooter button:hover {
+  opacity: 0.8;
+}

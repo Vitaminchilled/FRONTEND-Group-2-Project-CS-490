@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lateef:wght@200;300;400;500;600;700;800&display=swap');
+
+.Verify {
+    position: relative;
+    overflow-y: auto;
+    height: auto;
+    padding-bottom: 10vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.Verify h1 {
+    margin: 0;
+    font-family: "Lateef";
+    font-size: 7vw;
+    font-weight: 400;
+}
+.Verify hr {
+    width: 70%;
+    margin: 0;
+    border: none;
+    border-top: 2px solid #b3b3b3;
+}
+
+
+.VerifySalon {
+    width: 300px;
+    height: 200px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+}
+.VerifySalonTop {
+    flex: 2;
+    background-color: #e8d4bb;
+}
+
+.VerifySalonBottom {
+    flex: 1;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.VerifySalonBottom h2 {
+    margin: 5px 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.VerifyGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 30px;
+  padding: 20px;
+}
