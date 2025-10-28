@@ -21,7 +21,7 @@
 .grid-layout {
     display: grid;
     grid-template-columns: 1fr auto;
-    grid-template-rows: 25px auto auto auto;
+    grid-template-rows: 28px auto auto auto;
     column-gap: 15px;
     row-gap: 10px;
     width: 100%;

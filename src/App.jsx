@@ -1,4 +1,7 @@
 import NavBar from './components/NavBar.jsx'
+import Login from './pages/Login.jsx'
+import CustomerRegistration from './pages/CustomerRegistration.jsx'
+import SalonRegistration from './pages/SalonRegistration.jsx'
 import Home from './pages/Home.jsx'
 import SearchSalons from './pages/SearchSalons.jsx'
 import Account from './pages/AccountDetails.jsx'
@@ -26,13 +29,17 @@ function App() {
 
         {/* Controls Routing to Pages */}
         <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/search" element={<SearchSalons />} />
-            <Route path="/salon/:salon_id" element={<SalonDashboard />} />
-            <Route path="/salon/:salon_id/services" element={<Services/>} />
-            <Route path="/salon/:salon_id/products" element={<Products/>} />
-            <Route path="/salon/:salon_id/gallery" element={<Gallery/>} />
-            <Route path="/account" element={<Account/>} />
+          <Route path="/" element={<Home />} />
+          <Route path="/search" element={<SearchSalons />} />
+          <Route path="/salon/:salon_id" element={<SalonDashboard />} />
+          <Route path="/salon/:salon_id/services" element={<Services/>} />
+          <Route path="/salon/:salon_id/products" element={<Products/>} />
+          <Route path="/salon/:salon_id/gallery" element={<Gallery/>} />
+          <Route path="/account" element={<Account/>} />
+          <Route path="/login" element={<Login />}/>
+          <Route path="/signup" element={<CustomerRegistration />}/>
+          <Route path="/register-salon" element={<SalonRegistration />}/>
+        </Routes>
             {/*
             Routes to include:
               /account is account details and should depend on the account type
@@ -58,7 +65,6 @@ function App() {
               consider adding a path to view a specific salon dashboard as a customer
               /salons/:salon_id
             */}
-        </Routes>
     </div>
   )
 }

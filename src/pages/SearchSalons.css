@@ -45,6 +45,7 @@
 .search-form {
     display: flex;
     flex-direction: column;
+    justify-content: left;
     gap: 14px;
 }
 
@@ -53,6 +54,10 @@
     margin: 0;
     font-weight: 500;
     font-size: 13px;
+}
+
+.search-form label {
+    margin: 0;
 }
 
 .search-form input {

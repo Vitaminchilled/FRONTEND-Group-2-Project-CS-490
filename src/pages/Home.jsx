@@ -4,7 +4,6 @@ import background from '../assets/homePage_background.png';
 import './Home.css'
 
 function Salon( {salon} ) {
-  
   const stars = Array.from({ length: 5 }, (_, i) => {
     const starValue = i + 1;
     if (salon.average_rating >= starValue) return "★";
@@ -27,17 +26,16 @@ function Salon( {salon} ) {
   );
 }
 
-
 function TagGroup( {tag} ){
   const [salons, setSalons] = useState([]);
 
   useEffect(() => {
       const fetchSalons = async() => {
           try {
-              //const response = await fetch(`/api/TopSalonsByTag?tag=${encodeURIComponent(tag)}`);
+              //const response = await fetch(`/TopSalonsByTag?tag=${encodeURIComponent(tag)}`);
               //Delete bellow  when the above fetch is added
               const name = "NAME";
-              //const response = await fetch(`/api/salonData`);
+              const response = await fetch(`http://127.0.0.1:5000/salonData`);
 
               if (!response.ok) {
               throw new Error(`Response status: ${response.status}`);
@@ -73,9 +71,11 @@ function TagGroup( {tag} ){
   );
 }
 
+
 function Home() {
   const navigate = useNavigate()
   const [businessName, setBusinessName] = useState("")
+
   const tagRefs = useRef({});
 
   const scrollToTag = (tag) => {
