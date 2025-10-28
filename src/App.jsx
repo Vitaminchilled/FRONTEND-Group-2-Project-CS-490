@@ -28,10 +28,10 @@ function App() {
         <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/search" element={<SearchSalons />} />
-            <Route path="/salon/1" element={<SalonDashboard />} />
-            <Route path="/salon/1/services" element={<Services/>} />
-            <Route path="/salon/1/products" element={<Products/>} />
-            <Route path="/salon/1/gallery" element={<Gallery/>} />
+            <Route path="/salon/:salon_id" element={<SalonDashboard />} />
+            <Route path="/salon/:salon_id/services" element={<Services/>} />
+            <Route path="/salon/:salon_id/products" element={<Products/>} />
+            <Route path="/salon/:salon_id/gallery" element={<Gallery/>} />
             <Route path="/account" element={<Account/>} />
             {/*
             Routes to include:

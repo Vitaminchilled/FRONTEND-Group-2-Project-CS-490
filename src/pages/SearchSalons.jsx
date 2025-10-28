@@ -1,7 +1,77 @@
+import React, { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import './SearchSalons.css'
-/* just styling no functionality */
 
 function SearchSalons() {
+  const location = useLocation()
+  const initialFilter = location.state?.filter || { business_name: "", category: "", employee_first: "", employee_last: "" }
+  //used to get filter inputs from home page to search page
+  /*
+  navigate('/search', {
+      state: { filter: { business_name: businessName, category: "", employee_first: "", employee_last: "" } }
+  })
+  */
+  
+  const [filter, setFilter] = useState(initialFilter)
+  const [currentFilter, setCurrentFilter] = useState(initialFilter)
+
+  const [salons, setSalons] = useState([])
+  const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
+  const [iterpages, setIterPages] = useState([])
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const retrieveSalons = async (pageNumber = 1, filters = currentFilter) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { business_name, category, employee_first, employee_last } = filters
+      console.log(currentFilter)
+      console.log(filter)
+
+      const response = await fetch(`http://127.0.0.1:5000/salon/all?business_name=${business_name}&category=${category}&employee_first=${employee_first}&employee_last=${employee_last}&page=${pageNumber}`)
+
+      if(!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`HTTP error ${response.status}: ${errorText}`)
+      }
+
+      const data = await response.json()
+      console.log(data)
+      //destructuring data in the case that if it is null/undefined it defaults as a {} with default salon and total_page values
+      const { 
+        salons: retrievedSalons=[], 
+        total_pages: retrievedTotalPages = 1, 
+        page: retrievedPage = 1,
+        iter_pages: retrievedIterPages = [1]
+      } = data || {}
+      
+      setSalons(retrievedSalons)
+      setPage(retrievedPage)
+      setTotalPages(retrievedTotalPages)
+      setIterPages(retrievedIterPages)
+
+    } catch (err) {
+      console.error('Fetch error:', err)
+      setError(err.message || "Unexpected Error Occurred")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    retrieveSalons(page, currentFilter)
+  }, [page, currentFilter])
+
+  const handleFilter = () => {
+    setCurrentFilter(filter)
+    setPage(1)
+    retrieveSalons(1, currentFilter)
+  }
+
   return (
     <div className='search-page'>
         <div className='nav-border'></div>
@@ -11,32 +81,40 @@ function SearchSalons() {
                   <h1 className='filter-title'>
                     Search Options
                   </h1>
-                  <form className='search-form'>
+                  <form className='search-form' onSubmit={handleFilter}>
                     <label>
                       <p className='input-title'>Business Name:</p>
                       <input 
                         placeholder='Business Name'
+                        value={filter.business_name}
+                        onChange={event => setFilter({...filter, business_name: event.target.value})}
                       />
                     </label>
                     <label>
                       <p className='input-title'>Category:</p>
                       <input 
                         placeholder='Category'
+                        value={filter.category}
+                        onChange={event => setFilter({...filter, category: event.target.value})}
                       />
                     </label>
                     <label>
-                      <p className='input-title'>Location:</p>
+                      <p className='input-title'>Employee First Name:</p>
                       <input 
-                        placeholder='Location'
+                        placeholder='First Name'
+                        value={filter.employee_first}
+                        onChange={event => setFilter({...filter, employee_first: event.target.value})}
                       />
                     </label>
                     <label>
-                      <p className='input-title'>Employee:</p>
+                      <p className='input-title'>Employee Last Name:</p>
                       <input 
-                        placeholder='Employee Name'
+                        placeholder='Last Name'
+                        value={filter.employee_last}
+                        onChange={event => setFilter({...filter, employee_last: event.target.value})}
                       />
                     </label>
-                    <div className='tag-section'>
+                    {/*<div className='tag-section'>
                       <p className='input-object-title'>Tags +</p>
                       <div className='tag-item'>
                         Salon Hair Cut X
@@ -45,12 +123,32 @@ function SearchSalons() {
                         Hair Color X
                       </div>
                     </div>
-                    <p className='input-object-title'>Rating +</p>
+                    <p className='input-object-title'>Rating +</p>*/}
                   </form>
                 </div>
                 <div className='button-section'>
-                  <button className='search-btn'>Search</button>
-                  <button className='search-btn'>Reset</button>
+                  <button type='submit' className='search-btn'
+                    disabled={
+                      !filter.business_name && !filter.category && !filter.employee_first && !filter.employee_last
+                    }
+                    onClick={(e) => {
+                      e.preventDefault()   // just in case?
+                      handleFilter()
+                    }}
+                  >
+                    Search
+                  </button>
+                  <button className='search-btn'
+                    onClick={() => {
+                      const emptyFilter = { business_name: "", category: "", employee_first: "", employee_last: "" }
+                      setFilter(emptyFilter)
+                      setCurrentFilter(emptyFilter)
+                      setPage(1)
+                      retrieveSalons(1, emptyFilter)
+                    }}
+                  >
+                    Reset
+                  </button>
                 </div>
             </div>
             <div className="search-results">
@@ -58,87 +156,48 @@ function SearchSalons() {
                   <h1 className='results-title'>
                     Businesses
                   </h1>
-                  {/* add map here for all salon results */}
                 </div>
+
                 <div className='results-selection'>
-                  <div className='result-item'>
-                    <p className='item-title'>Awesome Hair Salon</p>
-                    <div className='white-divider'></div>
-                    <p className='item-category'>Hair</p>
-                    <div className='white-divider'></div>
-                    <p className='item-rating'>Rating: 4 stars</p>
-                  </div>
-                  <div className='result-item'>
-                    <p className='item-title'>Barber Bros Hair</p>
-                    <div className='white-divider'></div>
-                    <p className='item-category'>Barber</p>
-                    <div className='white-divider'></div>
-                    <p className='item-rating'>Rating: 3 stars</p>
-                  </div>
-                  <div className='result-item'>
-                    <p className='item-title'>Brow Lifts</p>
-                    <div className='white-divider'></div>
-                    <p className='item-category'>Brows</p>
-                    <div className='white-divider'></div>
-                    <p className='item-rating'>Rating: 5 stars</p>
-                  </div>
-                  <div className='result-item'>
-                    <p className='item-title'>Cool Nail Studio</p>
-                    <div className='white-divider'></div>
-                    <p className='item-category'>Nails</p>
-                    <div className='white-divider'></div>
-                    <p className='item-rating'>Rating: 3.5 stars</p>
-                  </div>
-                  <div className='result-item'>
-                    <p className='item-title'>Cutiecules</p>
-                    <div className='white-divider'></div>
-                    <p className='item-category'>Nails</p>
-                    <div className='white-divider'></div>
-                    <p className='item-rating'>Rating: 5 stars</p>
-                  </div>
-                  <div className='result-item'>
-                    <p className='item-title'>Even Better Hair Salon</p>
-                    <div className='white-divider'></div>
-                    <p className='item-category'>Hair</p>
-                    <div className='white-divider'></div>
-                    <p className='item-rating'>Rating: 4.5 stars</p>
-                  </div>
-                  <div className='result-item'>
-                    <p className='item-title'>Nail Castle</p>
-                    <div className='white-divider'></div>
-                    <p className='item-category'>Nails</p>
-                    <div className='white-divider'></div>
-                    <p className='item-rating'>Rating: 4.5 stars</p>
-                  </div>
-                  <div className='result-item'>
-                    <p className='item-title'>Ok Hair Salon</p>
-                    <div className='white-divider'></div>
-                    <p className='item-category'>Hair</p>
-                    <div className='white-divider'></div>
-                    <p className='item-rating'>Rating: 2.5 stars</p>
-                  </div>
-                  <div className='result-item'>
-                    <p className='item-title'>Pedicures idk</p>
-                    <div className='white-divider'></div>
-                    <p className='item-category'>Pedi</p>
-                    <div className='white-divider'></div>
-                    <p className='item-rating'>Rating: 2 stars</p>
-                  </div>
-                  
+                  {loading && <p>Loading salons...</p>}
+                  {error && <p>{error}</p>}
+
+                  {salons.map((salon) => (
+                    <Link key={salon.salon_id} className='result-item' to={`/salon/${salon.salon_id}`}>
+                      <p className='item-title'>{salon.salon_name}</p>
+                      <div className='white-divider'></div>
+                      <p className='item-category'>{salon.tag_name}</p>
+                      <div className='white-divider'></div>
+                      <p className='item-rating'>Rating: {salon.rating}</p>
+                    </Link>
+                  ))}
                 </div>
+
                 <div className='pagination-section'>
-                  <button className='prev-next'>{'<<'} Prev</button>
-                  <button className='num-btn'>1</button>
-                  <button className='num-btn'>2</button>
-                  ...
-                  <button className='num-btn'>3</button>
-                  <button className='num-btn'>4</button>
-                  <button className='num-btn'>5</button>
-                  ...
-                  <button className='num-btn'>6</button>
-                  <button className='num-btn'>7</button>
-                  <button className='prev-next'>Next {'>>'}</button>
+                  <button className='prev-next'
+                    disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                  >
+                    {'<<'} Prev
+                  </button>
+                  {iterpages && iterpages.map((p,index) => {
+                    if (p === "...")
+                        return <span key={index} className='gap'>...</span>
+                    else
+                      return <button key={index} className='num-btn'
+                        disabled={p === page}
+                        onClick={() => setPage(p)}>
+                        {p}
+                      </button>
+                  })}
+                  <button className='prev-next'
+                    disabled={page === totalPages}
+                    onClick={() => setPage(page + 1)}
+                  >
+                    Next {'>>'}
+                  </button>
                 </div>
+
             </div>
         </div>
     </div>

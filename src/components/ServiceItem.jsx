@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import './ServiceItem.css'
 
-function ServiceItem({ itemTitle, itemPrice, itemDesc, itemDuration, itemTags=[] }){
+function ServiceItem({ itemTitle, itemPrice, itemDesc, itemDuration, itemTags }){
     const [expanded, setExpanded] = useState(false)
 
     return (
@@ -14,7 +14,7 @@ function ServiceItem({ itemTitle, itemPrice, itemDesc, itemDuration, itemTags=[]
                     {itemTitle}
                 </h3>
                 <h3 className='item-price'>
-                    {itemPrice}
+                    ${itemPrice}
                 </h3>
                 <p className='item-description'>
                     {itemDesc}
@@ -23,14 +23,17 @@ function ServiceItem({ itemTitle, itemPrice, itemDesc, itemDuration, itemTags=[]
                     Book
                 </button>
                 <p className='item-duration'>
-                    Duration: {itemDuration}
+                    Duration: {itemDuration} minutes
                 </p>
                 <div className='tag-section'>
-                    {Array.isArray(itemTags) && itemTags.map((tag, index) => (
+                    <div className='service-tag'>
+                        {itemTags}
+                    </div>
+                    {/*{Array.isArray(itemTags) && itemTags.map((tag, index) => (
                         <div key={index} className='service-tag'>
                             {tag}
                         </div>
-                    ))}
+                    ))}*/}
                 </div>
             </div>
         </div>
