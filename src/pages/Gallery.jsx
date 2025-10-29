@@ -55,9 +55,9 @@ function Gallery() {
           <p className='not-found'>No salon found for Salon ID {salon_id}.</p>
         ) : (
         <div className="gallery-page">
-            <SalonHeader
+          <SalonHeader
             salonID={salon_id}
-            headerTitle={salon[3]}
+            headerTitle={salon.salon_name}
             headerTags={tags}
           />
         </div>

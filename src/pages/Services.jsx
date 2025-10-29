@@ -80,7 +80,7 @@ function Services() {
             
             <SalonHeader
               salonID={salon_id}
-              headerTitle={salon[3]}
+              headerTitle={salon.salon_name}
               headerTags={tags}
             />
 
@@ -93,12 +93,12 @@ function Services() {
               {error && <p>{error}</p>}
               {services.map((service) => (
                 <ServiceItem
-                  key={service[0]}
-                  itemTitle={service[2]}
-                  itemPrice={service[6]}
-                  itemDesc={service[4]}
-                  itemDuration={service[5]}
-                  itemTags={service[3]}
+                  key={service.service_id}
+                  itemTitle={service.service_name}
+                  itemPrice={service.price}
+                  itemDesc={service.description}
+                  itemDuration={service.duration_minutes}
+                  itemTags={service.master_tag_name}
                 />
               ))}
             </div>

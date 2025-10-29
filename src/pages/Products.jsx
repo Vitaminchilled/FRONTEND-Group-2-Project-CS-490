@@ -56,7 +56,7 @@ function Products() {
         <div className="products-page">
           <SalonHeader
             salonID={salon_id}
-            headerTitle={salon[3]}
+            headerTitle={salon.salon_name}
             headerTags={tags}
           />
         </div>

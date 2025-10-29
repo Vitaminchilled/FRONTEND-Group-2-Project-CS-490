@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import background from '../assets/homePage_background.png';
 import './Home.css'
 
@@ -26,13 +26,14 @@ function Salon( {salon} ) {
   );
 }
 
+
 function TagGroup( {tag} ){
   const [salons, setSalons] = useState([]);
 
   useEffect(() => {
       const fetchSalons = async() => {
           try {
-              //const response = await fetch(`/TopSalonsByTag?tag=${encodeURIComponent(tag)}`);
+              //const response = await fetch(`/api/TopSalonsByTag?tag=${encodeURIComponent(tag)}`);
               //Delete bellow  when the above fetch is added
               const name = "NAME";
               const response = await fetch(`http://127.0.0.1:5000/salonData`);
@@ -71,11 +72,7 @@ function TagGroup( {tag} ){
   );
 }
 
-
 function Home() {
-  const navigate = useNavigate()
-  const [businessName, setBusinessName] = useState("")
-
   const tagRefs = useRef({});
 
   const scrollToTag = (tag) => {
@@ -84,13 +81,6 @@ function Home() {
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
-
-  const handleSearch = (event) => {
-    event.preventDefault()
-    navigate('/search', {
-      state: { filter: { business_name: businessName, category: "", employee_first: "", employee_last: "" } }
-    })
-  }
 
   const tags = [
     "Hair Salon",
@@ -101,17 +91,28 @@ function Home() {
     "Day Spa"
   ];
 
+  const navigate = useNavigate()
+  const [businessName, setBusinessName] = useState("")
+  const handleSearch = (event) => {
+    event.preventDefault()
+    navigate('/search', {
+      state: { filter: { business_name: businessName, category: "", employee_first: "", employee_last: "" } }
+    })
+  }
+
   return (
     <div className="Home">
       <div className="Background">
+        <div className="BackgroundInner">
+          <h1>WELCOME</h1>
+          <form>
+            <input autoComplete="off" type="text" placeholder="Search salons by name" name="search" value={businessName}
+              onChange={event => setBusinessName(event.target.value)} 
+            />
+            <button onClick={handleSearch} type="submit">Search</button>
+          </form>
+        </div>
         <img src={background} alt="None" />
-        <h1>WELCOME</h1>
-        <form>
-          <input autoComplete="off" type="text" placeholder="Search salons by name" name="search" value={businessName}
-            onChange={event => setBusinessName(event.target.value)} 
-          />
-          <button onClick={handleSearch} type="submit">Search</button>
-        </form>
       </div>
 
       <div className='TagsBar'>

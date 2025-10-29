@@ -3,9 +3,6 @@ import { useParams, NavLink } from 'react-router-dom'
 import SalonHeader from '../components/SalonHeader.jsx'
 import DashboardGroup from '../components/DashboardGroup.jsx'
 import employeeIcon from '../assets/PersonIcon.png'
-import door from '../assets/door.jpg'
-import cheyenne from '../assets/cheyenne.jpg'
-import pork from '../assets/pork.png'
 import EmployeeItem from '../components/EmployeeItem.jsx'
 import four from '../assets/stars/4.png'
 
@@ -75,7 +72,7 @@ function SalonDashboard() {
         >
             <SalonHeader
               salonID={salon_id}
-              headerTitle={salon[3]}
+              headerTitle={salon.salon_name}
               headerTags={tags}
             />
 
@@ -162,7 +159,7 @@ function SalonDashboard() {
 
             <DashboardGroup
               groupTitle='About Us'
-              groupExtra={`${salon[8]}, ${salon[9]}, ${salon[10]} ${salon[11]}, ${salon[12]}`}
+              groupExtra={`${salon.address}, ${salon.city}, ${salon.state} ${salon.postal_code}, ${salon.country}`}
             />
 
             <p className='about-us'
@@ -199,10 +196,10 @@ function SalonDashboard() {
               {error && <p>{error}</p>}
               {employees.map((employee) => (
                 <EmployeeItem
-                  key={employee[0]}
+                  key={employee.employee_id}
                   employeeImg={employeeIcon}
-                  employeeName={`${employee[1]} ${employee[2]}`}
-                  employeeDesc={employee[3]}
+                  employeeName={`${employee.employee_first_name} ${employee.employee_last_name}`}
+                  employeeDesc={employee.description}
                 />
               ))}
             </div>

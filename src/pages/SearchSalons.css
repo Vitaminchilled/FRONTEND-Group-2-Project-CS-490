@@ -1,7 +1,8 @@
 .nav-border {
     background-color: #f0d7bd; 
-    height: 100px; 
+    height: 20px; 
     width: 100%;
+    margin-top: 80px;
 }
 
 .inner-format {
@@ -203,7 +204,7 @@
 }
 
 .item-category {
-    flex: 0 0 20%;
+    flex: 0 0 15%;
     margin: 0;
     padding: 0;
     white-space: nowrap;
@@ -212,7 +213,7 @@
 }
 
 .item-rating {
-    flex: 0 0 30%;
+    flex: 0 0 35%;
     margin: 0;
     padding: 0;
     white-space: nowrap;
