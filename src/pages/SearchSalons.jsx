@@ -157,30 +157,42 @@ function SearchSalons() {
                   {error && <p>{error}</p>}
 
                   {salons.map((salon) => {
-                    const stars = Array.from({ length: 5 }, (_, i) => {
-                      const starValue = i + 1;
-                      if (salon.rating >= starValue) return "★";        // full star
-                      if (salon.rating >= starValue - 0.5) return "⯪";  // half star
-                      return "☆";                                       // empty star
-                    })
-
-                    return (
-                      <Link key={salon.salon_id} className='result-item' to={`/salon/${salon.salon_id}`}>
+                    if (salon.rating === null || salon.rating === undefined) {
+                      return (
+                        <Link key={salon.salon_id} className='result-item' to={`/salon/${salon.salon_id}`}>
                         <p className='item-title'>{salon.salon_name}</p>
                         <div className='white-divider'></div>
                         <p className='item-category'>{salon.tag_name}</p>
                         <div className='white-divider'></div>
-                        <p className='item-rating'>
-                          Rating:{`${" "}`}
-                          <span className='stars'>
-                            {stars.map((star, index) => (
-                              <span key={index}>{star}</span>
-                            ))}
-                          </span>
-                          {`${" "}`}({salon.rating})
-                        </p>
+                        <p className='item-rating'>Rating: Not available</p>
                       </Link>
-                    )
+                      )
+                    } else {
+                      const stars = Array.from({ length: 5 }, (_, i) => {
+                        const starValue = i + 1;
+                        if (salon.rating >= starValue) return "★";        // full star
+                        if (salon.rating >= starValue - 0.5) return "⯪";  // half star
+                        return "☆";                                       // empty star
+                      })
+
+                      return (
+                        <Link key={salon.salon_id} className='result-item' to={`/salon/${salon.salon_id}`}>
+                          <p className='item-title'>{salon.salon_name}</p>
+                          <div className='white-divider'></div>
+                          <p className='item-category'>{salon.tag_name}</p>
+                          <div className='white-divider'></div>
+                          <p className='item-rating'>
+                            Rating:{`${" "}`}
+                            <span className='stars'>
+                              {stars.map((star, index) => (
+                                <span key={index}>{star}</span>
+                              ))}
+                            </span>
+                            {`${" "}`}({salon.rating})
+                          </p>
+                        </Link>
+                      )
+                    }
                   })}
                 </div>
 

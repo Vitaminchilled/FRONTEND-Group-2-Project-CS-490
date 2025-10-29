@@ -200,6 +200,7 @@
     overflow-x: hidden;
     text-overflow: ellipsis;
     text-align: start;
+    font-weight: 600;
 }
 
 .item-category {
@@ -219,6 +220,10 @@
     overflow-x: hidden;
     text-overflow: ellipsis;
     text-align: end;
+}
+
+.stars {
+    color: #E6AF50;
 }
 
 .white-divider {
