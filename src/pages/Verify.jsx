@@ -4,7 +4,6 @@ import './Verify.css'
 
 function Verify() {
   const [salons, setSalons] = useState([]);
-  const [owner, setOwner] = useState([]);
   
   useEffect(() => {
     const fetchSalons = async() => {
@@ -15,13 +14,16 @@ function Verify() {
         }
         const result = await response.json();
         setSalons(result.salons);
-        console.log(salons);
       } catch (error) {
         console.error(error.message);
       }
     }
     fetchSalons();
   }, []);
+
+  const handleSalonChange = (salon_id) => {
+    setSalons((prev) => prev.filter((s) => s.salon_id !== salon_id));
+  };
 
   return (
     <div className='Verify'>
@@ -30,15 +32,15 @@ function Verify() {
 
       <div className="VerifyGrid">
         {salons.map((salon, index) => (
-          <MenuBox title={salon.name} key={index}>
+          <MenuBox title={salon.name} key={index} data={salon} onDataChange={handleSalonChange}>
             <p>{salon.email}<br />
             {salon.phone_number}<br />
-            1 Street St, City, State</ p>
-            <p>{salon.first_name} {salon.last_name}(Owner)<br />
-            {salon.email}<br />
-            {salon.phone_number}<br />
-            {salon.birth_year}<br />
-            Created on: {salon.created_at}</p>
+            {salon.address}<br />
+            {salon.city}, {salon.state}, {salon.postal_code}, {salon.country}</ p>
+            <p>{salon.owner_first_name} {salon.owner_last_name}(Owner)<br />
+            {salon.owner_email}<br />
+            {salon.owner_phone_number}<br />
+            {salon.owner_birth_year}</p>
           </MenuBox>
         ))}
         

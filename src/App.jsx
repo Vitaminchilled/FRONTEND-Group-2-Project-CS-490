@@ -3,6 +3,7 @@ import Home from './pages/Home.jsx'
 import SearchSalons from './pages/SearchSalons.jsx'
 import Account from './pages/AccountDetails.jsx'
 import Verify from './pages/Verify.jsx'
+import Users from './pages/Users.jsx'
 import { Routes, Route } from "react-router-dom"
 import './App.css'
 
@@ -15,10 +16,12 @@ function App() {
         {/* Controls Routing to Pages */}
         <div className="AppContent"> 
           <Routes >
+            {/* Changes base page depending on user type !NEEDS TO BE DONE STILL! */}
             <Route path="/" element={<Home />} />
             <Route path="/search" element={<SearchSalons />} />
             <Route path="/account" element={<Account />}/>
             <Route path="/verify" element={<Verify />}/>
+            <Route path="/users" element={<Users />}/>
             {/*
             Routes to include:
               /account is account details and should depend on the account type
