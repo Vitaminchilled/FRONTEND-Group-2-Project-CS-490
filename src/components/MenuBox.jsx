@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import {ModalView, ModalVerify, ModalReject} from './Modal.jsx';
+import {ModalView, ModalVerify, ModalReject, ModalDelete} from './Modal.jsx';
 import './MenuBox.css';
 
 function MenuBox({ title, children, data, showView = true, showVerify = true, showReject = true, showDelete = false, onDataChange}) {
@@ -43,7 +43,7 @@ function MenuBox({ title, children, data, showView = true, showVerify = true, sh
       {isModalOpen === 'view'   && <ModalView   setModalOpen={() => setModalOpen(null)} salon={data}/>}
       {isModalOpen === 'verify' && <ModalVerify setModalOpen={() => setModalOpen(null)} salon={data} verifyChange={onDataChange}/>}
       {isModalOpen === 'reject' && <ModalReject setModalOpen={() => setModalOpen(null)} salon={data} verifyChange={onDataChange}/>}
-      {isModalOpen === 'delete' && <ModalDelete setModalOpen={() => setModalOpen(null)} user ={data}/>}
+      {isModalOpen === 'delete' && <ModalDelete setModalOpen={() => setModalOpen(null)} user ={data} verifyDelete={onDataChange}/>}
     </div>
   );
 }

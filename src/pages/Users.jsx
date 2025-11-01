@@ -21,6 +21,10 @@ function Users() {
     fetchUsers();
   }, []);
 
+  const handleUserChange = (user_id) => {
+    setUsers((prev) => prev.filter((s) => s.user_id !== user_id));
+  };
+
   return (
     <div className='Users'>
       <h1>Users</h1>
@@ -28,7 +32,7 @@ function Users() {
 
       <div className="UsersGrid">
         {users.map((user, index) => (
-          <MenuBox title={user.username} key={index} showView={false} showReject={false} showVerify={false} showDelete={true}>
+          <MenuBox title={user.username} key={index} data={user} showView={false} showReject={false} showVerify={false} showDelete={true} onDataChange={handleUserChange}>
             <p>{user.first_name} (First)<br />
             {user.last_name} (Last)<br />
             Role: {user.role}</ p>

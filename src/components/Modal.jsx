@@ -92,7 +92,7 @@ export function ModalReject ({setModalOpen, salon, verifyChange}) {
     );
 };
 
-async function handleUserDeletion(userId, setModalOpen) {
+async function handleUserDeletion(userId, setModalOpen, verifyDelete) {
     try {
         const response = await fetch("/api/deleteUser", {
         method: "POST",
@@ -111,13 +111,13 @@ async function handleUserDeletion(userId, setModalOpen) {
         const result = await response.json();
         console.log("Deletion success:", result);
         setModalOpen(false);
-
+        verifyDelete(userId);
     } catch (error) {
         console.error("Error Deleting User:", error);
     }
 }
 
-export function ModalDelete ({setModalOpen, user}) {
+export function ModalDelete ({setModalOpen, user, verifyDelete}) {
     return (
         <div className='ModalBackground'>
             <div className='ModalContainer'>
@@ -129,7 +129,7 @@ export function ModalDelete ({setModalOpen, user}) {
                 </div>
                 <div className='ModalFooter'>
                     <button onClick={() => setModalOpen(false)}>Cancel</button>
-                    <button onClick={() => handleUserDeletion(user.user_id, setModalOpen)}>Confirm</button>
+                    <button onClick={() => handleUserDeletion(user.user_id, setModalOpen, verifyDelete)}>Confirm</button>
                 </div>
             </div>
         </div>
