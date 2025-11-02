@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import background from '../assets/homePage_background.png';
 import './Home.css'
 
@@ -90,15 +91,28 @@ function Home() {
     "Day Spa"
   ];
 
+  const navigate = useNavigate()
+  const [businessName, setBusinessName] = useState("")
+  const handleSearch = (event) => {
+    event.preventDefault()
+    navigate('/search', {
+      state: { filter: { business_name: businessName, category: "", employee_first: "", employee_last: "" } }
+    })
+  }
+
   return (
     <div className="Home">
       <div className="Background">
+        <div className="BackgroundInner">
+          <h1>WELCOME</h1>
+          <form>
+            <input autoComplete="off" type="text" placeholder="Search salons by name" name="search" value={businessName}
+              onChange={event => setBusinessName(event.target.value)} 
+            />
+            <button onClick={handleSearch} type="submit">Search</button>
+          </form>
+        </div>
         <img src={background} alt="None" />
-        <h1>WELCOME</h1>
-        <form>
-          <input autoComplete="off" type="text" placeholder="Search salons, stylists, or services" name="search" />
-          <button type="submit">Search</button>
-        </form>
       </div>
 
       <div className='TagsBar'>

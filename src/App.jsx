@@ -4,6 +4,10 @@ import SearchSalons from './pages/SearchSalons.jsx'
 import Account from './pages/AccountDetails.jsx'
 import Verify from './pages/Verify.jsx'
 import Users from './pages/Users.jsx'
+
+//Salon Dashboard Pages put into one folder to keep it together
+import SalonDashboard from './pages/SalonPages/SalonDashboard.jsx'
+
 import { Routes, Route } from "react-router-dom"
 import './App.css'
 
@@ -21,6 +25,8 @@ function App() {
             <Route path="/search" element={<SearchSalons />} />
             <Route path="/account" element={<Account />}/>
             <Route path="/verify" element={<Verify />}/>
+            <Route path="/salon/:salon_id" element={<SalonDashboard />} />
+            
             <Route path="/users" element={<Users />}/>
             {/*
             Routes to include:
