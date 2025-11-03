@@ -48,15 +48,8 @@ function SalonHeader({ salonID, headerTitle, headerTags, headerRatingValue}) {
         {headerTitle}
       </h1>
 
-      <div className="header-tags">
-        {headerTags && headerTags.map((tag,index) => {
-          const isLast = index === headerTags.length-1
-          if (isLast)
-            return <p key={index} className="tag">{tag}</p>
-          else
-            return <p key={index} className="tag comma">{tag},</p>
-        })}
-      </div>
+      {headerTags && <p className="header-tags">{headerTags.join(', ')}</p>}
+      
 
       <div className="header-rating">
         <p className={headerRatingValue ? "rating-available" : "rating-unavailable"}>{headerRating}</p> 
