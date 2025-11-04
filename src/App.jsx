@@ -6,6 +6,7 @@ import Verify from './pages/Verify.jsx'
 
 //Salon Dashboard Pages put into one folder to keep it together
 import SalonDashboard from './pages/SalonPages/SalonDashboard.jsx'
+import SalonServices from './pages/SalonPages/Services.jsx'
 
 import { Routes, Route } from "react-router-dom"
 import './App.css'
@@ -24,7 +25,7 @@ function App() {
             <Route path="/account" element={<Account />}/>
             <Route path="/verify" element={<Verify />}/>
             <Route path="/salon/:salon_id" element={<SalonDashboard />} />
-            
+            <Route path="/salon/:salon_id/services" element={<SalonServices />} />
             {/*
             Routes to include:
               /account is account details and should depend on the account type
