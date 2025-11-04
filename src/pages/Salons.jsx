@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import MenuBox from '../components/MenuBox.jsx';
 import './Verify.css'
 
-function Verify() {
+function Salons() {
   const [salons, setSalons] = useState([]);
   
   useEffect(() => {
     const fetchSalons = async() => {
     try {
-        const response = await fetch(`/api/salonsToVerify`);
+        const response = await fetch(`/api/allSalons`);
         if (!response.ok) {
           throw new Error(`Response status: ${response.status}`);
         }
@@ -27,12 +27,12 @@ function Verify() {
 
   return (
     <div className='Verify'>
-      <h1>Verify</h1>
+      <h1>Salons</h1>
       <hr />
 
       <div className="VerifyGrid">
         {salons.map((salon, index) => (
-          <MenuBox title={salon.name} key={index} data={salon} onDataChange={handleSalonChange}>
+          <MenuBox title={salon.name} key={index} data={salon} onDataChange={handleSalonChange} showReject={false} showVerify={false}>
             <p>{salon.email}<br />
             {salon.phone_number}<br />
             {salon.address}<br />
@@ -49,4 +49,4 @@ function Verify() {
   );
 }
 
-export default Verify
+export default Salons
