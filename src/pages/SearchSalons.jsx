@@ -1,40 +1,78 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import './SearchSalons.css'
+import cross from '../assets/XIcon.png'
 
 function SearchSalons() {
   const location = useLocation()
-  const initialFilter = location.state?.filter || { business_name: "", category: "", employee_first: "", employee_last: "" }
+  const initialFilter = location.state?.filter || { 
+    business_name: "", 
+    categories: [], 
+    employee_first: "", 
+    employee_last: "" 
+  }
   
   const [filter, setFilter] = useState(initialFilter)
   const [currentFilter, setCurrentFilter] = useState(initialFilter)
+  const [newCategory, setNewCategory] = useState('')
 
   const [salons, setSalons] = useState([])
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [iterpages, setIterPages] = useState([])
+  const [masterTags, setMasterTags] = useState([])
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+
+  function getStarString(rating) {
+    let stars = ''
+    for (let i = 1; i <= 5; i++) {
+      if (rating >= i) stars += '★'
+      else if (rating >= i - 0.5) stars += '⯪'
+      else stars += '☆'
+    }
+    return stars
+  }
 
   const retrieveSalons = async (pageNumber = 1, filters = currentFilter) => {
     setLoading(true);
     setError(null);
 
     try {
-      const { business_name, category, employee_first, employee_last } = filters
+      const params = new URLSearchParams()
+      if (filters.business_name) {
+        params.append('business_name', filters.business_name)
+      }
+      filters.categories.forEach(cat => params.append("categories", cat))
+      if (filters.employee_first) {
+        params.append('employee_first', filters.employee_first)
+      }
+      if (filters.employee_last) {
+        params.append('employee_last', filters.employee_last)
+      }
+      params.append('page', pageNumber)
+
       console.log(currentFilter)
       console.log(filter)
 
-      const response = await fetch(`/api/salon/all?business_name=${business_name}&category=${category}&employee_first=${employee_first}&employee_last=${employee_last}&page=${pageNumber}`)
+      const response = await fetch(`/api/salon/all?${params.toString()}`)
+      const master_tag_response = await fetch("/api/master-tags")
 
       if(!response.ok) {
         const errorText = await response.text()
         throw new Error(`HTTP error ${response.status}: ${errorText}`)
       }
 
+      if(!master_tag_response) {
+        const errorText = await master_tag_response.text()
+        throw new Error(`Master Tag: HTTP error ${master_tag_response.status}: ${errorText}`)
+      }
+
       const data = await response.json()
+      const master_tag_data = await master_tag_response.json()
       console.log(data)
+      console.log(master_tag_data)
       //destructuring data in the case that if it is null/undefined it defaults as a {} with default salon and total_page values
       const { 
         salons: retrievedSalons=[], 
@@ -42,11 +80,16 @@ function SearchSalons() {
         page: retrievedPage = 1,
         iter_pages: retrievedIterPages = [1]
       } = data || {}
+
+      const {
+        master_tags: retrievedMasterTags=[]
+      } = master_tag_data || {}
       
       setSalons(retrievedSalons)
       setPage(retrievedPage)
       setTotalPages(retrievedTotalPages)
       setIterPages(retrievedIterPages)
+      setMasterTags(retrievedMasterTags)
 
     } catch (err) {
       console.error('Fetch error:', err)
@@ -60,10 +103,28 @@ function SearchSalons() {
     retrieveSalons(page, currentFilter)
   }, [page, currentFilter])
 
+  const handleAddCategory = (event) => {
+    event.preventDefault()
+    if (!newCategory) return
+    if (!filter.categories.includes(newCategory)) {
+      setFilter(prev => ({
+        ...prev,
+        categories: [...prev.categories, newCategory]
+      }))
+    }
+    setNewCategory('')
+  }
+
+  const handleRemoveCategory = (catToRemove) => {
+    setFilter(prev => ({
+      ...prev,
+      categories: prev.categories.filter(cat => cat !== catToRemove)
+    }))
+  }
+
   const handleFilter = () => {
     setCurrentFilter(filter)
     setPage(1)
-    retrieveSalons(1, currentFilter)
   }
 
   return (
@@ -86,11 +147,38 @@ function SearchSalons() {
                     </label>
                     <label>
                       <p className='input-title'>Category:</p>
-                      <input 
-                        placeholder='Category'
-                        value={filter.category}
-                        onChange={event => setFilter({...filter, category: event.target.value})}
-                      />
+                      <div className='category-section'>
+                        <div className='current-categories'>
+                          {filter.categories.map((category, index) => (
+                            <div key={index} className='tag-item'>
+                              <p className='tag-title'>
+                                {category}
+                              </p>
+                              <img className='tag-remove'
+                                src={cross}
+                                alt="X"
+                                onClick={() => handleRemoveCategory(category)}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        <div className='add-categories'>
+                          <select className='input-category'
+                            value={newCategory}
+                            onChange={event => setNewCategory(event.target.value)}
+                          >
+                            <option value=''>Choose</option>
+                            {masterTags.map((masterTag) => (
+                              <option key={masterTag.master_tag_id} value={masterTag.name}>
+                                {masterTag.name}
+                              </option>
+                            ))}
+
+                          </select>
+                          <button className='btn-category' onClick={handleAddCategory}>Add</button>
+                        </div>
+                      </div>
+                      
                     </label>
                     <label>
                       <p className='input-title'>Employee First Name:</p>
@@ -108,22 +196,12 @@ function SearchSalons() {
                         onChange={event => setFilter({...filter, employee_last: event.target.value})}
                       />
                     </label>
-                    {/*<div className='tag-section'>
-                      <p className='input-object-title'>Tags +</p>
-                      <div className='tag-item'>
-                        Salon Hair Cut X
-                      </div>
-                      <div className='tag-item'>
-                        Hair Color X
-                      </div>
-                    </div>
-                    <p className='input-object-title'>Rating +</p>*/}
                   </form>
                 </div>
                 <div className='button-section'>
                   <button type='submit' className='search-btn'
                     disabled={
-                      !filter.business_name && !filter.category && !filter.employee_first && !filter.employee_last
+                      !filter.business_name && filter.categories.length===0 && !filter.employee_first && !filter.employee_last
                     }
                     onClick={(e) => {
                       e.preventDefault()
@@ -134,11 +212,11 @@ function SearchSalons() {
                   </button>
                   <button className='search-btn'
                     onClick={() => {
-                      const emptyFilter = { business_name: "", category: "", employee_first: "", employee_last: "" }
+                      const emptyFilter = { business_name: "", categories: [], employee_first: "", employee_last: "" }
                       setFilter(emptyFilter)
                       setCurrentFilter(emptyFilter)
                       setPage(1)
-                      retrieveSalons(1, emptyFilter)
+                      
                     }}
                   >
                     Reset
@@ -157,38 +235,35 @@ function SearchSalons() {
                   {error && <p>{error}</p>}
 
                   {salons.map((salon) => {
-                    if (salon.rating === null || salon.rating === undefined) {
+                    if (salon.average_rating === null || salon.average_rating === undefined) {
                       return (
                         <Link key={salon.salon_id} className='result-item' to={`/salon/${salon.salon_id}`}>
                         <p className='item-title'>{salon.salon_name}</p>
                         <div className='white-divider'></div>
-                        <p className='item-category'>{salon.tag_name}</p>
+                        <p className='item-category'>
+                          {salon.tag_names.join(', ')}
+                        </p>
                         <div className='white-divider'></div>
                         <p className='item-rating'>Rating: Not available</p>
                       </Link>
                       )
                     } else {
-                      const stars = Array.from({ length: 5 }, (_, i) => {
-                        const starValue = i + 1;
-                        if (salon.rating >= starValue) return "★";        // full star
-                        if (salon.rating >= starValue - 0.5) return "⯪";  // half star
-                        return "☆";                                       // empty star
-                      })
+                      const stars = getStarString(salon.average_rating)
 
                       return (
                         <Link key={salon.salon_id} className='result-item' to={`/salon/${salon.salon_id}`}>
                           <p className='item-title'>{salon.salon_name}</p>
                           <div className='white-divider'></div>
-                          <p className='item-category'>{salon.tag_name}</p>
+                          <p className='item-category'>
+                            {salon.tag_names.join(', ')}
+                          </p>
                           <div className='white-divider'></div>
                           <p className='item-rating'>
                             Rating:{`${" "}`}
                             <span className='stars'>
-                              {stars.map((star, index) => (
-                                <span key={index}>{star}</span>
-                              ))}
+                              {stars}
                             </span>
-                            {`${" "}`}({salon.rating})
+                            {`${" "}`}({salon.average_rating})
                           </p>
                         </Link>
                       )
