@@ -8,7 +8,7 @@ function Salons() {
   useEffect(() => {
     const fetchSalons = async() => {
     try {
-        const response = await fetch(`/api/allSalons`);
+        const response = await fetch(`/api/admin/verifiedSalons`);
         if (!response.ok) {
           throw new Error(`Response status: ${response.status}`);
         }

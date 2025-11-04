@@ -8,7 +8,7 @@ function Users() {
   useEffect(() => {
     const fetchUsers = async() => {
     try {
-        const response = await fetch(`/api/allUsers`);
+        const response = await fetch(`/api/admin/users`);
         if (!response.ok) {
           throw new Error(`Response status: ${response.status}`);
         }

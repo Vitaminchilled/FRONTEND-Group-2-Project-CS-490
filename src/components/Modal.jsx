@@ -30,7 +30,7 @@ export function ModalView ({setModalOpen, salon}) {
 
 async function handleVerification(salonId, isVerified, setModalOpen, verifyChange) {
     try {
-        const response = await fetch("/api/verifySalon", {
+        const response = await fetch("/api/admin/verifySalon", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -94,8 +94,8 @@ export function ModalReject ({setModalOpen, salon, verifyChange}) {
 
 async function handleUserDeletion(userId, setModalOpen, verifyDelete) {
     try {
-        const response = await fetch("/api/deleteUser", {
-        method: "POST",
+        const response = await fetch("/api/admin/deleteUser", {
+        method: "DELETE",
         headers: {
             "Content-Type": "application/json",
         },
