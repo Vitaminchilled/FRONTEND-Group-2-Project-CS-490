@@ -1,0 +1,54 @@
+.not-found {
+    position: relative;
+    padding-top: 80px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.services-page {
+    position: relative;
+    padding-bottom: 180px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.services-background {
+    position: absolute;
+    top: 421px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-repeat: repeat-y;
+    background-size: clamp(300px, 80% ,900px); /* might change this */
+    background-position: center top;
+    z-index: -1;
+}
+
+.services-content {
+    display: flex;
+    flex-direction: column; 
+    gap: 25px;
+    align-items: center; 
+    padding: 0;
+    min-height: 500px;
+}
+
+.page-title {
+    font-family: Lateef;
+    font-weight: 500;
+    font-size: 45px;
+    margin: 0;
+    padding: 0;
+}
+
+.service-group {
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px;
+}

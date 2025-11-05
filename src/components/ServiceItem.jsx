@@ -1,0 +1,205 @@
+import React, { useEffect, useState } from 'react'
+import './ServiceItem.css'
+import deleteIcon from '../assets/BlackXIcon.png'
+import tagRemove from '../assets/WhiteXIcon.png'
+
+/* itemTitle, itemPrice, itemDesc, itemDuration, itemTags */
+function ServiceItem({ accountType, service, optionTags = [], isEditing = false , onStartEdit, onCancelEdit, onSaveEdit, onDelete}){
+    const [expanded, setExpanded] = useState(false)
+    const [editData, setEditData] = useState({
+        ...service,
+        tags: service.tags || [],
+        is_active: service.is_active ?? 1, /* add functionality later assume all are active for now */
+    })
+    /* pass in tags so they can be mapped and formatted when adding and removing tags */
+    const [newTag, setNewTag] = useState('')
+
+    useEffect(() => {
+        setEditData(service)
+    }, [service])
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setEditData((prev) => ({ ...prev, [name]: value }));
+    }
+
+    const handleAddTag = (event) => {
+        event.preventDefault()
+        if (!newTag) return
+        if (!editData.tags.includes(newTag)) {
+            setEditData(prev => ({
+                ...prev,
+                tags: [...prev.tags, newTag]
+            }))
+        }
+        setNewTag('')
+    }
+
+    const handleRemoveTag = (TagToRemove) => {
+        setEditData(prev => ({
+            ...prev,
+            tags: prev.tags.filter(t => t !== TagToRemove)
+        }))
+    }
+
+    return (
+        <div className={`service-item ${expanded ? "expanded" : ""}`}
+            onMouseEnter={() => setExpanded(true)}
+            onMouseLeave={() => !isEditing && setExpanded(false)}
+        >
+
+            {(accountType === 'owner' || accountType === 'admin') && (
+                isEditing ? (
+                    <div className='edit-grid-layout'>
+                        <div className='title-section'>
+                            <label className='edit-label title'>Name:</label>
+                            <input className='edit-input title'
+                                name='name'
+                                value={editData.name}
+                                onChange={handleChange}
+                                placeholder='Service Name'
+                            />
+                        </div>
+                        <div className='price-section'>
+                            <label className='edit-label price'>Price: $</label>
+                            <input className='edit-input price'
+                                name='price'
+                                value={editData.price}
+                                onChange={handleChange}
+                                placeholder='Price ex. 10.00'
+                            />
+                        </div>
+                        <img className='edit-remove'
+                            src={deleteIcon}
+                            alt='X'
+                            onClick={() => {
+                                if (service.service_id === null) return
+                                if (window.confirm("Are you sure you want to delete this service? This action cannot be undone.")) {
+                                    onDelete(service.service_id)
+                                }
+                                
+                            }}
+                            style={{ opacity: service.service_id === null ? 0.2 : 1, cursor: service.service_id === null ? 'not-allowed' : 'pointer' }}
+                        />
+                        <div className='description-section'>
+                            <label className='edit-label description'>Description:</label>
+                            <textarea className='edit-input description'
+                                name='description'
+                                value={editData.description}
+                                onChange={handleChange}
+                                placeholder='Service Description'
+                            />
+                        </div>
+                        <div className='duration-section'>
+                            <label className='edit-label duration'>Duration:</label>
+                            <input className='edit-input duration'
+                                name='duration_minutes'
+                                value={editData.duration_minutes}
+                                onChange={handleChange}
+                                placeholder='Service Duration ex. 10 (minutes)'
+                            />
+                        </div>
+                        <div className='tag-section'>
+                            <label className='edit-label tags'>Tags:</label>
+                            <div className='current-tags'>
+                                {editData.tags.map((tag, index) => (
+                                    <div key={index} className='tag-item'>
+                                        <p className='tag-title'>
+                                            {tag}
+                                        </p>
+                                        <img className='tag-remove'
+                                            src={tagRemove}
+                                            alt="X"
+                                            onClick={() => handleRemoveTag(tag)}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                            <div className='add-tags'>
+                                <select className='edit-input tags'
+                                    value={newTag}
+                                    onChange={event => setNewTag(event.target.value)}
+                                >
+                                    <option value=''>Choose</option>
+                                    {optionTags.map((optionTag) => (
+                                        <option key={optionTag.tag_id} value={optionTag.name}>
+                                            {optionTag.name}
+                                        </option>
+                                    ))}
+                                </select>
+                                <button className='edit-btn-tags' onClick={handleAddTag}>Add</button>
+                            </div>
+                        </div>
+                        <div className='edit-buttons'>
+                            <button className='edit-btn-save'
+                                onClick={() => onSaveEdit(editData)}
+                            >
+                                Save
+                            </button>
+                            <button className='edit-btn-cancel'
+                                onClick={onCancelEdit}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                ) : (
+                    <div className='grid-layout'>
+                        <h3 className='item-title'>
+                            {service.name}
+                        </h3>
+                        <h3 className='item-price'>
+                            ${service.price}
+                        </h3>
+                        <p className='item-description'>
+                            {service.description}
+                        </p>
+                        <button className='item-btn'
+                            onClick={onStartEdit}
+                        >
+                            Edit
+                        </button>
+                        <p className='item-duration'>
+                            Duration: {service.duration_minutes} minutes
+                        </p>
+                        <div className='tag-section'>
+                            {Array.isArray(service.tags) && service.tags.map((tag, index) => (
+                                <div key={index} className='service-tag'>
+                                    {tag}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )
+            )}
+            {(accountType === 'none' || accountType === 'customer') && (
+                <div className="grid-layout">
+                    <h3 className='item-title'>
+                        {service.name}
+                    </h3>
+                    <h3 className='item-price'>
+                        ${service.price}
+                    </h3>
+                    <p className='item-description'>
+                        {service.description}
+                    </p>
+                    <button className='item-btn'>
+                        Book
+                    </button>
+                    <p className='item-duration'>
+                        Duration: {service.duration_minutes} minutes
+                    </p>
+                    <div className='tag-section'>
+                        {Array.isArray(service.tags) && service.tags.map((tag, index) => (
+                            <div key={index} className='service-tag'>
+                                {tag}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
+
+export default ServiceItem
