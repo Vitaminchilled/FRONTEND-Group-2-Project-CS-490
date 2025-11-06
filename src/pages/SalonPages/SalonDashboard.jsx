@@ -247,7 +247,7 @@ function SalonDashboard() {
                         key={review.review_id}
                       >
                         <div className='grid-layout'>
-                          <h3 className='review-name'>{review.user_first_name} {review.user_last_name} </h3>
+                          <h3 className='review-name'>{review.customer_name} </h3>
                           <h2 className='review-rating available'>{stars}</h2>
                           <p className='review-date'>Reviewed on {review.review_date}</p>
                           <p className='review-comment'>{review.comment}</p>

@@ -6,6 +6,8 @@ import SalonHeader from '../../components/SalonHeader.jsx'
 import stripeBackground from "../../assets/stripeBackground.png"
 import ServiceItem from '../../components/ServiceItem.jsx'
 
+import {ModalServiceDelete, ModalMessage} from '../../components/Modal.jsx';
+
 function Services() {
   const { salon_id } = useParams()
   const {user, setUser} = useUser(); /* will eventually be removed for other method */
@@ -18,6 +20,23 @@ function Services() {
 
   const [editingServiceId, setEditingServiceId] = useState(null);
   const [newService, setNewService] = useState(null)
+
+  const [modalService, setModalService] = useState(null); //holds service being displayed
+  const handleDeleteClick = (service) => {
+    setModalService(service); // open modal for this service
+  }
+  const [modalMessage, setModalMessage] = useState(null)
+
+  useEffect(() => {
+    if (modalService || modalMessage) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [modalService, modalMessage]);
 
   const retrieveServices = async () => {
     setLoading(true);
@@ -36,12 +55,12 @@ function Services() {
       }
 
       if(!salon_response.ok) {
-        const errorText = await salon_response.text()
+        const errorText = await salon_response.json()
         throw new Error(`Salon fetch failed: HTTP error ${salon_response.status}: ${errorText}`)
       }
 
       if(!services_response.ok) {
-        const errorText = await services_response.text()
+        const errorText = await services_response.json()
         throw new Error(`Services fetch failed: HTTP error ${services_response.status}: ${errorText}`)
       }
 
@@ -65,7 +84,7 @@ function Services() {
 
     } catch (err) {
       console.error('Fetch error:', err)
-      setError(err.message || "Unexpected Error Occurred")
+      setError(err.error || "Unexpected Error Occurred")
     } finally {
       setLoading(false)
     }
@@ -77,23 +96,39 @@ function Services() {
 
   const handleAddService = async (serviceData) => {
     try {
+      const cleanedData = {
+        ...serviceData,
+        name: serviceData.name.trim(),
+        description: serviceData.description.trim(),
+        price: parseFloat(serviceData.price),
+        duration_minutes: parseInt(serviceData.duration_minutes, 10),
+        tags: Array.isArray(serviceData.tags) ? serviceData.tags : [],
+      }
+
       const response = await fetch(`/api/salon/${salon_id}/services/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(serviceData)
+        body: JSON.stringify(cleanedData)
       })
 
       if (!response.ok) throw new Error('Failed to add service')
       const data = await response.json()
-      alert(data.message)
-
-      retrieveServices().catch(err => console.error("Failed to refresh services:", err))
+      /*alert(data.message)*/
+      setModalMessage({
+        title: "Success",
+        content: data.message
+      })
       setNewService(null)
+      await retrieveServices().catch(err => console.error("Failed to refresh services:", err))
     } catch (err) {
       console.error(err)
-      alert('Could not add service')
+      /*alert('Could not add service')*/
+      setModalMessage({
+        title: "Error",
+        content: err.message || 'This service could not be added.'
+      })
     }
   }
 
@@ -107,23 +142,40 @@ function Services() {
 
   const handleSaveEdit = async (updatedService) => {
     try {
+      const cleanedData = {
+        ...updatedService,
+        name: updatedService.name.trim(),
+        description: updatedService.description.trim(),
+        price: parseFloat(updatedService.price),
+        duration_minutes: parseInt(updatedService.duration_minutes, 10),
+        tags: Array.isArray(updatedService.tags) ? updatedService.tags : [],
+      }
+
       const editResponse = await fetch(`/api/salon/${salon_id}/services/${updatedService.service_id}/edit`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(updatedService)
+        body: JSON.stringify(cleanedData)
       })
 
       if (!editResponse.ok) throw new Error('Failed to update service')
 
       const data = await editResponse.json()
       setEditingServiceId(null)
-      alert(data.message)
-      retrieveServices().catch(err => console.error("Failed to refresh services:", err))
+      /*alert(data.message)*/
+      setModalMessage({ 
+        title: "Success",
+        content: data.message
+      })
+      await retrieveServices().catch(err => console.error("Failed to refresh services:", err))
     } catch (err) {
       console.error(err)
-      alert('Could not update service') /* update to modal styling? */
+      /*alert('Could not update service')  update to modal styling? */
+      setModalMessage({
+        title: "Error",
+        content: err.message || 'This service could not be updated.'
+      })
     }
   }
 
@@ -133,15 +185,30 @@ function Services() {
         method: 'DELETE'
       })
 
+      if (deleteResponse.status === 409) {
+        const errorData = await deleteResponse.json()
+        throw new Error(errorData.error || 'Failed to delete service')
+      }
+
       if (!deleteResponse.ok) throw new Error('Failed to delete service')
 
       const data = await deleteResponse.json()
       setEditingServiceId(null)
-      alert(data.message)
-      retrieveServices().catch(err => console.error("Failed to refresh services:", err))
+      /*alert(data.message)*/
+      setModalService(null) /* is this necessary??? */
+      setModalMessage({
+        title: "Success",
+        content: data.message
+      })
+      await retrieveServices().catch(err => console.error("Failed to refresh services:", err))
     } catch (err) {
       console.error(err)
-      alert('Could not delete service') /* update to modal styling? */
+      /*alert(err.message || 'Could not delete service')  update to modal styling? */
+      setModalService(null) /* is this necessary??? */
+      setModalMessage({
+        title: "Error",
+        content: err.message || 'This service could not be deleted.'
+      })
     }
   }
 
@@ -182,7 +249,8 @@ function Services() {
                   onStartEdit={() => handleStartEdit(service.service_id)}
                   onCancelEdit={handleCancelEdit}
                   onSaveEdit={handleSaveEdit}
-                  onDelete={() => handleDeleteService(service.service_id)}
+                  onDelete={() => handleDeleteClick(service)} 
+                  /* onDelete={() => handleDeleteService(service.service_id)} */
                 />
               ))}
               {newService && (
@@ -210,11 +278,26 @@ function Services() {
                   tags: [],
                   is_active: 1
                 })}
+                disabled={newService !== null}
               >
                 Add Service
               </button>
             )}
           </div>
+          {modalService && (
+            <ModalServiceDelete
+              service={modalService}
+              setModalOpen={setModalService}
+              onConfirm={handleDeleteService}
+            />
+          )}
+          {modalMessage && (
+            <ModalMessage
+              content={modalMessage.content}
+              title={modalMessage.title}
+              setModalOpen={setModalMessage}
+            />
+          )}
         </div>
       ))}
     </>

@@ -88,8 +88,13 @@
     transition: all 0.5s ease;
 }
 
-.item-btn:hover{
+.item-btn:hover:not(:disabled) {
     background-color: #cba170;
+    cursor: pointer;
+}
+
+.item-btn:disabled {
+    cursor: not-allowed;
 }
 
 .item-duration {
@@ -288,6 +293,11 @@
     background-color: #118c1e;
     cursor: pointer;
     border: none;
+}
+
+.edit-grid-layout .edit-btn-save:disabled {
+    background-color: #a2e4a8;
+    cursor: not-allowed;
 }
 
 .edit-grid-layout .edit-btn-cancel {

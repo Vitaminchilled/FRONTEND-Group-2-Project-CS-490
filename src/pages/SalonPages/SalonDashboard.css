@@ -180,6 +180,8 @@
     margin: 0;
     line-height: 1;
     align-self: center;
+    text-wrap: nowrap;
+    
 }
 
 .review-item .grid-layout .review-rating {
@@ -187,6 +189,11 @@
     grid-column: 2;
     margin: 0;
     justify-self: end;
+}
+
+.review-item .grid-layout .review-rating.available {
+    font-weight: 500;
+    font-family: Kumbh Sans;
 }
 
 .review-item .grid-layout .review-date {

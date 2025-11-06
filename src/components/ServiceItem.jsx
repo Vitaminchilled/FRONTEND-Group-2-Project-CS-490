@@ -19,8 +19,8 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
     }, [service])
 
     const handleChange = (event) => {
-        const { name, value } = event.target;
-        setEditData((prev) => ({ ...prev, [name]: value }));
+        const { name, value } = event.target
+        setEditData((prev) => ({ ...prev, [name]: value }))
     }
 
     const handleAddTag = (event) => {
@@ -58,6 +58,8 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                                 value={editData.name}
                                 onChange={handleChange}
                                 placeholder='Service Name'
+                                autoComplete='off'
+                                required
                             />
                         </div>
                         <div className='price-section'>
@@ -66,7 +68,18 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                                 name='price'
                                 value={editData.price}
                                 onChange={handleChange}
+                                onBlur={(event) => 
+                                    setEditData(prev => ({
+                                        ...prev,
+                                        price: parseFloat(event.target.value || 0).toFixed(2)
+                                    }))
+                                }
                                 placeholder='Price ex. 10.00'
+                                type='number'
+                                step={0.01}
+                                min={0}
+                                autoComplete='off'
+                                required
                             />
                         </div>
                         <img className='edit-remove'
@@ -74,10 +87,7 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                             alt='X'
                             onClick={() => {
                                 if (service.service_id === null) return
-                                if (window.confirm("Are you sure you want to delete this service? This action cannot be undone.")) {
-                                    onDelete(service.service_id)
-                                }
-                                
+                                onDelete(service)  
                             }}
                             style={{ opacity: service.service_id === null ? 0.2 : 1, cursor: service.service_id === null ? 'not-allowed' : 'pointer' }}
                         />
@@ -88,6 +98,7 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                                 value={editData.description}
                                 onChange={handleChange}
                                 placeholder='Service Description'
+                                required
                             />
                         </div>
                         <div className='duration-section'>
@@ -97,6 +108,10 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                                 value={editData.duration_minutes}
                                 onChange={handleChange}
                                 placeholder='Service Duration ex. 10 (minutes)'
+                                type='number'
+                                min={1}
+                                autoComplete="off"
+                                required
                             />
                         </div>
                         <div className='tag-section'>
@@ -133,6 +148,12 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                         <div className='edit-buttons'>
                             <button className='edit-btn-save'
                                 onClick={() => onSaveEdit(editData)}
+                                disabled={
+                                    !editData.name?.trim() ||
+                                    !editData.price ||
+                                    !editData.description?.trim() ||
+                                    !editData.duration_minutes
+                                }
                             >
                                 Save
                             </button>
@@ -183,7 +204,9 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                     <p className='item-description'>
                         {service.description}
                     </p>
-                    <button className='item-btn'>
+                    <button className='item-btn'
+                        disabled={accountType==='none'}
+                    >
                         Book
                     </button>
                     <p className='item-duration'>

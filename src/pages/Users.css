@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Lobster&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Lateef:wght@200;300;400;500;600;700;800&display=swap');
 
-.Verify {
+.Users {
     position: relative;
     overflow-y: auto;
     height: auto;
@@ -11,19 +11,19 @@
     align-items: center;
     text-align: center;
 }
-.Verify h1 {
+.Users h1 {
     margin: 0;
     font-family: "Lateef";
     font-size: 7vw;
     font-weight: 400;
 }
-.Verify hr {
+.Users hr {
     width: 70%;
     margin: 0;
     border: none;
     border-top: 2px solid #b3b3b3;
 }
-.VerifyGrid {
+.UsersGrid {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;

@@ -63,7 +63,12 @@
     transition: background-color 0.5s ease;
 }
 
-.add-service:hover {
+.add-service:hover:not(:disabled) {
     background-color: #d2bba0;
     border: 1px solid #887259;
+    cursor: pointer;
+}
+
+.add-service:disabled {
+    cursor: not-allowed;
 }
