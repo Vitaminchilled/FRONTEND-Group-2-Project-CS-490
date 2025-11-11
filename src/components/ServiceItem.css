@@ -18,7 +18,7 @@
     background-color: #f1f1f1;
 }
 
-.grid-layout {
+.service-item .grid-layout {
     display: grid;
     grid-template-columns: 1fr auto;
     grid-template-rows: 28px auto auto auto;
@@ -27,7 +27,7 @@
     width: 100%;
 }
 
-.item-title {
+.service-item .item-title {
     grid-column: 1;
     grid-row: 1;
     font-family: Kumbh Sans;
@@ -37,7 +37,7 @@
     width:100%;
 }
 
-.item-price {
+.service-item .item-price {
     grid-column: 2;
     grid-row: 1;
     font-family: Kumbh Sans;
@@ -47,7 +47,7 @@
     justify-self: center;
 }
 
-.item-description {
+.service-item .item-description {
     grid-column: 1;
     grid-row: 2;
     font-family: Kumbh Sans;
@@ -68,7 +68,7 @@
     white-space: normal;
 }
 
-.item-btn {
+.service-item .item-btn {
     grid-column: 2;
     grid-row: 2;
     font-family: Kumbh Sans;
@@ -88,16 +88,16 @@
     transition: all 0.5s ease;
 }
 
-.item-btn:hover:not(:disabled) {
+.service-item .item-btn:hover:not(:disabled) {
     background-color: #cba170;
     cursor: pointer;
 }
 
-.item-btn:disabled {
+.service-item .item-btn:disabled {
     cursor: not-allowed;
 }
 
-.item-duration {
+.service-item .item-duration {
     grid-column: 1 / -1;
     grid-row: 3;
     margin: 15px 0 0 0;
@@ -106,7 +106,7 @@
     font-size: 18px;
 }
 
-.tag-section {
+.service-item .tag-section {
     grid-column: 1 / -1;
     grid-row: 4;
     display: flex;
@@ -114,7 +114,7 @@
     gap: 10px;
 }
 
-.service-tag {
+.service-item .service-tag {
     background-color: #b98a59;
     border-radius: 12px;
     color: white;
@@ -126,7 +126,7 @@
 
 /* EDIT MODE CSS*/
 
-.edit-grid-layout {
+.service-item .edit-grid-layout {
     display: grid;
     grid-template-columns: 1fr 1fr auto;
     grid-template-rows: auto auto auto auto auto;
@@ -135,14 +135,15 @@
     width: 100%;
 }
 
-.edit-grid-layout .edit-input {
+.service-item .edit-grid-layout .edit-input {
     border-radius: 5px;
     border: 1px solid #a8a8a8;
     padding: 5px;
     box-sizing: border-box;
+    background-color: white;
 }
 
-.edit-grid-layout .edit-label {
+.service-item .edit-grid-layout .edit-label {
     font-weight: 600;
     font-family: Lateef;
     font-size: 25px;
@@ -152,7 +153,7 @@
     line-height: 1;
 }
 
-.edit-grid-layout .title-section {
+.service-item .edit-grid-layout .title-section {
     grid-column: 1;
     grid-row: 1;
     display: flex;
@@ -161,7 +162,7 @@
     min-width: 0;
 }
 
-.edit-grid-layout .price-section {
+.service-item .edit-grid-layout .price-section {
     grid-column: 2;
     grid-row: 1;
     display: flex;
@@ -170,7 +171,7 @@
     min-width: 0;
 }
 
-.edit-grid-layout .edit-remove {
+.service-item .edit-grid-layout .edit-remove {
     grid-column: 3;
     grid-row: 1;
     width: 25px;
@@ -178,21 +179,21 @@
     cursor: pointer;
 }
 
-.edit-grid-layout .description-section {
+.service-item .edit-grid-layout .description-section {
     grid-column: 1 / -1;
     grid-row: 2;
     display: flex;
     flex-direction: column;
 }
 
-.edit-grid-layout .description-section .edit-input {
+.service-item .edit-grid-layout .description-section .edit-input {
     max-width: 100%;
     min-width: 200px;
     max-height: 200px;
     min-height: 100px;
 }
 
-.edit-grid-layout .duration-section {
+.service-item .edit-grid-layout .duration-section {
     grid-column: 1 / -1;
     grid-row: 3;
     display: flex;
@@ -201,7 +202,7 @@
     min-width: 0;
 }
 
-.edit-grid-layout .tag-section {
+.service-item .edit-grid-layout .tag-section {
     grid-column: 1 / -1;
     grid-row: 4;
     display: flex;
@@ -209,7 +210,7 @@
     gap: 5px;
 }
 
-.edit-grid-layout .current-tags {
+.service-item .edit-grid-layout .current-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
@@ -218,7 +219,7 @@
     padding: 0;
 }
 
-.edit-grid-layout .tag-item {
+.service-item .edit-grid-layout .tag-item {
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -232,24 +233,24 @@
     font-size: 15px;
 }
 
-.edit-grid-layout .tag-item .tag-title {
+.service-item .edit-grid-layout .tag-item .tag-title {
     margin: 0;
     padding: 0;
     font-family: Kumbh Sans;
     color: white;
 }
 
-.edit-grid-layout .tag-item .tag-remove {
+.service-item .edit-grid-layout .tag-item .tag-remove {
     width: 15px;
     height: 15px;
     cursor: pointer;
 }
 
-.edit-grid-layout .edit-input.tags {
+.service-item .edit-grid-layout .edit-input.tags {
     border-radius: 5px 0 0 5px;
 }
 
-.edit-grid-layout .edit-btn-tags {
+.service-item .edit-grid-layout .edit-btn-tags {
     border-radius: 0 5px 5px 0;
     border: none;
     background-color: #b98a59;
@@ -259,18 +260,18 @@
     transition: all 0.5s ease;
 }
 
-.edit-grid-layout .edit-btn-tags:hover:not(:disabled) {
+.service-item .edit-grid-layout .edit-btn-tags:hover:not(:disabled) {
     background-color: #d8ae82;
     cursor: pointer;
 }
 
-.edit-grid-layout .edit-btn-tags:disabled {
+.service-item .edit-grid-layout .edit-btn-tags:disabled {
     background-color: #b98a59;
     cursor: not-allowed;
     opacity: 0.7;
 }
 
-.edit-grid-layout .edit-buttons {
+.service-item .edit-grid-layout .edit-buttons {
     grid-column: 1 / -1;
     grid-row: 5;
     display: flex;
@@ -279,7 +280,7 @@
     margin-top: 10px;
 }
 
-.edit-grid-layout .edit-btn-save {
+.service-item .edit-grid-layout .edit-btn-save {
     border: none;
     background-color: #59b963;
     border-radius: 15px;
@@ -289,18 +290,18 @@
     transition: background-color 0.5s ease;
 }
 
-.edit-grid-layout .edit-btn-save:hover:not(:disabled) {
+.service-item .edit-grid-layout .edit-btn-save:hover:not(:disabled) {
     background-color: #118c1e;
     cursor: pointer;
     border: none;
 }
 
-.edit-grid-layout .edit-btn-save:disabled {
+.service-item .edit-grid-layout .edit-btn-save:disabled {
     background-color: #a2e4a8;
     cursor: not-allowed;
 }
 
-.edit-grid-layout .edit-btn-cancel {
+.service-item .edit-grid-layout .edit-btn-cancel {
     border: none;
     background-color: #db5e5e;
     border-radius: 15px;
@@ -310,15 +311,15 @@
     transition: background-color 0.5s ease;
 }
 
-.edit-grid-layout .edit-btn-cancel:hover:not(:disabled) {
+.service-item .edit-grid-layout .edit-btn-cancel:hover:not(:disabled) {
     background-color: #b83131;
     cursor: pointer;
     border: none;
 }
 
-.edit-grid-layout .title-section .edit-input,
-.edit-grid-layout .price-section .edit-input,
-.edit-grid-layout .duration-section .edit-input {
+.service-item .edit-grid-layout .title-section .edit-input,
+.service-item .edit-grid-layout .price-section .edit-input,
+.service-item .edit-grid-layout .duration-section .edit-input {
     flex: 1;
     min-width: 0;
 }

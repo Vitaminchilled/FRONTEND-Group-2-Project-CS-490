@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
+import { useUser } from "../../context/UserContext";
 import SalonHeader from '../../components/SalonHeader.jsx'
-import productImg from '../../assets/ProductPlaceholder.jpg'
+import ProductCard from '../../components/ProductCard.jsx'
+import './Products.css'
 
 function Products() {
     const { salon_id } = useParams()
+    const {user, setUser} = useUser()
     const [salon, setSalon] = useState({})
     const [tags, setTags] = useState([])
+    const [products, setProducts] = useState([])
 
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+
+    const [editingProductId, setEditingProductId] = useState(null);
+    const [newProduct, setNewProduct] = useState(null)
 
     const retrieveProducts = async () => {
         setLoading(true);
@@ -49,24 +56,26 @@ function Products() {
 
     useEffect(() => {
         retrieveProducts()
-    }, [salon_id])
+    }, [])
+
+    const handleProductChange = (product_id) => {
+        setProducts((prev) => prev.filter((p) => p.product_id !== product_id))
+    }
+
+    const handleStartEdit = (productID) => {
+        setEditingProductId(productID)
+    }
+
+    const handleCancelEdit = () => {
+        setEditingProductId(null)
+    }
 
     return (
         <>
             {(!loading && error ? (
                 <p className='not-found'>{error}</p>
             ) : (
-                <div className='products-page'
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '25px',
-                        alignItems: 'center',
-                        padding: '0',
-                        minHeight: '500px',
-                        paddingBottom: '180px'
-                    }}
-                >
+                <div className='products-page'>
                     <SalonHeader
                         salonID={salon_id}
                         headerTitle={salon.salon_name}
@@ -74,151 +83,33 @@ function Products() {
                         headerRatingValue={salon.average_rating}
                     />
                     
-                    <div className='products-title'
-                        style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '10px',
-                            margin: '0',
-                            alignItems:'center'
-                        }}
-                    >
-                        <h2 className="page-title"
-                            style={{
-                                height: '50px'
-                            }}
-                        >
+                    <div className='title-group'>
+                        <h2 className="page-title">
                             Products
                         </h2>
-                        <p className='page-counts'
-                            style={{
-                                margin: '0',
-                                padding: '0'
-                            }}
-                        >
+                        <p className='page-counts'>
                             1 of 1
                         </p>
                     </div>
 
-                    <div className="product-group"
-                        style={{
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                            gap: '25px'
-                        }}
-                    >
-                        <div className='product-item'
-                            style={{
-                                backgroundColor:'white',
-                                boxShadow: 'inset 0 0 5px 0 #b6b6b6',
-                                borderRadius: '15px',
-                                padding: '20px 12px',
-                                width: '25vw',
-                                maxWidth: '200px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                margin: '0',
-                                gap: '10px'
+                    <div className="product-group">
+                        <ProductCard
+                            accountType={user.type}
+                            product={{
+                                product_id: 1,
+                                salon_id: 1,
+                                name: "Shampoo A",
+                                description: "Sulfate-free shampoo with more text to see how it behaves",
+                                price: 12.99,
+                                stock_quantity: 50,
+                                image_url: null,
+                                created_at: "2025-11-05 21:59:23",
+                                last_modified: "2025-11-05 21:59:23"
                             }}
-                        >
-                            <img className='product-img'
-                                src={productImg}
-                                alt='img'
-                                style={{
-                                    border: '1px solid #b6b6b6',
-                                    borderRadius: '15px',
-                                    width: '100%',
-                                    height: '60%'
-                                }}
-                            />
-                            
-                            <div className='product-content'
-                                style={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    gap: '10px',
-                                    alignItems: 'center'
-                                }}
-                            >
-                                <div className='product-details'
-                                    style={{
-                                        
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap:'8px',
-                                        margin: '0',
-                                        padding: '0'
-                                    }}
-                                >
-                                    <h3 className='product-name'
-                                        style={{
-                                            color: 'black',
-                                            fontFamily: 'Kumbh Sans',
-                                            fontSize: '18px',
-                                            margin: '0',
-                                            padding: '0'
-                                        }}
-                                    >
-                                        Product Name
-                                    </h3>
-                                    <p className='product-price'
-                                        style={{
-                                            color: 'black',
-                                            fontFamily: 'Kumbh Sans',
-                                            fontSize: '15px',
-                                            margin: '0',
-                                            padding: '0'
-                                        }}
-                                    >
-                                        $9.99
-                                    </p>
-                                    <p className='product-description'
-                                        style={{
-                                            color: 'black',
-                                            fontFamily: 'Kumbh Sans',
-                                            fontSize: '15px',
-                                            margin: '0',
-                                            padding: '0'
-                                        }}
-                                    >
-                                        Long product description with extra flourish
-                                    </p>
-                                </div>
-                                <button className='product-btn'
-                                    style={{
-                                        backgroundColor:'#b98a59',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '10px',
-                                        padding: '8px 10px',
-                                        fontWeight: '600',
-                                        fontSize: '15px',
-                                        width: 'fit-content'
-                                    }}
-                                >
-                                    Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                        <div className='product-item'
-                            style={{
-                                backgroundColor:'white',
-                                boxShadow: 'inset 0 0 5px 0 #b6b6b6',
-                                borderRadius: '15px',
-                                padding: '20px 12px',
-                                width: '25vw',
-                                maxWidth: '200px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                                margin: '0',
-                                gap: '10px'
-                            }}
-                        ></div>
+                            isEditing={editingProductId === 1}
+                            onStartEdit={() => handleStartEdit(1)}
+                            onCancelEdit={handleCancelEdit}
+                        />
                         
                     </div>
                 </div>

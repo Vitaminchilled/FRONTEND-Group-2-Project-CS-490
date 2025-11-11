@@ -53,7 +53,7 @@
     gap: 10px;
 }
 
-.add-service {
+.add-salon-item {
     border-radius: 15px;
     padding: 10px 15px;
     font-size: 20px;
@@ -63,12 +63,12 @@
     transition: background-color 0.5s ease;
 }
 
-.add-service:hover:not(:disabled) {
+.add-salon-item:hover:not(:disabled) {
     background-color: #d2bba0;
     border: 1px solid #887259;
     cursor: pointer;
 }
 
-.add-service:disabled {
+.add-salon-item:disabled {
     cursor: not-allowed;
 }

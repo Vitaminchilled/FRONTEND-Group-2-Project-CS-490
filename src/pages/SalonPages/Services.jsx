@@ -18,7 +18,6 @@ function Services() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const [editingServiceId, setEditingServiceId] = useState(null);
   const [newService, setNewService] = useState(null)
 
   const [modalService, setModalService] = useState(null); //holds service being displayed
@@ -56,12 +55,12 @@ function Services() {
 
       if(!salon_response.ok) {
         const errorText = await salon_response.json()
-        throw new Error(`Salon fetch failed: HTTP error ${salon_response.status}: ${errorText}`)
+        throw new Error(`Salon fetch failed: HTTP error ${salon_response.status}: ${errorText.error || errorText}`)
       }
 
       if(!services_response.ok) {
         const errorText = await services_response.json()
-        throw new Error(`Services fetch failed: HTTP error ${services_response.status}: ${errorText}`)
+        throw new Error(`Services fetch failed: HTTP error ${services_response.status}: ${errorText || errorText}`)
       }
 
       const salon_data = await salon_response.json()
@@ -84,7 +83,7 @@ function Services() {
 
     } catch (err) {
       console.error('Fetch error:', err)
-      setError(err.error || "Unexpected Error Occurred")
+      setError(err.message || "Unexpected Error Occurred")
     } finally {
       setLoading(false)
     }
@@ -113,7 +112,10 @@ function Services() {
         body: JSON.stringify(cleanedData)
       })
 
-      if (!response.ok) throw new Error('Failed to add service')
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(`Add Service fetch failed: HTTP error ${response.status}: ${errorData.error || errorData}`)
+      }
       const data = await response.json()
       /*alert(data.message)*/
       setModalMessage({
@@ -121,10 +123,10 @@ function Services() {
         content: data.message
       })
       setNewService(null)
-      await retrieveServices().catch(err => console.error("Failed to refresh services:", err))
+      await retrieveServices()
     } catch (err) {
       console.error(err)
-      /*alert('Could not add service')*/
+      setNewService(null)
       setModalMessage({
         title: "Error",
         content: err.message || 'This service could not be added.'
@@ -132,12 +134,8 @@ function Services() {
     }
   }
 
-  const handleStartEdit = (serviceID) => {
-    setEditingServiceId(serviceID)
-  }
-
-  const handleCancelEdit = () => {
-    setEditingServiceId(null)
+  const handleCancelNewService = () => {
+    setNewService(null)
   }
 
   const handleSaveEdit = async (updatedService) => {
@@ -159,16 +157,18 @@ function Services() {
         body: JSON.stringify(cleanedData)
       })
 
-      if (!editResponse.ok) throw new Error('Failed to update service')
+      if (!editResponse.ok) {
+        const errorData = await editResponse.json()
+        throw new Error(`Edit Service fetch failed: HTTP error ${editResponse.status}: ${errorData.error || errorData}`)
+      }
 
       const data = await editResponse.json()
-      setEditingServiceId(null)
       /*alert(data.message)*/
       setModalMessage({ 
         title: "Success",
         content: data.message
       })
-      await retrieveServices().catch(err => console.error("Failed to refresh services:", err))
+      await retrieveServices()
     } catch (err) {
       console.error(err)
       /*alert('Could not update service')  update to modal styling? */
@@ -187,24 +187,25 @@ function Services() {
 
       if (deleteResponse.status === 409) {
         const errorData = await deleteResponse.json()
-        throw new Error(errorData.error || 'Failed to delete service')
+        throw new Error(`Delete Service fetch failed: HTTP error ${deleteResponse.status}: ${errorData.error || errorData}`)
       }
 
-      if (!deleteResponse.ok) throw new Error('Failed to delete service')
+      if (!deleteResponse.ok) {
+        const errorData = await deleteResponse.json()
+        throw new Error(`Delete Service fetch failed: HTTP error ${deleteResponse.status}: ${errorData.error || errorData}`)
+      }
 
       const data = await deleteResponse.json()
-      setEditingServiceId(null)
       /*alert(data.message)*/
       setModalService(null) /* is this necessary??? */
       setModalMessage({
         title: "Success",
         content: data.message
       })
-      await retrieveServices().catch(err => console.error("Failed to refresh services:", err))
+      await retrieveServices()
     } catch (err) {
       console.error(err)
-      /*alert(err.message || 'Could not delete service')  update to modal styling? */
-      setModalService(null) /* is this necessary??? */
+      setModalService(null)
       setModalMessage({
         title: "Error",
         content: err.message || 'This service could not be deleted.'
@@ -245,9 +246,7 @@ function Services() {
                   accountType={user.type}
                   service={service}
                   optionTags={tags}
-                  isEditing={editingServiceId === service.service_id}
-                  onStartEdit={() => handleStartEdit(service.service_id)}
-                  onCancelEdit={handleCancelEdit}
+                  
                   onSaveEdit={handleSaveEdit}
                   onDelete={() => handleDeleteClick(service)} 
                   /* onDelete={() => handleDeleteService(service.service_id)} */
@@ -259,16 +258,16 @@ function Services() {
                   accountType={user.type}
                   service={newService}
                   optionTags={tags}
-                  isEditing={true}
+                  newItem={true}
                   /* onStartEdit not necessary? */
-                  onCancelEdit={() => setNewService(null)}
                   onSaveEdit={handleAddService}
+                  onCancelNew={handleCancelNewService}
                   /* onDelete not included since delete isnt valid for new service */
                 />
               )}
             </div>
             {(user.type === 'owner') && (
-              <button className='add-service'
+              <button className='add-salon-item'
                 onClick={() => setNewService({
                   service_id: null,
                   name: '',

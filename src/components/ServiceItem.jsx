@@ -4,7 +4,7 @@ import deleteIcon from '../assets/BlackXIcon.png'
 import tagRemove from '../assets/WhiteXIcon.png'
 
 /* itemTitle, itemPrice, itemDesc, itemDuration, itemTags */
-function ServiceItem({ accountType, service, optionTags = [], isEditing = false , onStartEdit, onCancelEdit, onSaveEdit, onDelete}){
+function ServiceItem({ accountType, service, optionTags = [], newItem = false, onSaveEdit, onDelete, onCancelNew}){
     const [expanded, setExpanded] = useState(false)
     const [editData, setEditData] = useState({
         ...service,
@@ -12,15 +12,42 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
         is_active: service.is_active ?? 1, /* add functionality later assume all are active for now */
     })
     /* pass in tags so they can be mapped and formatted when adding and removing tags */
+    const [isEditing, setIsEditing] = useState(false)
     const [newTag, setNewTag] = useState('')
 
     useEffect(() => {
         setEditData(service)
     }, [service])
 
+    useEffect(() => {
+        if (newItem) {
+            setIsEditing(true)
+        }
+    }, [newItem])
+
     const handleChange = (event) => {
         const { name, value } = event.target
         setEditData((prev) => ({ ...prev, [name]: value }))
+    }
+
+    const handleStartEdit = () => setIsEditing(true)
+    const handleCancelEdit = () => {
+        if (newItem) {
+            onCancelNew?.()
+        } else {
+            setIsEditing(false)
+            setEditData(service) // reset changes
+        }
+    }
+
+    //to disable edit mode after saving
+    const handleSaveClick = async () => {
+        try {
+            await onSaveEdit(editData)
+            setIsEditing(false) // switch back to standard mode
+        } catch (err) {
+            console.error(err)
+        }
     }
 
     const handleAddTag = (event) => {
@@ -48,7 +75,7 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
             onMouseLeave={() => !isEditing && setExpanded(false)}
         >
 
-            {(accountType === 'owner' || accountType === 'admin') && (
+            {(accountType === 'owner') && (
                 isEditing ? (
                     <div className='edit-grid-layout'>
                         <div className='title-section'>
@@ -68,11 +95,15 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                                 name='price'
                                 value={editData.price}
                                 onChange={handleChange}
-                                onBlur={(event) => 
-                                    setEditData(prev => ({
-                                        ...prev,
-                                        price: parseFloat(event.target.value || 0).toFixed(2)
-                                    }))
+                                onBlur={(event) => {
+                                        let value = parseFloat(event.target.value || 0)
+                                        if (value < 0) value = 0
+
+                                        setEditData(prev => ({
+                                            ...prev,
+                                            price: value.toFixed(2)
+                                        }))
+                                    }
                                 }
                                 placeholder='Price ex. 10.00'
                                 type='number'
@@ -147,10 +178,10 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                         </div>
                         <div className='edit-buttons'>
                             <button className='edit-btn-save'
-                                onClick={() => onSaveEdit(editData)}
+                                onClick={handleSaveClick}
                                 disabled={
                                     !editData.name?.trim() ||
-                                    !editData.price ||
+                                    !editData.price || editData.price < 0 ||
                                     !editData.description?.trim() ||
                                     !editData.duration_minutes
                                 }
@@ -158,7 +189,7 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                                 Save
                             </button>
                             <button className='edit-btn-cancel'
-                                onClick={onCancelEdit}
+                                onClick={handleCancelEdit}
                             >
                                 Cancel
                             </button>
@@ -176,7 +207,7 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                             {service.description}
                         </p>
                         <button className='item-btn'
-                            onClick={onStartEdit}
+                            onClick={handleStartEdit}
                         >
                             Edit
                         </button>
@@ -193,7 +224,7 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                     </div>
                 )
             )}
-            {(accountType === 'none' || accountType === 'customer') && (
+            {(accountType === 'none' || accountType === 'customer' || accountType === 'admin') && (
                 <div className="grid-layout">
                     <h3 className='item-title'>
                         {service.name}
@@ -205,7 +236,7 @@ function ServiceItem({ accountType, service, optionTags = [], isEditing = false 
                         {service.description}
                     </p>
                     <button className='item-btn'
-                        disabled={accountType==='none'}
+                        disabled={accountType==='none' || accountType==='admin'}
                     >
                         Book
                     </button>
