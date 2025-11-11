@@ -3,41 +3,46 @@ import './ProductCard.css'
 import deleteIcon from '../assets/BlackXIcon.png'
 import productImg from '../assets/ProductPlaceholder.jpg' /* default img */
 
-/* Implementation Explanation
-To allow editing one product at a time in a page write this
-where { entity }Id is the entity youre tracking (i.e. service, product, etc.)
-
-const [editing{ entity }Id, setEditing{ entity }Id] = useState(null)
-
-Then write these two
-const handleStartEdit = ({ entity }Id) => {
-    setEditing{ entity }Id({ entity }Id)
-}
-
-const handleCancelEdit = () => {
-    setEditing{ entity }Id(null)
-}
-
-Then in the product card send this
-<ProductCard
-    ...
-    isEditing={editing{ entity }Id === { entity }.{ entity }_id}
-    ^^^ to set editMode if it matches the unique id
-
-    onStartEdit={() => handleStartEdit({ entity }.{ entity }_id)}
-    onCancelEdit={handleCancelEdit}
-/>
-*/
-
-function ProductItem({ accountType, product, isEditing = false , onStartEdit, onCancelEdit, onSaveEdit, onDelete}){
+function ProductItem({ accountType, product, newItem = false, onSaveEdit, onDelete, onCancelNew}){
     const [editData, setEditData] = useState({
         ...product
     })
     const [imagePreview, setImagePreview] = useState(null)
+    const [isEditing, setIsEditing] = useState(false)
 
     useEffect(() => {
         setEditData(product)
     }, [product])
+
+    useEffect(() => {
+        if (newItem) {
+            setIsEditing(true)
+        }
+    }, [newItem])
+
+    const handleStartEdit = () => setIsEditing(true)
+    const handleCancelEdit = () => {
+        if (newItem) {
+            onCancelNew?.()
+        } else {
+            setIsEditing(false)
+            setEditData(product) // reset changes
+        }
+    }
+
+    const handleSaveClick = async () => {
+        try {
+            await onSaveEdit(editData)
+            setIsEditing(false) // switch back to standard mode
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
+    const handleChange = (event) => {
+        const { name, value } = event.target
+        setEditData((prev) => ({ ...prev, [name]: value }))
+    }
 
     useEffect(() => {
         return () => {
@@ -46,11 +51,6 @@ function ProductItem({ accountType, product, isEditing = false , onStartEdit, on
             }
         }
     }, [imagePreview])
-
-    const handleChange = (event) => {
-        const { name, value } = event.target
-        setEditData((prev) => ({ ...prev, [name]: value }))
-    }
 
     function handleImageChange(event) {
         const file = event.target.files[0]
@@ -168,24 +168,24 @@ function ProductItem({ accountType, product, isEditing = false , onStartEdit, on
                                 name='description'
                                 value={editData.description}
                                 onChange={handleChange}
-                                placeholder='Service Description'
+                                placeholder='Product Description'
                                 required
                             />
                         </div>
                         <div className='edit-buttons'>
                             <button className='edit-btn-save'
-                                onClick={() => onSaveEdit(editData)}
+                                onClick={handleSaveClick}
                                 disabled={
                                     !editData.name?.trim() ||
                                     !editData.price || editData.price < 0 ||
                                     !editData.description?.trim() ||
-                                    !editData.stock_quantity || editData.stock_quantity < 0
+                                    !editData.stock_quantity || editData.stock_quantity <= 0
                                 }
                             >
                                 Save
                             </button>
                             <button className='edit-btn-cancel'
-                                onClick={onCancelEdit}
+                                onClick={handleCancelEdit}
                             >
                                 Cancel
                             </button>
@@ -210,7 +210,7 @@ function ProductItem({ accountType, product, isEditing = false , onStartEdit, on
                             {product.description}
                         </p>
                         <button className='item-btn'
-                            onClick={onStartEdit}
+                            onClick={handleStartEdit}
                         >
                             Edit
                         </button>

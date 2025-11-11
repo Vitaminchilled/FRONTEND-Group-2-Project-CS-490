@@ -5,6 +5,8 @@ import SalonHeader from '../../components/SalonHeader.jsx'
 import ProductCard from '../../components/ProductCard.jsx'
 import './Products.css'
 
+import {ModalProductDelete, ModalMessage} from '../../components/Modal.jsx';
+
 function Products() {
     const { salon_id } = useParams()
     const {user, setUser} = useUser()
@@ -106,7 +108,7 @@ function Products() {
                                 created_at: "2025-11-05 21:59:23",
                                 last_modified: "2025-11-05 21:59:23"
                             }}
-                            isEditing={editingProductId === 1}
+                            
                             onStartEdit={() => handleStartEdit(1)}
                             onCancelEdit={handleCancelEdit}
                         />

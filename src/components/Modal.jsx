@@ -200,6 +200,38 @@ export function ModalEmployeeDelete ({setModalOpen, employee, onConfirm}) {
     );
 };
 
+export function ModalProductDelete ({setModalOpen, product, onConfirm}) {
+    if (!product) return null /* might remove this later */
+
+    return (
+        <div className='ModalBackground'>
+            <div className='ModalContainer'>
+                <div className='ModalTitle'>
+                    <h2>{product.name}</h2>
+                </div>
+                <div className='ModalBody'>
+                    <label>Are you sure you want to delete this product?</label>
+                </div>
+                <div className='ModalFooter'>
+                    <button 
+                        onClick={() => setModalOpen(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        onClick={() => {
+                            onConfirm(product.product_id)
+                            setModalOpen(false)
+                        }}
+                    >
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 /* use for alerts like "New service created", "user deleted", etc */
 export function ModalMessage ({setModalOpen, title, content}) {
     return (
