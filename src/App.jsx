@@ -24,7 +24,7 @@ function App() {
         <div className="AppContent"> 
           <Routes >
             {/* NEEDS TO REFRESH AFTER USER LOGS IN!! (might alredy do)*/}
-            {(user.type === 'none' || user.type === 'customer') && (
+            {(user.type === 'none' || user.type === 'customer' || user.type === 'owner') && (
               <Route path="/" element={<Home />} />
             )}
             {(user.type === 'admin') && (
