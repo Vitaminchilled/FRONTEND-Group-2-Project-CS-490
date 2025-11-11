@@ -135,3 +135,90 @@ export function ModalDelete ({setModalOpen, user, verifyDelete}) {
         </div>
     );
 };
+
+export function ModalServiceDelete ({setModalOpen, service, onConfirm}) {
+    if (!service) return null /* might remove this later */
+
+    return (
+        <div className='ModalBackground'>
+            <div className='ModalContainer'>
+                <div className='ModalTitle'>
+                    <h2>{service.name}</h2>
+                </div>
+                <div className='ModalBody'>
+                    <label>Are you sure you want to delete this service?</label>
+                </div>
+                <div className='ModalFooter'>
+                    <button 
+                        onClick={() => setModalOpen(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        onClick={() => {
+                            onConfirm(service.service_id)
+                            setModalOpen(false)
+                        }}
+                    >
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export function ModalEmployeeDelete ({setModalOpen, employee, onConfirm}) {
+    if (!employee) return null /* might remove this later */
+
+    return (
+        <div className='ModalBackground'>
+            <div className='ModalContainer'>
+                <div className='ModalTitle'>
+                    <h2>{employee.first_name} {employee.last_name}</h2>
+                </div>
+                <div className='ModalBody'>
+                    <label>Are you sure you want to delete this employee?</label>
+                </div>
+                <div className='ModalFooter'>
+                    <button 
+                        onClick={() => setModalOpen(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        onClick={() => {
+                            onConfirm(employee.employee_id)
+                            setModalOpen(false)
+                        }}
+                    >
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+/* use for alerts like "New service created", "user deleted", etc */
+export function ModalMessage ({setModalOpen, title, content}) {
+    return (
+        <div className='ModalBackground' onClick={() => setModalOpen(false)}>
+            <div className='ModalContainer' onClick={(event) => event.stopPropagation()}>
+                <div className='ModalTitle'>
+                    <h2>{title}</h2>
+                </div>
+                <div className='ModalBody'>
+                    <label>{content}</label>
+                </div>
+                <div className='ModalFooter'>
+                    <button 
+                        onClick={() => setModalOpen(false)}
+                    >
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
