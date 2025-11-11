@@ -199,11 +199,13 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
                         <h3 className='employee-name'>{`${employee.first_name} ${employee.last_name}`}</h3>
                         <p className='employee-description'>{employee.description}</p>
                         <p className='employee-salary'><strong>Salary:</strong> {employee.salary_value}/hr</p>
-                        <button className='item-btn'
+                        <button
+                            className="item-btn employee-edit-btn"
                             onClick={handleStartEdit}
-                        >
+                            >
                             Edit
                         </button>
+
                         <div className='tag-section'>
                             {Array.isArray(employee.tags) && employee.tags.map((tag, index) => (
                                 <div key={index} className='employee-tag'>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import emptyCart from "../assets/ShoppingCart.png"
 import fullCart from "../assets/FullShoppingCart.png"
@@ -7,7 +7,33 @@ import './NavBar.css'
 
 function NavBar() {
   const {user, setUser} = useUser();
+  const navigate = useNavigate();
   const [dropdown, setDropdown] = useState(false)
+
+  // Logout handler
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        // Clear user context
+        setUser({
+          type: 'none',
+          username: '',
+          name: '',
+          userId: null,
+          isLoading: false
+        });
+        // Redirect to home
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
 
   //if we add anything else for the user profile we can just add it here so it maps on its own
   const userMenuItems = [
@@ -112,12 +138,10 @@ function NavBar() {
         {/* RIGHT: Customer */}
         {(user.type === 'customer') && (
           <>
-            <li
-              className='nav-item'
-            >
-              <NavLink  to="/logout" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>
+            <li className='nav-item'>
+              <button onClick={handleLogout} className="nav-link" style={{border: 'none', background: 'none', cursor: 'pointer', padding: 0, font: 'inherit'}}>
                 Log Out
-              </NavLink >
+              </button>
             </li>
             <li
               className='nav-item'
@@ -125,7 +149,7 @@ function NavBar() {
               onMouseLeave={() => setDropdown(false)}
               style={{position:'relative'}}
             >
-              <div className='Square'>{user.name}</div>
+              <div className='Square'>{user.name || user.username}</div>
               { dropdown && (
                   <ul
                     onClick={() => setDropdown(false)}
@@ -156,9 +180,7 @@ function NavBar() {
                 )
               }
             </li>
-            <li
-              className='nav-item'
-            >
+            <li className='nav-item'>
               <NavLink
                 to="/shopping-cart"
                 end={false}
@@ -177,12 +199,10 @@ function NavBar() {
         {/* RIGHT: Owner */}
         {(user.type === 'owner') && (
           <>
-            <li
-              className='nav-item'
-            >
-              <NavLink  to="/logout" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>
+            <li className='nav-item'>
+              <button onClick={handleLogout} className="nav-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit'}}>
                 Log Out
-              </NavLink >
+              </button>
             </li>
             <li
               className='nav-item'
@@ -190,7 +210,7 @@ function NavBar() {
               onMouseLeave={() => setDropdown(false)}
               style={{position:'relative'}}
             >
-              <div className='Square'>{user.name}</div>
+              <div className='Square'>{user.name || user.username}</div>
               { dropdown && (
                   <ul
                     onClick={() => setDropdown(false)}
@@ -228,9 +248,9 @@ function NavBar() {
         {(user.type === 'admin') && (
           <>
             <li>
-              <NavLink  to="/logout" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>
+              <button onClick={handleLogout} className="nav-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit'}}>
                 Log Out
-              </NavLink >
+              </button>
             </li>
           </>
         )}

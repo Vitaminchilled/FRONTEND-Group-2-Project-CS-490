@@ -9,6 +9,11 @@ import { useUser } from "./context/UserContext";
 //Salon Dashboard Pages put into one folder to keep it together
 import SalonDashboard from './pages/SalonPages/SalonDashboard.jsx'
 import SalonServices from './pages/SalonPages/Services.jsx'
+import Logout from './pages/Logout.jsx'
+
+import Login from './pages/Login.jsx'
+import SalonRegistration from "./pages/SalonRegistration.jsx";
+import CustomerRegistration from './pages/CustomerRegistration.jsx'
 
 import { Routes, Route } from "react-router-dom"
 import './App.css'
@@ -36,6 +41,12 @@ function App() {
             <Route path="/verify" element={<Verify />}/>
             <Route path="/salon/:salon_id" element={<SalonDashboard />} />
             <Route path="/salon/:salon_id/services" element={<SalonServices />} />
+
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<CustomerRegistration />} />
+            <Route path="/register-salon" element={<SalonRegistration />} />
+
+            <Route path="/logout" element={<Logout />} />
             
             <Route path="/users" element={<Users />}/>
             {/*
