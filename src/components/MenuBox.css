@@ -65,6 +65,9 @@
 .MenuBoxFooter .reject {
   background-color: #d4a9a9;
 }
+.MenuBoxFooter .delete {
+  background-color: #d4a9a9;
+}
 
 .MenuBoxFooter button:hover {
   opacity: 0.8;

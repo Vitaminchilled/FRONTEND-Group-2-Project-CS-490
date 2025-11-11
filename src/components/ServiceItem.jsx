@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from 'react'
-import employeeIcon from '../assets/PersonIcon.png'
-import "./EmployeeItem.css"
+import './ServiceItem.css'
 import deleteIcon from '../assets/BlackXIcon.png'
 import tagRemove from '../assets/WhiteXIcon.png'
 
-function EmployeeItem({ accountType, employee, optionTags = [], newItem = false, onSaveEdit, onDelete, onCancelNew}) {
+/* itemTitle, itemPrice, itemDesc, itemDuration, itemTags */
+function ServiceItem({ accountType, service, optionTags = [], newItem = false, onSaveEdit, onDelete, onCancelNew}){
+    const [expanded, setExpanded] = useState(false)
     const [editData, setEditData] = useState({
-        ...employee,
-        tags: employee.tags || [],
-        effective_date: employee.effective_date || new Date().toISOString().split('T')[0]
+        ...service,
+        tags: service.tags || [],
+        is_active: service.is_active ?? 1, /* add functionality later assume all are active for now */
     })
+    /* pass in tags so they can be mapped and formatted when adding and removing tags */
     const [isEditing, setIsEditing] = useState(false)
     const [newTag, setNewTag] = useState('')
-    
+
     useEffect(() => {
-        setEditData(employee)
-    }, [employee])
+        setEditData(service)
+    }, [service])
 
     useEffect(() => {
         if (newItem) {
@@ -34,14 +36,14 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
             onCancelNew?.()
         } else {
             setIsEditing(false)
-            setEditData(employee) // reset changes
+            setEditData(service) // reset changes
         }
     }
 
     //to disable edit mode after saving
     const handleSaveClick = async () => {
         try {
-            await onSaveEdit(editData, employee)
+            await onSaveEdit(editData)
             setIsEditing(false) // switch back to standard mode
         } catch (err) {
             console.error(err)
@@ -66,60 +68,32 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
             tags: prev.tags.filter(t => t !== TagToRemove)
         }))
     }
-    
+
     return (
-        <div className={`staff-item ${accountType === 'owner' ? "owner" : ""}`}>
+        <div className={`service-item ${expanded ? "expanded" : ""}`}
+            onMouseEnter={() => setExpanded(true)}
+            onMouseLeave={() => !isEditing && setExpanded(false)}
+        >
+
             {(accountType === 'owner') && (
                 isEditing ? (
                     <div className='edit-grid-layout'>
-                        <div className='name-section'>
-                            <div className='first-name-section'>
-                                <label className='edit-label first'>First Name:</label>
-                                <input className='edit-input first'
-                                    name='first_name'
-                                    value={editData.first_name}
-                                    onChange={handleChange}
-                                    placeholder='First Name'
-                                    autoComplete='off'
-                                    required
-                                />
-                            </div>
-                            <div className='last-name-section'>
-                                <label className='edit-label last'>Last Name:</label>
-                                <input className='edit-input last'
-                                    name='last_name'
-                                    value={editData.last_name}
-                                    onChange={handleChange}
-                                    placeholder='Last Name'
-                                    autoComplete='off'
-                                    required
-                                />
-                            </div>
-                        </div>
-                        <img className='edit-remove'
-                            src={deleteIcon}
-                            alt='X'
-                            onClick={() => {
-                                if (employee.employee_id === null) return
-                                onDelete(employee)  
-                            }}
-                            style={{ opacity: employee.employee_id === null ? 0.2 : 1, cursor: employee.employee_id === null ? 'not-allowed' : 'pointer' }}
-                        />
-                        <div className='description-section'>
-                            <label className='edit-label description'>Description:</label>
-                            <textarea className='edit-input description'
-                                name='description'
-                                value={editData.description}
+                        <div className='title-section'>
+                            <label className='edit-label title'>Name:</label>
+                            <input className='edit-input title'
+                                name='name'
+                                value={editData.name}
                                 onChange={handleChange}
-                                placeholder='Employee Description'
+                                placeholder='Service Name'
+                                autoComplete='off'
                                 required
                             />
                         </div>
-                        <div className='salary-section'>
-                            <label className='edit-label salary'>Hourly Salary: $</label>
-                            <input className='edit-input salary'
-                                name='salary_value'
-                                value={editData.salary_value}
+                        <div className='price-section'>
+                            <label className='edit-label price'>Price: $</label>
+                            <input className='edit-input price'
+                                name='price'
+                                value={editData.price}
                                 onChange={handleChange}
                                 onBlur={(event) => {
                                         let value = parseFloat(event.target.value || 0)
@@ -127,15 +101,47 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
 
                                         setEditData(prev => ({
                                             ...prev,
-                                            salary_value: value.toFixed(2)
+                                            price: value.toFixed(2)
                                         }))
                                     }
                                 }
-                                placeholder='Salary/hr ex. 10.00'
+                                placeholder='Price ex. 10.00'
                                 type='number'
                                 step={0.01}
                                 min={0}
                                 autoComplete='off'
+                                required
+                            />
+                        </div>
+                        <img className='edit-remove'
+                            src={deleteIcon}
+                            alt='X'
+                            onClick={() => {
+                                if (service.service_id === null) return
+                                onDelete(service)  
+                            }}
+                            style={{ opacity: service.service_id === null ? 0.2 : 1, cursor: service.service_id === null ? 'not-allowed' : 'pointer' }}
+                        />
+                        <div className='description-section'>
+                            <label className='edit-label description'>Description:</label>
+                            <textarea className='edit-input description'
+                                name='description'
+                                value={editData.description}
+                                onChange={handleChange}
+                                placeholder='Service Description'
+                                required
+                            />
+                        </div>
+                        <div className='duration-section'>
+                            <label className='edit-label duration'>Duration:</label>
+                            <input className='edit-input duration'
+                                name='duration_minutes'
+                                value={editData.duration_minutes}
+                                onChange={handleChange}
+                                placeholder='Service Duration ex. 10 (minutes)'
+                                type='number'
+                                min={1}
+                                autoComplete="off"
                                 required
                             />
                         </div>
@@ -162,7 +168,7 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
                                 >
                                     <option value=''>Choose</option>
                                     {optionTags.map((optionTag) => (
-                                        <option key={optionTag.master_tag_id} value={optionTag.name}>
+                                        <option key={optionTag.tag_id} value={optionTag.name}>
                                             {optionTag.name}
                                         </option>
                                     ))}
@@ -174,10 +180,10 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
                             <button className='edit-btn-save'
                                 onClick={handleSaveClick}
                                 disabled={
-                                    !editData.first_name?.trim() ||
-                                    !editData.last_name?.trim() ||
+                                    !editData.name?.trim() ||
+                                    !editData.price || editData.price < 0 ||
                                     !editData.description?.trim() ||
-                                    !editData.salary_value || editData.salary_value <= 0
+                                    !editData.duration_minutes
                                 }
                             >
                                 Save
@@ -191,22 +197,26 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
                     </div>
                 ) : (
                     <div className='grid-layout'>
-                        <img className="employee-img"
-                            src={employeeIcon}
-                            alt='img'
-                        />
-
-                        <h3 className='employee-name'>{`${employee.first_name} ${employee.last_name}`}</h3>
-                        <p className='employee-description'>{employee.description}</p>
-                        <p className='employee-salary'><strong>Salary:</strong> {employee.salary_value}/hr</p>
+                        <h3 className='item-title'>
+                            {service.name}
+                        </h3>
+                        <h3 className='item-price'>
+                            ${service.price}
+                        </h3>
+                        <p className='item-description'>
+                            {service.description}
+                        </p>
                         <button className='item-btn'
                             onClick={handleStartEdit}
                         >
                             Edit
                         </button>
+                        <p className='item-duration'>
+                            Duration: {service.duration_minutes} minutes
+                        </p>
                         <div className='tag-section'>
-                            {Array.isArray(employee.tags) && employee.tags.map((tag, index) => (
-                                <div key={index} className='employee-tag'>
+                            {Array.isArray(service.tags) && service.tags.map((tag, index) => (
+                                <div key={index} className='service-tag'>
                                     {tag}
                                 </div>
                             ))}
@@ -215,17 +225,27 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
                 )
             )}
             {(accountType === 'none' || accountType === 'customer' || accountType === 'admin') && (
-                <div className='grid-layout'>
-                    <img className="employee-img"
-                        src={employeeIcon}
-                        alt='img'
-                    />
-
-                    <h3 className='employee-name'>{`${employee.first_name} ${employee.last_name}`}</h3>
-                    <p className='employee-description'>{employee.description}</p>
+                <div className="grid-layout">
+                    <h3 className='item-title'>
+                        {service.name}
+                    </h3>
+                    <h3 className='item-price'>
+                        ${service.price}
+                    </h3>
+                    <p className='item-description'>
+                        {service.description}
+                    </p>
+                    <button className='item-btn'
+                        disabled={accountType==='none' || accountType==='admin'}
+                    >
+                        Book
+                    </button>
+                    <p className='item-duration'>
+                        Duration: {service.duration_minutes} minutes
+                    </p>
                     <div className='tag-section'>
-                        {Array.isArray(employee.tags) && employee.tags.map((tag, index) => (
-                            <div key={index} className='employee-tag'>
+                        {Array.isArray(service.tags) && service.tags.map((tag, index) => (
+                            <div key={index} className='service-tag'>
                                 {tag}
                             </div>
                         ))}
@@ -236,4 +256,4 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
     )
 }
 
-export default EmployeeItem
+export default ServiceItem

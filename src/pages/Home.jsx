@@ -96,7 +96,7 @@ function Home() {
   const handleSearch = (event) => {
     event.preventDefault()
     navigate('/search', {
-      state: { filter: { business_name: businessName, category: "", employee_first: "", employee_last: "" } }
+      state: { filter: { business_name: businessName, categories: [], employee_first: "", employee_last: "" } }
     })
   }
 
