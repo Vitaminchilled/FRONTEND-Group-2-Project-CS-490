@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import './SearchSalons.css'
-import cross from '../assets/XIcon.png'
+import cross from '../assets/GreyXIcon.png'
 
 function SearchSalons() {
   const location = useLocation()

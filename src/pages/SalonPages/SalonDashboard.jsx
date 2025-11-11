@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useParams, NavLink } from 'react-router-dom'
+import { useUser } from "../../context/UserContext";
 import SalonHeader from '../../components/SalonHeader.jsx'
 import employeeIcon from '../../assets/PersonIcon.png'
 import EmployeeItem from '../../components/EmployeeItem.jsx'
 import './SalonDashboard.css'
-
+import {ModalEmployeeDelete, ModalMessage} from '../../components/Modal.jsx';
 
 function SalonDashboard() {
   const { salon_id } = useParams()
+  const {user, setUser} = useUser();
   const [salon, setSalon] = useState({})
   const [tags, setTags] = useState([])
+  const [masterTags, setMasterTags] = useState([])
   const [employees, setEmployees] = useState([])
   const [reviews, setReviews] = useState([])
   const [startIndex, setStartIndex] = useState(0) //FOR REVIEW CAROUSEL
@@ -18,6 +21,14 @@ function SalonDashboard() {
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+
+  const [newEmployee, setNewEmployee] = useState(null)
+
+  const [ModalEmployee, setModalEmployee] = useState(null);
+  const handleDeleteClick = (employee) => {
+    setModalEmployee(employee); // open modal for this employee
+  }
+  const [modalMessage, setModalMessage] = useState(null)
 
   function getStarString(rating) {
     let stars = ''
@@ -44,29 +55,33 @@ function SalonDashboard() {
       }
 
       if(!salon_response.ok) {
-        const errorText = await salon_response.text()
-        throw new Error(`Salon fetch failed: HTTP error ${salon_response.status}: ${errorText}`)
+        const errorText = await salon_response.json()
+        throw new Error(`Salon fetch failed: HTTP error ${salon_response.status}: ${errorText.error || errorText}`)
       }
 
       if (!employees_response.ok) {
-        const errorText = await employees_response.text()
-        throw new Error(`Employees fetch failed: HTTP error ${employees_response.status}: ${errorText}`)
+        const errorText = await employees_response.json()
+        throw new Error(`Employees fetch failed: HTTP error ${employees_response.status}: ${errorText.error || errorText}`)
       }
 
       if (!reviews_response.ok) {
-        const errorText = await reviews_response.text()
-        throw new Error(`Reviews fetch failed: HTTP error ${reviews_response.status}: ${errorText}`)
+        const errorText = await reviews_response.json()
+        throw new Error(`Reviews fetch failed: HTTP error ${reviews_response.status}: ${errorText.error || errorText}`)
       }
 
       const salon_data = await salon_response.json()
       const employees_data = await employees_response.json()
       const reviews_data = await reviews_response.json()
+      
       console.log(salon_data)
       console.log(employees_data)
       console.log(reviews_data)
+
       //destructuring data in the case that if it is null/undefined it defaults as a {} with default salon and total_page values
       const { 
-        salon: retrievedSalon=[], tags: retrievedTags=[],
+        salon: retrievedSalon=[], 
+        tags: retrievedTags=[], 
+        master_tags: retrievedMasterTags=[]
       } = salon_data || {}
 
       const { 
@@ -83,6 +98,7 @@ function SalonDashboard() {
       setEmployees(retrievedEmployees)
       setReviews(retrievedReviews)
       setReviewCount(retrievedReviewCount)
+      setMasterTags(retrievedMasterTags)
 
       if (retrievedSalon?.average_rating != null) {
         setRating(getStarString(retrievedSalon.average_rating))
@@ -102,6 +118,187 @@ function SalonDashboard() {
     retrieveSalons()
   }, [salon_id])
 
+  /* employees */
+
+  const handleCancelNewEmployee = () => {
+    setNewEmployee(null)
+  }
+
+  const handleAddEmployee = async (employeeData) => {
+    try {
+      const cleanedEmployeeData = {
+        first_name: employeeData.first_name.trim(),
+        last_name: employeeData.last_name.trim(),
+        description: employeeData.description.trim(),
+        tags: Array.isArray(employeeData.tags) ? employeeData.tags : [],
+      }
+
+      const employee_response = await  fetch(`/api/salon/${salon_id}/employees`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(cleanedEmployeeData)
+      })
+
+      if (!employee_response.ok) {
+        const errorText = await employee_response.json()
+        throw new Error(`Employees fetch failed: HTTP error ${employee_response.status}: ${errorText.error || errorText}`)
+      }
+
+      const employee_data = await employee_response.json()
+
+      const cleanedSalaryData = {
+        salary_value: parseFloat(employeeData.salary_value),
+        effective_date: new Date().toISOString().split('T')[0]
+      }
+
+      const create_salary_response = await fetch(`/api/salon/${salon_id}/employees/${employee_data.employee_id}/salaries`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(cleanedSalaryData)
+      })
+
+      if (!create_salary_response.ok) {
+        const errorText = await create_salary_response.json()
+        throw new Error(`Salary fetch failed: HTTP error ${create_salary_response.status}: ${errorText.error || errorText}`)
+      }
+      const salary_data = await create_salary_response.json()
+      
+      setModalMessage({ 
+        title: "Success",
+        content: employee_data.message + `\n` + salary_data.message
+      })
+      setNewEmployee(null)
+      await retrieveSalons()
+    
+    } catch (err) {
+      console.error(err)
+      setNewEmployee(null)
+      setModalMessage({
+        title: "Error",
+        content: err.message || 'This employee could not be added.'
+      })
+    }
+  }
+  
+  const handleSaveEdit = async (updatedEmployee, employee) => {
+    try {
+      const cleanedEmployeeData = {
+        employee_id: updatedEmployee.employee_id,
+        first_name: updatedEmployee.first_name.trim(),
+        last_name: updatedEmployee.last_name.trim(),
+        description: updatedEmployee.description.trim(),
+        tags: Array.isArray(updatedEmployee.tags) ? updatedEmployee.tags : [],
+      }
+
+      console.log("Sending employee update data:", cleanedEmployeeData)
+
+      const newSalaryValue = parseFloat(updatedEmployee.salary_value)
+      const oldSalaryValue = parseFloat(employee.salary_value)
+
+      const nothingChanged =
+        cleanedEmployeeData.first_name === employee.first_name &&
+        cleanedEmployeeData.last_name === employee.last_name &&
+        cleanedEmployeeData.description === employee.description &&
+        JSON.stringify(cleanedEmployeeData.tags) === JSON.stringify(employee.tags) &&
+        newSalaryValue === oldSalaryValue
+
+      if (nothingChanged) {
+        setModalMessage({
+          title: "No Changes Detected",
+          content: "No updates were made because nothing was changed.",
+        })
+        return
+      }
+
+      const edit_employee_response = await fetch(`/api/salon/${salon_id}/employees/${updatedEmployee.employee_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(cleanedEmployeeData)
+      })
+
+      if (!edit_employee_response.ok) {
+        const errorText = await edit_employee_response.json()
+        throw new Error(`Employee fetch failed: HTTP error ${edit_employee_response.status}: ${errorText.error || errorText}`)
+      }
+
+      let salaryMessage = ""
+      if (newSalaryValue  !== oldSalaryValue) {
+        const cleanedSalaryData = {
+          salary_value: newSalaryValue,
+          effective_date: new Date().toISOString().split('T')[0]
+        }
+
+        console.log("Sending salary update data:", cleanedSalaryData)
+
+        const create_salary_response = await fetch(`/api/salon/${salon_id}/employees/${updatedEmployee.employee_id}/salaries`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(cleanedSalaryData)
+        })
+
+        if (!create_salary_response.ok) {
+          const errorText = await create_salary_response.json()
+          throw new Error(`Salary fetch failed: HTTP error ${create_salary_response.status}: ${errorText.error || errorText}`)
+        }
+
+        const salary_data = await create_salary_response.json()
+        salaryMessage = `\n${salary_data.message || 'Salary updated successfully.'}`
+      }
+
+      const employeeData = await edit_employee_response.json()
+      setModalMessage({ 
+        title: "Success",
+        content: employeeData.message + salaryMessage
+      })
+      await retrieveSalons()
+    } catch (err) {
+      console.error(err)
+
+      setModalMessage({
+        title: "Error",
+        content: err.message || 'This employee could not be updated.'
+      })
+    }
+  }
+
+  const handleDeleteEmployee = async (employeeID) => {
+    try {
+      const deleteResponse = await fetch(`/api/salon/${salon_id}/employees/${employeeID}`, {
+        method: 'DELETE'
+      })
+
+      if (!deleteResponse.ok) {
+        const errorData = await deleteResponse.json()
+        throw new Error(`Delete Employee fetch failed: HTTP error ${deleteResponse.status}: ${errorData.error || errorData}`)
+      }
+      const data = await deleteResponse.json()
+
+      setModalEmployee(null)
+      setModalMessage({
+        title: 'Success',
+        content: data.message
+      })
+
+      await retrieveSalons()
+    } catch (err) {
+      console.error(err)
+      setModalEmployee(null)
+      setModalMessage({
+        title: "Error",
+        content: err.message || 'This employee could not be deleted.'
+      })
+    }
+  }
+
+  /* reviews */
   const reviewsPerPage = 3
   const visibleReviews = reviews.slice(startIndex, startIndex + reviewsPerPage)
 
@@ -189,12 +386,42 @@ function SalonDashboard() {
               {employees.map((employee) => (
                 <EmployeeItem
                   key={employee.employee_id}
-                  employeeImg={employeeIcon}
-                  employeeName={`${employee.employee_first_name} ${employee.employee_last_name}`}
-                  employeeDesc={employee.description}
+                  accountType={user.type}
+                  employee={employee}
+                  optionTags={masterTags}
+                  onSaveEdit={handleSaveEdit}
+                  onDelete={() => handleDeleteClick(employee)} 
                 />
               ))}
+              {newEmployee && (
+                <EmployeeItem
+                  key="new"
+                  accountType={user.type}
+                  employee={newEmployee}
+                  optionTags={masterTags}
+                  newItem={true}
+                  onSaveEdit={handleAddEmployee}
+                  onCancelNew={handleCancelNewEmployee}                  
+                />
+              )}
             </div>
+            {(user.type === 'owner') && (
+              <button className='add-salon-item'
+                onClick={() => setNewEmployee({
+                  employee_id: null,
+                  first_name: '',
+                  last_name: '',
+                  description: '',
+                  tags: [],
+                  salary_id: null,
+                  salary_value: '',
+                  effective_date: ""
+                })}
+                disabled={newEmployee !== null}
+              >
+                Add Employee
+              </button>
+            )}
 
             <div className='dashboard-group'>
               <div className="group-header">
@@ -211,15 +438,6 @@ function SalonDashboard() {
               <div className='grey-divider'></div>
             </div>
 
-            {/* 
-              I didnt make it a component because I thought we might need to make a
-              reviews page with all reviews and replies for a salon which would need
-              formatted differently than the dashboard reviews.
-              If you press a review it goes to the review page and shows all reviews
-              but scrolled down to that specific review?? idk
-
-              need more reviews to check pagination
-            */}
             <div className='review-content'>
               <div className='review-btn'>
                 <button className='prev-next'
@@ -247,7 +465,7 @@ function SalonDashboard() {
                         key={review.review_id}
                       >
                         <div className='grid-layout'>
-                          <h3 className='review-name'>{review.user_first_name} {review.user_last_name} </h3>
+                          <h3 className='review-name'>{review.customer_name} </h3>
                           <h2 className='review-rating available'>{stars}</h2>
                           <p className='review-date'>Reviewed on {review.review_date}</p>
                           <p className='review-comment'>{review.comment}</p>
@@ -275,6 +493,21 @@ function SalonDashboard() {
             <div className='loyalty-rewards'>
               {/* loyalty goes here */}
             </div>
+
+            {ModalEmployee && (
+              <ModalEmployeeDelete
+                employee={ModalEmployee}
+                setModalOpen={setModalEmployee}
+                onConfirm={handleDeleteEmployee}
+              />
+            )}
+            {modalMessage && (
+              <ModalMessage
+                content={modalMessage.content}
+                title={modalMessage.title}
+                setModalOpen={setModalMessage}
+              />
+            )}
         </div>
       ))}
     </>
