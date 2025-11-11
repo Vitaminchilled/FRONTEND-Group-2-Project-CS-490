@@ -52,3 +52,23 @@
     flex-direction: column; 
     gap: 10px;
 }
+
+.add-salon-item {
+    border-radius: 15px;
+    padding: 10px 15px;
+    font-size: 20px;
+    font-family: Kumbh Sans;
+    border: 1px solid #a4a4a4;
+    background-color: white;
+    transition: background-color 0.5s ease;
+}
+
+.add-salon-item:hover:not(:disabled) {
+    background-color: #d2bba0;
+    border: 1px solid #887259;
+    cursor: pointer;
+}
+
+.add-salon-item:disabled {
+    cursor: not-allowed;
+}
