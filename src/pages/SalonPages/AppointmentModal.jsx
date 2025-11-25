@@ -4,7 +4,7 @@ import ServiceItem from '../../components/ServiceItem'
 import EmployeeItem from '../../components/EmployeeItem'
 import './AppointmentModal.css'
 
-export function AppointmentModal ({setModalOpen, accountType, salon, tags, services, selectedService}) {
+export function AppointmentModal ({setModalOpen, accountType, salon, tags, services, selectedService, setModalMessage}) {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
     const [step, setStep] = useState(1) 
@@ -279,35 +279,41 @@ export function AppointmentModal ({setModalOpen, accountType, salon, tags, servi
 
     const handleAppointmentSubmit = async () => {
         try {
-        const cleanedData = {
-            salon_id: salon.salon_id,
-            customer_id: 33, /* temp until user context */
-            employee_id: chosenEmployee.employee_id,
-            service_id: chosenService.service_id,
-            appointment_date: chosenDateTime.appointment_date,
-            start_time: chosenDateTime.start_time,
-            notes: note.trim()
-        }
-        console.log(cleanedData)
+            const cleanedData = {
+                salon_id: salon.salon_id,
+                customer_id: 33, /* temp until user context */
+                employee_id: chosenEmployee.employee_id,
+                service_id: chosenService.service_id,
+                appointment_date: chosenDateTime.appointment_date,
+                start_time: chosenDateTime.start_time,
+                notes: note.trim()
+            }
+            console.log(cleanedData)
 
-        const response = await fetch(`/api/appointments/book`, {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(cleanedData)
-        })
+            const response = await fetch(`/api/appointments/book`, {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(cleanedData)
+            })
 
-        if (!response.ok) {
-            const errorData = await response.json()
-            throw new Error(`Create Appointment fetch failed: HTTP error ${response.status}: ${errorData.error || errorData}`)
-        }
-        const data = await response.json()
-        await alert(data.message)
-        setModalOpen(null)
-
+            if (!response.ok) {
+                const errorData = await response.json()
+                throw new Error(`Create Appointment fetch failed: HTTP error ${response.status}: ${errorData.error || errorData}`)
+            }
+            const data = await response.json()
+            setModalOpen(null)
+            setModalMessage({
+                title: "Success",
+                content: data.message
+            })
         } catch (err) {
-        console.error(err)
+            console.error(err)
+            setModalMessage({
+                title: "Error",
+                content: err.message || 'This service could not be deleted.'
+            })
         }
   }
 

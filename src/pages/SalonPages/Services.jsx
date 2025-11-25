@@ -310,6 +310,7 @@ function Services() {
               selectedService={appointmentModal}
               services={services}
               setModalOpen={setAppointmentModal}
+              setModalMessage={setModalMessage}
             />
           )}
         </div>
