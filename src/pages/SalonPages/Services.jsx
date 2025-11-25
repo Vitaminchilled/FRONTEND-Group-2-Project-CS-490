@@ -7,6 +7,7 @@ import stripeBackground from "../../assets/stripeBackground.png"
 import ServiceItem from '../../components/ServiceItem.jsx'
 
 import {ModalServiceDelete, ModalMessage} from '../../components/Modal.jsx';
+import { AppointmentModal } from './AppointmentModal.jsx';
 
 function Services() {
   const { salon_id } = useParams()
@@ -25,9 +26,10 @@ function Services() {
     setModalService(service); // open modal for this service
   }
   const [modalMessage, setModalMessage] = useState(null)
+  const [appointmentModal, setAppointmentModal] = useState(null)
 
   useEffect(() => {
-    if (modalService || modalMessage) {
+    if (modalService || modalMessage || appointmentModal) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -35,7 +37,7 @@ function Services() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [modalService, modalMessage]);
+  }, [modalService, modalMessage, appointmentModal]);
 
   const retrieveServices = async () => {
     setLoading(true);
@@ -213,6 +215,10 @@ function Services() {
     }
   }
 
+  const handleBookClick = async (service) => {
+    setAppointmentModal(service)
+  }
+
   return (
     <>
       {(!loading && error ? (
@@ -249,7 +255,7 @@ function Services() {
                   
                   onSaveEdit={handleSaveEdit}
                   onDelete={() => handleDeleteClick(service)} 
-                  /* onDelete={() => handleDeleteService(service.service_id)} */
+                  onBook={() => handleBookClick(service)}
                 />
               ))}
               {newService && (
@@ -259,7 +265,6 @@ function Services() {
                   service={newService}
                   optionTags={tags}
                   newItem={true}
-                  /* onStartEdit not necessary? */
                   onSaveEdit={handleAddService}
                   onCancelNew={handleCancelNewService}
                   /* onDelete not included since delete isnt valid for new service */
@@ -295,6 +300,16 @@ function Services() {
               content={modalMessage.content}
               title={modalMessage.title}
               setModalOpen={setModalMessage}
+            />
+          )}
+          {appointmentModal && (
+            <AppointmentModal 
+              accountType={"customer"}
+              salon={salon}
+              tags={tags}
+              selectedService={appointmentModal}
+              services={services}
+              setModalOpen={setAppointmentModal}
             />
           )}
         </div>

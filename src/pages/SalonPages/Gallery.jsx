@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import SalonHeader from '../../components/SalonHeader.jsx'
 
-function Products() {
+function Gallery() {
     const { salon_id } = useParams()
     const [salon, setSalon] = useState({})
     const [tags, setTags] = useState([])
@@ -94,4 +94,4 @@ function Products() {
     )
 }
 
-export default Products
+export default Gallery

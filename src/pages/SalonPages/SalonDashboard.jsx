@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useParams, NavLink } from 'react-router-dom'
 import { useUser } from "../../context/UserContext";
 import SalonHeader from '../../components/SalonHeader.jsx'
-import employeeIcon from '../../assets/PersonIcon.png'
 import EmployeeItem from '../../components/EmployeeItem.jsx'
 import './SalonDashboard.css'
 import {ModalEmployeeDelete, ModalMessage} from '../../components/Modal.jsx';
@@ -29,6 +28,17 @@ function SalonDashboard() {
     setModalEmployee(employee); // open modal for this employee
   }
   const [modalMessage, setModalMessage] = useState(null)
+
+  useEffect(() => {
+    if (ModalEmployee || modalMessage) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [ModalEmployee, modalMessage]);
 
   function getStarString(rating) {
     let stars = ''

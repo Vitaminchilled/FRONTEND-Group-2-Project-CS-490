@@ -9,6 +9,15 @@
     transition: all 0.3s ease-in;
 }
 
+.staff-item.selected {
+    background-color: #f4e6d0;
+    border: 1px solid #e1ceaf;
+}
+
+.staff-item.selected:hover {
+    background-color: #ead6b6;
+}
+
 .staff-item:hover {
     background-color: #f1f1f1;
 }

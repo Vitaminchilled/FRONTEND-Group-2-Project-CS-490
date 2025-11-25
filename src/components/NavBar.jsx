@@ -166,10 +166,10 @@ function NavBar() {
               >
                 <img
                   className='cart-image'
-                  src={emptyCart}
+                  src={fullCart}
                   alt="Cart"
+                  title='Shopping Cart'
                 />
-                {`(0)`} {/* eventually add the number of cart items here and add if for when cart isnt empty for different icon*/}
               </NavLink>
             </li>
           </>
