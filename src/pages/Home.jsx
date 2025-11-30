@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import background from '../assets/homePage_background.png';
 import './Home.css'
 
@@ -12,7 +13,7 @@ function Salon( {salon} ) {
   });
 
   return (
-    <div className="Salon" role="button" onClick={() => console.log(`Clicked ${salon.name}`)}>
+    <Link key={salon.salon_id} className="Salon" to={`/salon/${salon.salon_id}`}>
       <div className="SalonTop"></div>
       <div className="SalonBottom">
         <h2>{salon.name}</h2>
@@ -22,7 +23,7 @@ function Salon( {salon} ) {
           ))}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
