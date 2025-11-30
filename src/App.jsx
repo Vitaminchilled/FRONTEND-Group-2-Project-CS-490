@@ -8,6 +8,7 @@ import Users from './pages/Users.jsx'
 import { useUser } from "./context/UserContext";
 //Salon Dashboard Pages put into one folder to keep it together
 import SalonDashboard from './pages/SalonPages/SalonDashboard.jsx'
+import SalonServices from './pages/SalonPages/Services.jsx'
 
 import { Routes, Route } from "react-router-dom"
 import './App.css'
@@ -24,7 +25,7 @@ function App() {
         <div className="AppContent"> 
           <Routes >
             {/* NEEDS TO REFRESH AFTER USER LOGS IN!! (might alredy do)*/}
-            {(user.type === 'none' || user.type === 'customer') && (
+            {(user.type === 'none' || user.type === 'customer' || user.type === 'owner') && (
               <Route path="/" element={<Home />} />
             )}
             {(user.type === 'admin') && (
@@ -34,6 +35,7 @@ function App() {
             <Route path="/account" element={<Account />}/>
             <Route path="/verify" element={<Verify />}/>
             <Route path="/salon/:salon_id" element={<SalonDashboard />} />
+            <Route path="/salon/:salon_id/services" element={<SalonServices />} />
             
             <Route path="/users" element={<Users />}/>
             {/*

@@ -180,6 +180,8 @@
     margin: 0;
     line-height: 1;
     align-self: center;
+    text-wrap: nowrap;
+    
 }
 
 .review-item .grid-layout .review-rating {
@@ -187,6 +189,11 @@
     grid-column: 2;
     margin: 0;
     justify-self: end;
+}
+
+.review-item .grid-layout .review-rating.available {
+    font-weight: 500;
+    font-family: Kumbh Sans;
 }
 
 .review-item .grid-layout .review-date {
@@ -204,4 +211,25 @@
     height: 150px;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/*should apply too whole app im just adding it in here for clarity*/
+.add-salon-item {
+    border-radius: 15px;
+    padding: 10px 15px;
+    font-size: 20px;
+    font-family: Kumbh Sans;
+    border: 1px solid #a4a4a4;
+    background-color: white;
+    transition: background-color 0.5s ease;
+}
+
+.add-salon-item:hover:not(:disabled) {
+    background-color: #d2bba0;
+    border: 1px solid #887259;
+    cursor: pointer;
+}
+
+.add-salon-item:disabled {
+    cursor: not-allowed;
 }

@@ -48,7 +48,11 @@ function SalonHeader({ salonID, headerTitle, headerTags, headerRatingValue}) {
         {headerTitle}
       </h1>
 
-      {headerTags && <p className="header-tags">{headerTags.join(', ')}</p>}
+      {headerTags && 
+        <p className="header-tags">
+          {headerTags.map((tag) => tag.name).join(", ")}
+        </p>
+      }
       
 
       <div className="header-rating">
