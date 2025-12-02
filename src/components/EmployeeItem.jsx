@@ -4,7 +4,12 @@ import "./EmployeeItem.css"
 import deleteIcon from '../assets/BlackXIcon.png'
 import tagRemove from '../assets/WhiteXIcon.png'
 
-function EmployeeItem({ accountType, employee, optionTags = [], newItem = false, onSaveEdit, onDelete, onCancelNew}) {
+function EmployeeItem({ 
+    accountType, 
+    employee, optionTags = [], 
+    newItem = false, selected = false,
+    onSaveEdit, onDelete, onCancelNew
+}) {
     const [editData, setEditData] = useState({
         ...employee,
         tags: employee.tags || [],
@@ -68,7 +73,7 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
     }
     
     return (
-        <div className={`staff-item ${accountType === 'owner' ? "owner" : ""}`}>
+        <div className={`staff-item ${accountType === 'owner' ? "owner" : ""} ${selected ? 'selected' : ''}`}>
             {(accountType === 'owner') && (
                 isEditing ? (
                     <div className='edit-grid-layout'>

@@ -6,7 +6,8 @@ import SalonHeader from '../../components/SalonHeader.jsx'
 import stripeBackground from "../../assets/stripeBackground.png"
 import ServiceItem from '../../components/ServiceItem.jsx'
 
-import {ModalServiceDelete, ModalMessage} from '../../components/Modal.jsx';
+import { ModalServiceDelete, ModalMessage } from '../../components/Modal.jsx';
+import { BookAppointment } from '../../components/BookAppointment.jsx'
 
 function Services() {
   const { salon_id } = useParams()
@@ -25,9 +26,10 @@ function Services() {
     setModalService(service); // open modal for this service
   }
   const [modalMessage, setModalMessage] = useState(null)
+  const [bookAppointment, setBookAppointment] = useState(null)
 
   useEffect(() => {
-    if (modalService || modalMessage) {
+    if (modalService || modalMessage || bookAppointment) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -35,7 +37,7 @@ function Services() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [modalService, modalMessage]);
+  }, [modalService, modalMessage, bookAppointment]);
 
   const retrieveServices = async () => {
     setLoading(true);
@@ -213,6 +215,10 @@ function Services() {
     }
   }
 
+  const handleBookClick = async (service) => {
+    setBookAppointment(service)
+  }
+
   return (
     <>
       {(!loading && error ? (
@@ -249,7 +255,7 @@ function Services() {
                   
                   onSaveEdit={handleSaveEdit}
                   onDelete={() => handleDeleteClick(service)} 
-                  /* onDelete={() => handleDeleteService(service.service_id)} */
+                  onBook={() => handleBookClick(service)}
                 />
               ))}
               {newService && (
@@ -295,6 +301,17 @@ function Services() {
               content={modalMessage.content}
               title={modalMessage.title}
               setModalOpen={setModalMessage}
+            />
+          )}
+          {bookAppointment && (
+            <BookAppointment 
+              accountType={"customer"} /* change later */
+              salon={salon}
+              tags={tags}
+              selectedService={bookAppointment}
+              services={services}
+              setModalOpen={setBookAppointment}
+              setModalMessage={setModalMessage}
             />
           )}
         </div>

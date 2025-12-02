@@ -4,7 +4,12 @@ import deleteIcon from '../assets/BlackXIcon.png'
 import tagRemove from '../assets/WhiteXIcon.png'
 
 /* itemTitle, itemPrice, itemDesc, itemDuration, itemTags */
-function ServiceItem({ accountType, service, optionTags = [], newItem = false, onSaveEdit, onDelete, onCancelNew}){
+function ServiceItem({ 
+    accountType, 
+    service, optionTags = [], 
+    newItem = false, 
+    onSaveEdit, onDelete, onCancelNew, onBook
+}){
     const [expanded, setExpanded] = useState(false)
     const [editData, setEditData] = useState({
         ...service,
@@ -237,6 +242,7 @@ function ServiceItem({ accountType, service, optionTags = [], newItem = false, o
                     </p>
                     <button className='item-btn'
                         disabled={accountType==='none' || accountType==='admin'}
+                        onClick={onBook}
                     >
                         Book
                     </button>
