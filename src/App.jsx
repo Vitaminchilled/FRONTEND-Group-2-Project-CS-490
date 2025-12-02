@@ -2,6 +2,7 @@ import NavBar from './components/NavBar.jsx'
 import Home from './pages/Home.jsx'
 import SearchSalons from './pages/SearchSalons.jsx'
 import Account from './pages/AccountDetails.jsx'
+import MyAppointments from './pages/MyAppointments.jsx'
 import Verify from './pages/Verify.jsx'
 import Salons from './pages/Salons.jsx'
 import Users from './pages/Users.jsx'
@@ -11,7 +12,7 @@ import SalonDashboard from './pages/SalonPages/SalonDashboard.jsx'
 import SalonServices from './pages/SalonPages/Services.jsx'
 import SalonProducts from './pages/SalonPages/Products.jsx'
 import SalonGallery from './pages/SalonPages/Gallery.jsx'
-
+import SalonReviews from './pages/SalonPages/Reviews.jsx'
 
 import { Routes, Route } from "react-router-dom"
 import './App.css'
@@ -41,8 +42,9 @@ function App() {
             <Route path="/salon/:salon_id/services" element={<SalonServices />} />
             <Route path="/salon/:salon_id/products" element={<SalonProducts />} />
             <Route path="/salon/:salon_id/gallery" element={<SalonGallery />} />
-            
+            <Route path="/salon/:salon_id/reviews" element={<SalonReviews />} />
             <Route path="/users" element={<Users />}/>
+            <Route path="/appointment-rewards" element={<MyAppointments />}/>
             {/*
             Routes to include:
               /account is account details and should depend on the account type

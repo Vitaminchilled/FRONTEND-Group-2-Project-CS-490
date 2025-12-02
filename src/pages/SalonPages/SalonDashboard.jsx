@@ -354,6 +354,12 @@ function SalonDashboard() {
                 Gallery
               </NavLink>
 
+              <NavLink className='card'
+                to={`/salon/${salon_id}/reviews`} 
+                end={false}>
+                Reviews
+              </NavLink>
+
             </div>
 
             <div className='dashboard-group'>
