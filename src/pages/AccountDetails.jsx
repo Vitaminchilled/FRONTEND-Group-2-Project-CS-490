@@ -34,13 +34,57 @@ function AccountDetails() {
     setEditedDetails((prev) => ({ ...prev, [name]: value }));
   };
 
-  const toggleEdit = () => {
-    if (isEditing) {
-      // here’s where you’d send data to backend later
-      console.log("Saving changes:", editedDetails);
+  const toggleEdit = async () => {
+  if (isEditing) {
+    console.log("Saving changes:", editedDetails);
+    const success = await saveDetails();
+
+    if (success) {
+      window.location.reload();
     }
-    setIsEditing(!isEditing);
-  };
+  }
+  setIsEditing(!isEditing);
+};
+
+const saveDetails = async () => {
+  try {
+    const response = await fetch("/api/updateUserDetails", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(editedDetails),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      if (data.field_errors) {
+        let msg = "Please correct the following:\n\n";
+
+        for (const field in data.field_errors) {
+          data.field_errors[field].forEach((err) => {
+            msg += `• ${field}: ${err}\n`;
+          });
+        }
+
+        window.alert(msg);
+      } else {
+        window.alert(data.error || "Something went wrong.");
+      }
+
+      setEditedDetails(userDetails); 
+
+      return false;
+    }
+    return true;
+
+  } catch (error) {
+    console.error(error.message);
+    window.alert("An unexpected error occurred.");
+    setEditedDetails(userDetails);
+
+    return false;
+  }
+};
 
   return (
     <div className="AccountDetails">
