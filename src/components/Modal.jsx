@@ -1,4 +1,4 @@
-import './modal.css';
+import './Modal.css';
 
 export function ModalView ({setModalOpen, salon}) {
     return (
