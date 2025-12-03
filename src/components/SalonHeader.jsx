@@ -4,7 +4,7 @@ import './SalonHeader.css'
 import headerImage from '../assets/HeaderImage.jpg'
 import homeIcon from '../assets/HomeIcon.png'
 import emptyHeartIcon from '../assets/EmptyHeartIcon.png'
-import fullHeartIcon from '../assets/fullHeartIcon.png'
+import fullHeartIcon from '../assets/FullHeartIcon.png'
 
 
 /* ({ salon_id, headerImage, headerTitle, headerTags, headerRating }) */
