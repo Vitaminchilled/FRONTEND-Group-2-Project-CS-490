@@ -9,7 +9,7 @@ import { useUser } from "./context/UserContext";
 //Salon Dashboard Pages put into one folder to keep it together
 import SalonDashboard from './pages/SalonPages/SalonDashboard.jsx'
 import SalonServices from './pages/SalonPages/Services.jsx'
-
+import Rewards from './pages/Rewards.jsx'
 import { Routes, Route } from "react-router-dom"
 import './App.css'
 
@@ -37,6 +37,8 @@ function App() {
             <Route path="/salon/:salon_id" element={<SalonDashboard />} />
             <Route path="/salon/:salon_id/services" element={<SalonServices />} />
             
+            <Route path="/rewards" element={<Rewards />}/>
+
             <Route path="/users" element={<Users />}/>
             {/*
             Routes to include:

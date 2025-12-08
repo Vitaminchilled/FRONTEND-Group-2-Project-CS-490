@@ -17,8 +17,13 @@ function NavBar() {
       cName: 'dropdown-link'
     },
     {
-      title: 'My Appointments & Rewards',
-      path: '/appointment-rewards',
+      title: 'Appointments',
+      path: '/appointment',
+      cName: 'dropdown-link'
+    },
+    {
+      title: 'My Rewards',
+      path: '/rewards',
       cName: 'dropdown-link'
     }
   ]
