@@ -9,12 +9,19 @@ import { useUser } from "./context/UserContext";
 //Salon Dashboard Pages put into one folder to keep it together
 import SalonDashboard from './pages/SalonPages/SalonDashboard.jsx'
 import SalonServices from './pages/SalonPages/Services.jsx'
+import SalonProducts from './pages/SalonPages/Products.jsx'
 import Rewards from './pages/Rewards.jsx'
-import { Routes, Route } from "react-router-dom"
+import SalonRegistration from './pages/LoginRegistration/SalonRegistration.jsx'
+import CustomerRegistration from './pages/LoginRegistration/CustomerRegistration.jsx'
+import Logout from './pages/LoginRegistration/Logout.jsx'
+import Login from './pages/LoginRegistration/Login.jsx'
+
+import { Routes, Route, Navigate } from "react-router-dom"
+
 import './App.css'
 
 function App() {
-  const {user, setUser} = useUser();
+  const {user} = useUser();
 
   return (
     <div>
@@ -25,46 +32,45 @@ function App() {
         <div className="AppContent"> 
           <Routes >
             {/* NEEDS TO REFRESH AFTER USER LOGS IN!! (might alredy do)*/}
-            {(user.type === 'none' || user.type === 'customer' || user.type === 'owner') && (
+            {(user.type === 'none' || user.type === 'customer') && (
               <Route path="/" element={<Home />} />
+            )}
+            {(user.type === 'owner') && (
+              <Route path="/" element={
+                user.salon_id ? (
+                  <Navigate to={`/salon/${user.salon_id}`} replace />
+                ) : (
+                  <div style={{padding: '20px', textAlign: 'center'}}>
+                    <h2>No Salon Associated</h2>
+                    <p>Please contact support if you believe this is an error.</p>
+                  </div>
+                )
+              } />
             )}
             {(user.type === 'admin') && (
               <Route path="/" element={<Salons />} />
             )}
+
+            {/* LOGIN/LOGOUT/SIGNUP/REGISTRATION ROUTES */}
+            <Route path="/signup" element={<CustomerRegistration />} />
+            <Route path="/register-salon" element={<SalonRegistration />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/logout" element={<Logout />} />
+
+            {/* GEN ROUTES */}
             <Route path="/search" element={<SearchSalons />} />
             <Route path="/account" element={<Account />}/>
-            <Route path="/verify" element={<Verify />}/>
+
+            {/* SALON ROUTES */}
             <Route path="/salon/:salon_id" element={<SalonDashboard />} />
             <Route path="/salon/:salon_id/services" element={<SalonServices />} />
-            
+            <Route path="/salon/:salon_id/products" element={<SalonProducts />} />
             <Route path="/rewards" element={<Rewards />}/>
-
+            
+            {/* ADMIN ROUTES */}
+            <Route path="/verify" element={<Verify />}/>
             <Route path="/users" element={<Users />}/>
-            {/*
-            Routes to include:
-              /account is account details and should depend on the account type
-              /appointment-rewards is customer "My Appointments & Rewards"
-
-              /business-calendar
-              /manage-service
-              /manage-employee
-              /manage-product
-              /manage-gallery
-              /services
-              /products
-              /gallery
-
-              /login
-              /signup
-              /register-salon
-
-              / for admin which is tentatively the salons list to view analytics
-              /users for admin list of users and some analytics
-              /verify for admin list of businesses to verify
-
-              consider adding a path to view a specific salon dashboard as a customer
-              /salons/:salon_id
-            */}
+            
           </Routes>
         </div>
     </div>

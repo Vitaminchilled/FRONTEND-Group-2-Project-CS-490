@@ -10,7 +10,7 @@ import {ModalServiceDelete, ModalMessage} from '../../components/Modal.jsx';
 
 function Services() {
   const { salon_id } = useParams()
-  const {user, setUser} = useUser(); /* will eventually be removed for other method */
+  const {user} = useUser(); /* will eventually be removed for other method */
   const [salon, setSalon] = useState({})
   const [tags, setTags] = useState([])
   const [services, setServices] = useState([])
@@ -243,6 +243,9 @@ function Services() {
               {services.map((service) => (
                 <ServiceItem
                   key={service.service_id}
+                  user={user}
+                  salon={salon}
+
                   accountType={user.type}
                   service={service}
                   optionTags={tags}

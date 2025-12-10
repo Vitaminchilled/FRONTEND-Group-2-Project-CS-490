@@ -1,0 +1,111 @@
+body {
+  background-color: #ffff;
+  font-family: 'Kumbh Sans', sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.CustomerRegistrationBox {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  width: 80%;
+  max-width: 1500px;
+  margin: 120px auto 30px auto; 
+  /*changed to have the box not cutoff by navbar 
+  change it back if you want*/
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  background: none;
+  flex-wrap: wrap;
+  background-color: #F5EEE6;
+  padding-bottom: 150px;
+}
+
+.leftBox {
+  flex: 1;
+  padding: 40px;
+  background-color: #F5EEE6;
+  color: #000;
+  min-width: 300px;
+}
+
+.rightBox {
+  flex: 1;
+  padding: 50px;
+  margin-right: 50px;
+  margin-left: 50px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  background-color: rgb(185, 138, 89, .18);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 300px;
+  padding-bottom: 70px;
+}
+
+.leftBox h1 {
+  font-size: 90px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.rightBox h1{
+  font-size: 50px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: 45px;
+  margin: 10px;
+  font-weight: 500;
+}
+
+h3 {
+  font-size: 25px;
+  line-height: 1.5;
+  margin-top: 10px;
+  margin-left: 10px;
+  font-weight: 300;
+}
+
+.rightBox input {
+  width: 70%;
+  padding: 12px;
+  margin: 15px auto;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  margin-bottom: 40px;
+}
+
+.buttons {
+  margin-top: 16px;
+  margin-left: 150px;
+  margin-right: 150px;
+}
+
+.buttons button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #b98a59;
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.buttons button:hover {
+  background-color: #a4764e;
+}

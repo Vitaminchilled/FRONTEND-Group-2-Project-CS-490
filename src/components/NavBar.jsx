@@ -17,8 +17,8 @@ function NavBar() {
       cName: 'dropdown-link'
     },
     {
-      title: 'Appointments',
-      path: '/appointment',
+      title: 'My Appointments',
+      path: '/appointments',
       cName: 'dropdown-link'
     },
     {
