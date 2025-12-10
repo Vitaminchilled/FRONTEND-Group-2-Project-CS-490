@@ -1,0 +1,303 @@
+body {
+  background-color: #ffffff;
+  font-family: 'Kumbh Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+  margin-top: 0;
+}
+
+.SalonRegistrationBoxPart1 {
+  width: 90%;
+  max-width: 900px;
+  margin: 120px auto 20px auto; 
+  /*changed to have the box not cutoff by navbar 
+  change it back if you want*/
+  border-radius: 12px;
+  background-color: #E8DCC8;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.title {
+  text-align: center;
+  padding: 20px;
+  background-color: #E8DCC8;
+}
+
+.title h1 {
+  font-size: 80px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 5px;
+}
+
+.title p {
+  font-size: 18px;
+  color: #000;
+  margin-bottom: 15px;
+}
+
+.tabs {
+  display: flex;
+  background-color: #E8DCC8;
+  padding: 0 60px;
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f2e5d2;
+  height: 50px;
+  font-weight: 600;
+  color: #333;
+  border-right: 1px solid #d2c4b0;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.tab.active {
+  background-color: #B98A59;
+  color: #fff;
+}
+
+.formRegister {
+  background-color: #f8f0e3;
+  padding: 50px 60px;
+  margin: 0 60px 20px;
+}
+
+.formTitle {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 35px;
+  color: #000;
+}
+
+.formButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 50px;
+}
+
+.formButtons button {
+  padding: 14px 40px;
+  border: none;
+  border-radius: 8px;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nextButton {
+  background-color: #B98A59;
+  color: white;
+}
+
+.backButton {
+  background-color: #d4c4b3;
+  color: #333;
+}
+
+.inlineWarning {
+  color: red;
+  background-color: white;
+  font-weight: bold;
+  padding: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  border-radius: 6px;
+}
+
+/* Tags */
+.tag-toolbar {
+  display: none;
+}
+
+.tag-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 30px;
+}
+
+.tag-pill {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid #333;
+  background: white;
+  color: #333;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.tag-pill.selected {
+  background: #B98A59;
+  color: white;
+  border-color: #B98A59;
+}
+
+/* Employee List */
+.employee-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.employee-item-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.employee-item-wrapper .staff-item {
+  flex: 1;
+  width: auto;
+}
+
+.delete-employee-btn {
+  padding: 8px 16px;
+  background: #d9534f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.delete-employee-btn:hover {
+  background: #c9302c;
+}
+
+/* Employee Form */
+.new-employee-form {
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.employee-input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.employee-textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  font-family: 'Kumbh Sans', sans-serif;
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.employee-form-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.save-employee-btn {
+  padding: 10px 20px;
+  background: #5cb85c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.save-employee-btn:hover {
+  background: #4cae4c;
+}
+
+.cancel-employee-btn {
+  padding: 10px 20px;
+  background: #d4c4b3;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cancel-employee-btn:hover {
+  background: #c4b4a3;
+}
+
+/* Employee Item Component Styles */
+.staff-item {
+  width: 100%;
+}
+
+.staff-item .grid-layout {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  grid-template-rows: auto auto;
+  gap: 10px;
+}
+
+.staff-item .grid-layout .employee-img {
+  grid-row: 1 / -1;
+  grid-column: 1;
+  width: 100px;
+  height: 100px;
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px 1px #a5a5a5;
+  object-fit: cover;
+}
+
+.staff-item .grid-layout .employee-name {
+  grid-row: 1;
+  grid-column: 2;
+  font-family: Lateef, serif;
+  font-size: 32px;
+  font-weight: 500;
+  margin: 0;
+  align-self: end;
+}
+
+.add-salon-item {
+    border-radius: 15px;
+    padding: 10px 15px;
+    font-size: 20px;
+    font-family: Kumbh Sans;
+    border: 1px solid #a4a4a4;
+    background-color: white;
+    transition: background-color 0.5s ease;
+}
+
+.add-salon-item:hover:not(:disabled) {
+    background-color: #d2bba0;
+    border: 1px solid #887259;
+    cursor: pointer;
+}
+
+.add-salon-item:disabled {
+    cursor: not-allowed;
+}
+
+.staff-item .grid-layout .employee-description {
+  grid-row: 2;
+  grid-column: 2;
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 16px;
+  margin: 0;
+  color: #555;
+}

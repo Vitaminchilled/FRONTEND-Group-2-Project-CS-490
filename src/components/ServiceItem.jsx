@@ -4,7 +4,12 @@ import deleteIcon from '../assets/BlackXIcon.png'
 import tagRemove from '../assets/WhiteXIcon.png'
 
 /* itemTitle, itemPrice, itemDesc, itemDuration, itemTags */
-function ServiceItem({ accountType, service, optionTags = [], newItem = false, onSaveEdit, onDelete, onCancelNew}){
+function ServiceItem({ 
+    salon, user,
+    service, optionTags = [], 
+    newItem = false, 
+    onSaveEdit, onDelete, onCancelNew, onBook
+}) {
     const [expanded, setExpanded] = useState(false)
     const [editData, setEditData] = useState({
         ...service,
@@ -14,6 +19,12 @@ function ServiceItem({ accountType, service, optionTags = [], newItem = false, o
     /* pass in tags so they can be mapped and formatted when adding and removing tags */
     const [isEditing, setIsEditing] = useState(false)
     const [newTag, setNewTag] = useState('')
+
+    /* variable for easy checking
+    we're only the owner if we are the right account type 
+    and have a matching salon id
+    */
+    const owner = user.type === 'owner' && user.salon_id === salon.salon_id
 
     useEffect(() => {
         setEditData(service)
@@ -75,12 +86,12 @@ function ServiceItem({ accountType, service, optionTags = [], newItem = false, o
             onMouseLeave={() => !isEditing && setExpanded(false)}
         >
 
-            {(accountType === 'owner') && (
+            {(owner) ? (
                 isEditing ? (
                     <div className='edit-grid-layout'>
                         <div className='title-section'>
-                            <label className='edit-label title'>Name:</label>
-                            <input className='edit-input title'
+                            <label className='edit-label service-title'>Name:</label>
+                            <input className='edit-input service-title'
                                 name='name'
                                 value={editData.name}
                                 onChange={handleChange}
@@ -223,8 +234,7 @@ function ServiceItem({ accountType, service, optionTags = [], newItem = false, o
                         </div>
                     </div>
                 )
-            )}
-            {(accountType === 'none' || accountType === 'customer' || accountType === 'admin') && (
+            ) : (
                 <div className="grid-layout">
                     <h3 className='item-title'>
                         {service.name}
@@ -236,7 +246,7 @@ function ServiceItem({ accountType, service, optionTags = [], newItem = false, o
                         {service.description}
                     </p>
                     <button className='item-btn'
-                        disabled={accountType==='none' || accountType==='admin'}
+                        disabled={!onBook || user.type !=='customer'}
                     >
                         Book
                     </button>
@@ -252,6 +262,7 @@ function ServiceItem({ accountType, service, optionTags = [], newItem = false, o
                     </div>
                 </div>
             )}
+            
         </div>
     )
 }

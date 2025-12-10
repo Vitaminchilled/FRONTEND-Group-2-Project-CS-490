@@ -9,13 +9,12 @@ import {ModalEmployeeDelete, ModalMessage} from '../../components/Modal.jsx';
 
 function SalonDashboard() {
   const { salon_id } = useParams()
-  const {user, setUser} = useUser();
+  const {user} = useUser();
   const [salon, setSalon] = useState({})
   const [tags, setTags] = useState([])
   const [masterTags, setMasterTags] = useState([])
   const [employees, setEmployees] = useState([])
   const [reviews, setReviews] = useState([])
-  const [startIndex, setStartIndex] = useState(0) //FOR REVIEW CAROUSEL
   const [reviewCount, setReviewCount] = useState(0)
   const [rating, setRating] = useState()
 
@@ -47,7 +46,7 @@ function SalonDashboard() {
     try {
       const salon_response = await fetch(`/api/salon/${salon_id}/header`)
       const employees_response = await fetch(`/api/salon/${salon_id}/employees`)
-      const reviews_response = await fetch(`/api/salon/${salon_id}/reviews`)
+      const reviews_response = await fetch(`/api/salon/${salon_id}/dashboard/reviews`)
 
       if (salon_response.status === 404) {
         setError("Salon not found")
@@ -298,20 +297,6 @@ function SalonDashboard() {
     }
   }
 
-  /* reviews */
-  const reviewsPerPage = 3
-  const visibleReviews = reviews.slice(startIndex, startIndex + reviewsPerPage)
-
-  const handlePrev = () => {
-    setStartIndex((prev) => Math.max(0, prev - reviewsPerPage))
-  }
-
-  const handleNext = () => {
-    setStartIndex((prev) =>
-      Math.min(reviews.length - reviewsPerPage, prev + reviewsPerPage)
-    )
-  }
-
   return (
     <>
       {(!loading && error ? (
@@ -342,6 +327,12 @@ function SalonDashboard() {
                 to={`/salon/${salon_id}/gallery`} 
                 end={false}>
                 Gallery
+              </NavLink>
+
+              <NavLink className='card'
+                to={`/salon/${salon_id}/reviews`} 
+                end={false}>
+                Reviews
               </NavLink>
 
             </div>
@@ -386,7 +377,9 @@ function SalonDashboard() {
               {employees.map((employee) => (
                 <EmployeeItem
                   key={employee.employee_id}
-                  accountType={user.type}
+                  user={user}
+                  salon={salon}
+
                   employee={employee}
                   optionTags={masterTags}
                   onSaveEdit={handleSaveEdit}
@@ -428,9 +421,6 @@ function SalonDashboard() {
                 <h2 className="group-title">
                   Reviews
                 </h2>
-                <p className="group-extra">
-                  {`${reviewCount} Review(s)`} {/* not pretty but idk how we wanna do this */}
-                </p>
                 <div className="rating-div">
                   <p className={salon.average_rating ? "rating-available" : "rating-unavailable"}>{rating}</p>
                 </div>
@@ -439,25 +429,11 @@ function SalonDashboard() {
             </div>
 
             <div className='review-content'>
-              <div className='review-btn'>
-                <button className='prev-next'
-                  onClick={handlePrev}
-                  disabled={startIndex === 0}
-                >
-                  Prev
-                </button>
-                <button className='prev-next'
-                  onClick={handleNext}
-                  disabled={startIndex + reviewsPerPage >= reviews.length}
-                >
-                  Next
-                </button>
-              </div>
               <div className='reviews'>
-                {!visibleReviews || visibleReviews.length === 0 ? (
+                {!reviews || reviews.length === 0 ? (
                   <p>No reviews available</p>
                 ) : (
-                  visibleReviews.map((review) => {
+                  reviews.map((review) => {
                     const stars = review.rating ? getStarString(review.rating) : "No rating available"
 
                     return (

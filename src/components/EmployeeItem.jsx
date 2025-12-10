@@ -4,7 +4,13 @@ import "./EmployeeItem.css"
 import deleteIcon from '../assets/BlackXIcon.png'
 import tagRemove from '../assets/WhiteXIcon.png'
 
-function EmployeeItem({ accountType, employee, optionTags = [], newItem = false, onSaveEdit, onDelete, onCancelNew}) {
+function EmployeeItem({ 
+    user, salon,
+    employee, optionTags = [], 
+    newItem = false, 
+    onSaveEdit, onDelete, onCancelNew,
+    selected = false
+}) {
     const [editData, setEditData] = useState({
         ...employee,
         tags: employee.tags || [],
@@ -12,6 +18,12 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
     })
     const [isEditing, setIsEditing] = useState(false)
     const [newTag, setNewTag] = useState('')
+
+    /* variable for easy checking
+    we're only the owner if we are the right account type 
+    and have a matching salon id
+    */
+    const owner = user.type === 'owner' && user.salon_id === salon.salon_id
     
     useEffect(() => {
         setEditData(employee)
@@ -68,8 +80,8 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
     }
     
     return (
-        <div className={`staff-item ${accountType === 'owner' ? "owner" : ""}`}>
-            {(accountType === 'owner') && (
+        <div className={`staff-item ${(owner) ? "owner" : ""}`}>
+            {(owner) ? (
                 isEditing ? (
                     <div className='edit-grid-layout'>
                         <div className='name-section'>
@@ -213,8 +225,7 @@ function EmployeeItem({ accountType, employee, optionTags = [], newItem = false,
                         </div>
                     </div>
                 )
-            )}
-            {(accountType === 'none' || accountType === 'customer' || accountType === 'admin') && (
+            ) : (
                 <div className='grid-layout'>
                     <img className="employee-img"
                         src={employeeIcon}

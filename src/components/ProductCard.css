@@ -1,0 +1,263 @@
+.product-item {
+    background-color: 'white';
+    box-shadow: inset 0 0 5px 0 #b6b6b6;
+    border-radius: 15px;
+    padding: 15px 20px;
+    width: 200px;
+}
+
+.product-item .grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto auto auto;
+    column-gap: 5px;
+    row-gap: 15px;
+    width: 100%;
+}
+
+.product-item .item-img {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    border: 1px solid #b6b6b6;
+    border-radius: 15px;
+    width: 200px;
+    height: 200px;
+}
+
+.product-item .item-title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+
+    font-family: Kumbh Sans;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 0;
+    margin: 0;
+}
+
+.product-item .item-price {
+    grid-column: 1;
+    grid-row: 3;
+
+    font-family: Kumbh Sans;
+    font-weight: 400;
+    font-size: 17px;
+    padding: 0;
+    margin: 0;
+}
+
+.product-item .item-stock {
+    grid-column: 2;
+    grid-row: 3;
+
+    font-family: Kumbh Sans;
+    font-weight: 400;
+    font-size: 17px;
+    padding: 0;
+    margin: 0;
+    justify-self: end;
+}
+
+.product-item .item-description {
+    grid-column: 1 / -1;
+    grid-row: 4;
+
+    font-family: Kumbh Sans;
+    font-weight: 400;
+    font-size: 15px;
+    padding: 0;
+    margin: 0;
+
+    line-height: 1.2; /* set line height */
+    height: calc(1.2em * 2) ; /* calculate based off of line height */
+    overflow: hidden;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* number of visible lines */
+    -webkit-box-orient: vertical;
+
+    line-clamp: 3; /*to avoid vscode thing*/
+
+    text-overflow: ellipsis;
+}
+
+.product-item .item-btn {
+    grid-column: 1 / -1;
+    grid-row: 5;
+
+    width: fit-content;
+    background-color: #b98a59;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-weight: 600;
+    font-size: 15px;
+
+    justify-self: center;
+    align-self: end;
+
+    transition: all 0.5s ease;
+}
+
+.product-item .item-btn:hover:not(:disabled) {
+    background-color: #d8ae82;
+    cursor: pointer;
+}
+
+/*Edit mode product card*/
+
+.product-item .edit-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: auto 72px auto auto auto auto;
+    column-gap: 5px;
+    row-gap: 15px;
+    width: 100%;
+}
+
+.product-item .edit-grid-layout .edit-input {
+    border-radius: 5px;
+    border: 1px solid #a8a8a8;
+    padding: 5px;
+    box-sizing: border-box;
+    background-color: white;
+}
+
+.product-item .edit-grid-layout .edit-label {
+    font-weight: 600;
+    font-family: Lateef;
+    font-size: 20px;
+    margin: 0;
+    padding: 0;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.product-item .edit-grid-layout .edit-remove {
+    grid-column: 4;
+    grid-row: 1;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    justify-self: end;
+}
+
+.product-item .edit-grid-layout .img-section {
+    grid-column: 1 / 4;
+    grid-row: 1;
+}
+
+.product-item .edit-grid-layout .edit-input.img {
+    width: 100%;
+}
+
+.product-item .edit-grid-layout .img-preview {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 40%;
+    height: 100%;
+    justify-self: center;
+    align-self: center;
+    border-radius: 10px;
+
+    object-fit: cover;
+    object-position: center;
+    overflow: hidden;
+}
+
+.product-item .edit-grid-layout .title-section {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    display: flex;
+    gap: 5px;
+    min-width: 0;
+    align-items: center;
+}
+
+.product-item .edit-grid-layout .edit-input.prod-title {
+    width: 80%;
+}
+
+.product-item .edit-grid-layout .price-section {
+    grid-column: 1 / 3;
+    grid-row: 4;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+}
+
+.product-item .edit-grid-layout .stock-section {
+    grid-column: 3 / -1;
+    grid-row: 4;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+}
+
+.product-item .edit-grid-layout .description-section {
+    grid-column: 1 / -1;
+    grid-row: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.product-item .edit-grid-layout .description-section .edit-input.description {
+    width: 100%;
+    min-height: 60px; /*idk why its not working without this*/
+    max-height: 60px;
+    resize: none;
+}
+
+.product-item .edit-grid-layout .edit-buttons {
+    grid-column: 1 / -1;
+    grid-row: 6;
+    display: flex;
+    gap: 10px;
+    justify-self: center;
+    margin-top: 8px;
+}
+
+.product-item .edit-grid-layout .edit-btn-save {
+    border: none;
+    background-color: #59b963;
+    border-radius: 10px;
+    padding: 8px 10px;
+    color: white;
+    font-size: 15px;
+    transition: background-color 0.5s ease;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.product-item .edit-grid-layout .edit-btn-save:hover:not(:disabled) {
+    background-color: #118c1e;
+    cursor: pointer;
+    border: none;
+}
+
+.product-item .edit-grid-layout .edit-btn-save:disabled {
+    background-color: #a2e4a8;
+    cursor: not-allowed;
+}
+
+.product-item .edit-grid-layout .edit-btn-cancel {
+    border: none;
+    background-color: #db5e5e;
+    border-radius: 10px;
+    padding: 8px 10px;
+    color: white;
+    font-size: 15px;
+    transition: background-color 0.5s ease;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.product-item .edit-grid-layout .edit-btn-cancel:hover:not(:disabled) {
+    background-color: #b83131;
+    cursor: pointer;
+    border: none;
+}

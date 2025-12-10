@@ -1,0 +1,45 @@
+.not-found {
+    position: relative;
+    padding-top: 80px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.products-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+    padding: 0 0 180px 0;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.products-page .title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    align-items: center;
+}
+
+.products-page .title-group .page-title {
+    height: 50px;
+}
+
+.products-page .title-group .page-counts {
+    margin: 0;
+    padding: 0;
+}
+
+.products-page .product-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: center;
+    padding: 0 120px;
+}

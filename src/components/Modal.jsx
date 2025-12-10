@@ -1,4 +1,4 @@
-import './Modal.css';
+import './modal.css';
 
 export function ModalView ({setModalOpen, salon}) {
     return (
@@ -189,6 +189,38 @@ export function ModalEmployeeDelete ({setModalOpen, employee, onConfirm}) {
                     <button 
                         onClick={() => {
                             onConfirm(employee.employee_id)
+                            setModalOpen(false)
+                        }}
+                    >
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export function ModalProductDelete ({setModalOpen, product, onConfirm}) {
+    if (!product) return null /* might remove this later */
+
+    return (
+        <div className='ModalBackground'>
+            <div className='ModalContainer'>
+                <div className='ModalTitle'>
+                    <h2>{product.name}</h2>
+                </div>
+                <div className='ModalBody'>
+                    <label>Are you sure you want to delete this product?</label>
+                </div>
+                <div className='ModalFooter'>
+                    <button 
+                        onClick={() => setModalOpen(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        onClick={() => {
+                            onConfirm(product.product_id)
                             setModalOpen(false)
                         }}
                     >

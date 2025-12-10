@@ -9,8 +9,15 @@ import { useUser } from "./context/UserContext";
 //Salon Dashboard Pages put into one folder to keep it together
 import SalonDashboard from './pages/SalonPages/SalonDashboard.jsx'
 import SalonServices from './pages/SalonPages/Services.jsx'
+import SalonProducts from './pages/SalonPages/Products.jsx'
 import Rewards from './pages/Rewards.jsx'
+import SalonRegistration from './pages/LoginRegistration/SalonRegistration.jsx'
+import CustomerRegistration from './pages/LoginRegistration/CustomerRegistration.jsx'
+import Logout from './pages/LoginRegistration/Logout.jsx'
+import Login from './pages/LoginRegistration/Login.jsx'
+
 import { Routes, Route } from "react-router-dom"
+
 import './App.css'
 
 function App() {
@@ -36,10 +43,15 @@ function App() {
             <Route path="/verify" element={<Verify />}/>
             <Route path="/salon/:salon_id" element={<SalonDashboard />} />
             <Route path="/salon/:salon_id/services" element={<SalonServices />} />
-            
+            <Route path="/salon/:salon_id/products" element={<SalonProducts />} />
             <Route path="/rewards" element={<Rewards />}/>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<CustomerRegistration />} />
+            <Route path="/register-salon" element={<SalonRegistration />} />
+            <Route path="/salon/:salon_id" element={<SalonDashboard />} />
 
             <Route path="/users" element={<Users />}/>
+            <Route path="/logout" element={<Logout />} />
             {/*
             Routes to include:
               /account is account details and should depend on the account type
