@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import emptyCart from "../assets/ShoppingCart.png"
 import fullCart from "../assets/FullShoppingCart.png"
@@ -7,9 +7,31 @@ import './NavBar.css'
 
 function NavBar() {
   const {user, setUser} = useUser();
+  const navigate = useNavigate();
   const [dropdown, setDropdown] = useState(false)
 
-  //if we add anything else for the user profile we can just add it here so it maps on its own
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        setUser({
+          type: 'none',
+          username: '',
+          name: '',
+          userId: null,
+          isLoading: false
+        });
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   const userMenuItems = [
     {
       title: 'Account Details',
@@ -17,13 +39,17 @@ function NavBar() {
       cName: 'dropdown-link'
     },
     {
-      title: 'My Appointments & Rewards',
-      path: '/appointment-rewards',
+      title: 'My Appointments',
+      path: '/appointments',
+      cName: 'dropdown-link'
+    },
+    {
+      title: 'My Rewards',
+      path: '/rewards',
       cName: 'dropdown-link'
     }
   ]
 
-  //same for the salon profile
   const salonMenuItems = [
     {
       title: 'Account Details',
@@ -37,7 +63,7 @@ function NavBar() {
     },
     {
       title: 'Manage Services',
-      path: '/manage-service',
+      path: user.salon_id ? `/salon/${user.salon_id}/services` : '/',
       cName: 'dropdown-link'
     },
     {
@@ -46,13 +72,18 @@ function NavBar() {
       cName: 'dropdown-link'
     },
     {
+      title: 'Manage Schedules',
+      path: user.salon_id ? `/salon/${user.salon_id}/manage-schedules` : '/',
+      cName: 'dropdown-link'
+    },
+    {
       title: 'Manage Products',
-      path: '/manage-product',
+      path: user.salon_id ? `/salon/${user.salon_id}/products` : '/',
       cName: 'dropdown-link'
     },
     {
       title: 'Manage Gallery',
-      path: '/manage-gallery',
+      path: user.salon_id ? `/salon/${user.salon_id}/gallery` : '/',
       cName: 'dropdown-link'
     }
   ]
@@ -60,11 +91,8 @@ function NavBar() {
   return (
     <nav className='NavBar'>
       <ul className="NavLeft">
-        {/* LEFT: None, Customer */}
         {(user.type === 'none' || user.type === 'customer') && (
           <>
-            {/* NavLinks have a built in function to see what the active link is */}
-            {/* End determines if it will partially match a link, or if it must be exact */}
             <li
               className='nav-item'
             >
@@ -81,43 +109,39 @@ function NavBar() {
             </li>
           </>
         )}
-        {/* LEFT: Owner */}
-        {(user.type === 'owner') && (
+        {(user.type === 'owner' && user.salon_id) && (
           <>
-            <li><NavLink  to="/" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Home</NavLink ></li>
-            <li><NavLink  to="/services" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Services</NavLink ></li>
-            <li><NavLink  to="/products" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Products</NavLink ></li>
-            <li><NavLink  to="/gallery" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Gallery</NavLink ></li>
+            <li><NavLink to={`/salon/${user.salon_id}`} end={true} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Home</NavLink></li>
+            <li><NavLink to={`/salon/${user.salon_id}/services`} end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Services</NavLink></li>
+            <li><NavLink to={`/salon/${user.salon_id}/products`} end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Products</NavLink></li>
+            <li><NavLink to={`/salon/${user.salon_id}/gallery`} end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Gallery</NavLink></li>
           </>
         )}
-        {/* LEFT: Admin */}
         {(user.type === 'admin') && (
           <>
             <li><NavLink  to="/" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Salons</NavLink ></li>
             <li><NavLink  to="/users" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Users</NavLink ></li>
             <li><NavLink  to="/verify" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Verify</NavLink ></li>
+            <li><NavLink  to="/admin/analytics" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Analytics</NavLink ></li>
           </>
         )}
       </ul>
         
       <ul className="NavRight">
-        {/* RIGHT: None */}
         {(user.type === 'none') && (
           <>
             <li><NavLink  to="/login" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Login</NavLink ></li>
             <li><NavLink  to="/signup" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>Sign Up</NavLink ></li>
             <li><NavLink  to="/register-salon" className="Square">Register Salon</NavLink ></li>
+            
           </>
         )}
-        {/* RIGHT: Customer */}
         {(user.type === 'customer') && (
           <>
-            <li
-              className='nav-item'
-            >
-              <NavLink  to="/logout" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>
+            <li className='nav-item'>
+              <button onClick={handleLogout} className="nav-link" style={{border: 'none', background: 'none', cursor: 'pointer', padding: 0, font: 'inherit'}}>
                 Log Out
-              </NavLink >
+              </button>
             </li>
             <li
               className='nav-item'
@@ -125,7 +149,7 @@ function NavBar() {
               onMouseLeave={() => setDropdown(false)}
               style={{position:'relative'}}
             >
-              <div className='Square'>{user.name}</div>
+              <div className='Square'>{user.name || user.username}</div>
               { dropdown && (
                   <ul
                     onClick={() => setDropdown(false)}
@@ -156,9 +180,7 @@ function NavBar() {
                 )
               }
             </li>
-            <li
-              className='nav-item'
-            >
+            <li className='nav-item'>
               <NavLink
                 to="/shopping-cart"
                 end={false}
@@ -166,23 +188,20 @@ function NavBar() {
               >
                 <img
                   className='cart-image'
-                  src={fullCart}
+                  src={emptyCart}
                   alt="Cart"
-                  title='Shopping Cart'
                 />
+                {`(0)`}
               </NavLink>
             </li>
           </>
         )}
-        {/* RIGHT: Owner */}
         {(user.type === 'owner') && (
           <>
-            <li
-              className='nav-item'
-            >
-              <NavLink  to="/logout" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>
+            <li className='nav-item'>
+              <button onClick={handleLogout} className="nav-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit'}}>
                 Log Out
-              </NavLink >
+              </button>
             </li>
             <li
               className='nav-item'
@@ -190,7 +209,7 @@ function NavBar() {
               onMouseLeave={() => setDropdown(false)}
               style={{position:'relative'}}
             >
-              <div className='Square'>{user.name}</div>
+              <div className='Square'>{user.name || user.username}</div>
               { dropdown && (
                   <ul
                     onClick={() => setDropdown(false)}
@@ -224,13 +243,12 @@ function NavBar() {
             </li>
           </>
         )}
-        {/* RIGHT: Admin */}
         {(user.type === 'admin') && (
           <>
             <li>
-              <NavLink  to="/logout" end={false} className={({ isActive }) => isActive ? "nav-link Selected" : "nav-link"}>
+              <button onClick={handleLogout} className="nav-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit'}}>
                 Log Out
-              </NavLink >
+              </button>
             </li>
           </>
         )}

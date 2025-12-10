@@ -1,0 +1,151 @@
+.calendar-widget {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e6ded2;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-header h2 {
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: #2f1e0f;
+  margin: 0;
+}
+
+.calendar-nav-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  color: #b98a59;
+  cursor: pointer;
+  padding: 5px 15px;
+  transition: color 0.3s ease;
+}
+
+.calendar-nav-btn:hover {
+  color: #d2bba0;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.calendar-weekdays div {
+  text-align: center;
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #7e6853;
+  padding: 10px 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  background: #fdfbf8;
+  border: 2px solid transparent;
+}
+
+.calendar-day.empty {
+  cursor: default;
+  background: transparent;
+}
+
+.calendar-day:not(.empty):hover {
+  background: #f3dfcf;
+  border-color: #d2bba0;
+}
+
+.calendar-day.today {
+  background: #e8f4f8;
+  border-color: #17a2b8;
+  font-weight: 600;
+}
+
+.calendar-day.selected {
+  background: #d2bba0;
+  border-color: #b98a59;
+}
+
+.calendar-day.selected .day-number {
+  color: white;
+  font-weight: 700;
+}
+
+.calendar-day.has-appointments {
+  border-color: #b98a59;
+}
+
+.day-number {
+  font-family: 'Kumbh Sans', sans-serif;
+  font-size: 16px;
+  color: #2f1e0f;
+}
+
+.appointment-badge {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  background: #b98a59;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.calendar-day.selected .appointment-badge {
+  background: white;
+  color: #b98a59;
+}
+
+@media (max-width: 768px) {
+  .calendar-widget {
+    padding: 15px;
+  }
+
+  .calendar-header h2 {
+    font-size: 18px;
+  }
+
+  .calendar-weekdays div {
+    font-size: 12px;
+    padding: 8px 0;
+  }
+
+  .day-number {
+    font-size: 14px;
+  }
+
+  .calendar-day {
+    padding: 5px;
+  }
+}

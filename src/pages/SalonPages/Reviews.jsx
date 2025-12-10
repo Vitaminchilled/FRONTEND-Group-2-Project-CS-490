@@ -5,6 +5,9 @@ import PersonIcon from '../../assets/PersonIcon.png'
 import FullReviewItem from "../../components/FullReviewItem.jsx"
 import './Reviews.css'
 
+import { ModalMessage } from '../../components/Modal.jsx';
+import { WriteReview } from "../../components/WriteReview.jsx"
+
 export default function Reviews() {
     const { salon_id } = useParams()
     const [salon, setSalon] = useState({})
@@ -76,11 +79,12 @@ export default function Reviews() {
     const handleCancelNewReview = () => {
         setNewReview(null)
     }
+    const [modalMessage, setModalMessage] = useState(null)
 
-    /*
-    const [modal, setModal] = useState(null)
+    const [completedAppointments, setCompletedAppointments] = useState([])
+
     useEffect(() => {
-        if (modal) {
+        if (newReview) {
         document.body.style.overflow = "hidden";
         } else {
         document.body.style.overflow = "";
@@ -88,8 +92,8 @@ export default function Reviews() {
         return () => {
         document.body.style.overflow = "";
         };
-    }, [modal]);
-    */
+    }, [newReview]);
+
 
     function getStarString(rating) {
         let stars = ''
@@ -166,7 +170,6 @@ export default function Reviews() {
             }
 
             const reviews_data = await reviews_response.json()
-            console.log(reviews_data)
 
             const { 
                 reviews: retrievedReviews=[],
@@ -189,9 +192,38 @@ export default function Reviews() {
         }
     }
 
+    const retrieveCompletedAppointments = async () => {
+        setLoading(true)
+        setError(null)
+
+        try {
+            const appointments_response = await fetch(`/api/appointments/reviewless/${salon_id}?customer_id=${33}`)
+            
+            if(!appointments_response.ok) {
+                const errorText = await appointments_response.json()
+                throw new Error(`Salon fetch failed: HTTP error ${appointments_response.status}: ${errorText.error || errorText}`)
+            }
+            
+            const appointments_data = await appointments_response.json()
+
+            const { 
+                appointments: retrievedAppointments=[], 
+            } = appointments_data || {}
+
+            console.log(retrievedAppointments)
+            
+            setCompletedAppointments(retrievedAppointments)
+        } catch (err) {
+            console.error(err)
+        } finally {
+            setLoading(false)
+        }
+    }
+
     /* runs once on mount */
     useEffect(() => {
         retrieveSalon()
+        retrieveCompletedAppointments()
     }, [])
 
     /* runs once on mount then every time dependencies update*/
@@ -205,6 +237,26 @@ export default function Reviews() {
         setPage(1)
     }
     
+    const handleWriteReview = () => {
+        if (completedAppointments.length > 0) {
+            setNewReview({
+                review_id: "new",
+                appointment_id: -1,
+                user_id: 33, //change later
+                user: 'Jane Doe', //change later
+                salon_id: salon_id,
+                rating: -1,
+                comment: "",
+                image_url: ""
+            })
+        } else {
+            setModalMessage({
+                title: "Error",
+                content: 'No available appointments to review'
+            })
+        }
+    }
+
     return (
         <>
             {(!loading && error ? (
@@ -333,7 +385,9 @@ export default function Reviews() {
                             <p className="write-context">
                                 Have an appointment you want to review for this salon? Leave one here!
                             </p>
-                            <button className="write-btn">
+                            <button className="write-btn"
+                                onClick={handleWriteReview}
+                            >
                                 Write Review
                             </button>
                         </div>
@@ -346,6 +400,7 @@ export default function Reviews() {
 
                                     return (
                                         <FullReviewItem
+                                            key={review.review_id}
                                             review={review}
                                             stars={stars}
                                             isOpen={openReviews[review.review_id] || false}
@@ -357,17 +412,6 @@ export default function Reviews() {
                             ) : (
                                 <p className="empty-reviews">No reviews found.</p>
                             )}
-                            {/*{newReview && (
-                                <FullReviewItem
-                                    key="new"
-                                    accountType={user.type}
-                                    service={newService}
-                                    optionTags={tags}
-                                    newItem={true}
-                                    onSaveEdit={handleAddService}
-                                    onCancelNew={handleCancelNewService}
-                                />
-                            )}*/}
                         </div>
                         <div className="pagination-section">
                             <button className='prev-next'
@@ -395,6 +439,28 @@ export default function Reviews() {
                         </div>
                     </div>
                 </div>
+                {modalMessage && (
+                    <ModalMessage
+                    content={modalMessage.content}
+                    title={modalMessage.title}
+                    setModalOpen={setModalMessage}
+                    />
+                )}
+                {newReview && (
+                    <WriteReview
+                        salon={salon}
+                        user={{
+                            user_id: 33,
+                            role: 'customer'
+                        }}
+                        newItem={true}
+                        appointments={completedAppointments}
+                        review={newReview}
+                        setModalOpen={setNewReview}
+                        setModalMessage={setModalMessage}
+                        onCancelNew={handleCancelNewReview}
+                    />
+                )}
             </div>
             ))}
         </>

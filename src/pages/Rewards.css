@@ -1,0 +1,111 @@
+.AccountDetails {
+    position: relative;
+    overflow-y: auto;
+    min-height: 68vh; 
+    padding-bottom: 19vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    background-color: #faf7f2;
+    color: #2d2623;
+}
+
+.RewardsList {
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.salon-card {
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.salon-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+    background-color: #ffffff;
+}
+
+.salon-name-points {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    font-family: 'Times New Roman', serif;
+}
+
+.salon-name-text {
+    font-weight: 700;
+    font-size: 1.25em;
+    color: #333;
+}
+
+.current-points {
+    font-weight: 400;
+    font-size: 1em;
+    color: #666;
+}
+
+.view-rewards-btn {
+    background-color: #d7c6af;
+    border: 1px solid #d3cdc6;
+    border-radius: 5px;
+    padding: 8px 15px;
+    font-family: 'Times New Roman', serif;
+    font-weight: 400;
+    color: #555;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.rewards-detail-list {
+    padding: 0 20px 0px 20px;
+    background-color: #ffffff;
+}
+
+.reward-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+}
+
+
+.reward-item-row:not(:first-child) {
+    border-top: 1px solid #e0e0e0;
+}
+
+.reward-text {
+    font-family: 'Times New Roman', serif;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.reward-tags {
+    display: flex;
+    gap: 10px;
+}
+
+.tag-pill {
+    background-color: #d7c6af;
+    color: #555;
+    padding: 6px 14px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    font-family: 'Times New Roman', serif;
+    font-weight: 400;
+    text-transform: capitalize;
+    white-space: nowrap;
+    border: 1px solid #d3cdc6;
+}

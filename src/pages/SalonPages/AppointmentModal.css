@@ -277,25 +277,25 @@
 
 /*step 4: appointment details*/
 
-.details-title {
+.AppointmentModalContainer .details-title {
     font-family: 'Kumbh Sans';
     font-weight: 400;
     margin: 20px 0 10px 0;
     font-size: 20px;
 }
 
-.details-section {
+.AppointmentModalContainer .details-section {
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding-left: 15px;
 }
 
-.details-text {
+.AppointmentModalContainer .details-text {
     margin: 0;
 }
 
-.horizontal-divider {
+.AppointmentModalContainer .horizontal-divider {
     height: 1px;
     width: 90%;
     background-color: rgb(168, 168, 168);
@@ -303,7 +303,7 @@
     margin-top: 20px;
 }
 
-.note-input {
+.AppointmentModalContainer .note-input {
     max-width: 100%;
     min-width: 300px;
     padding: 5px;

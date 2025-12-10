@@ -1,80 +1,131 @@
-import { useState, useEffect } from "react"
-import './AppointmentItem.css'
+import React, { useState } from 'react';
+import './AppointmentItem.css';
 
-export default function AppointmentItem({
-    accountType,
-    appointment,
-    newItem = false, onCancelNew,
-    onSaveEdit, onDelete
+function AppointmentItem({
+  accountType = 'owner',
+  appointment,
+  onCancel,
+  onReschedule,
+  onViewMore,
+  onSendNote,
+  selected
 }) {
+  const [isReplying, setIsReplying] = useState(false);
+  const [replyText, setReplyText] = useState('');
 
-    const [editData, setEditData] = useState({...appointment})
-    const [isEditing, setIsEditing] = useState(false)
-    const [expanded, setExpanded] = useState(false)
+  const canModify =
+    accountType === 'owner' ||
+    accountType === 'staff' ||
+    accountType === 'admin';
 
-    useEffect(() => {
-        setEditData(appointment)
-    }, [appointment])
+  const formattedPrice =
+    appointment?.price != null
+      ? Number(appointment.price).toFixed(2)
+      : '0.00';
 
-    useEffect(() => {
-        if (newItem) {
-            setIsEditing(true)
-        }
-    }, [newItem])
+  const handleSendReply = () => {
+    if (!replyText.trim()) return;
+    onSendNote?.(appointment, replyText.trim());
+    setReplyText('');
+    setIsReplying(false);
+  };
 
-    const handleChange = (event) => {
-        const { name, value } = event.target
-        setEditData((prev) => ({ ...prev, [name]: value }))
-    }
-
-    const handleStartEdit = () => setIsEditing(true)
-    const handleCancelEdit = () => {
-        if (newItem) {
-            onCancelNew?.()
-        } else {
-            setIsEditing(false)
-            setExpanded(false)
-            setEditData(appointment) // reset changes
-        }
-    }
-
-    //to disable edit mode after saving
-    const handleSaveClick = async () => {
-        try {
-            await onSaveEdit(editData)
-            setIsEditing(false) // switch back to standard mode
-        } catch (err) {
-            console.error(err)
-        }
-    }
-
-    return (
-        <div className={`appointment-item ${appointment.status} ${expanded ? "expanded" : ""}`}
-            onMouseEnter={() => setExpanded(true)}
-            onMouseLeave={() => !isEditing && setExpanded(false)}
-        >
-            <div className="grid-layout">
-                <h3 className="salon-name">{appointment.salon_name}</h3>
-                <p className="appointment-date">{appointment.appointment_date}</p>
-                <p className="appointment-time">{appointment.appointment_time}</p>
-                <p className="service-name">{appointment.service_name}</p>
-                <p className="employee-name">{appointment.employee_name}</p>
-                <p className="service-price">${appointment.service_price}</p>
-                {appointment.status === 'completed' && (
-                    <p className="loyalty-earned">{appointment.loyalty_pts} loyalty points</p>
-                )}
-                {appointment.status === 'booked' && (
-                    <div className="appt-interact">
-                        <button className="appt-btn">Cancel</button>
-                        <button className="appt-btn">Notes v</button>
-                        <button className="appt-btn">Reschedule</button>
-                    </div>
-                )}
-                <div className="notes-section">
-                    <div className="item-divider"></div>
-                    <div className="appt-notes">I have a history with allergies to certain products.</div>
-                </div>
-            </div>
+  return (
+    <div className={`appointment-card ${selected ? 'selected' : ''}`}>
+      {/* Top row with basic info */}
+      <div className="appointment-main">
+        <div className="appointment-left">
+          <p className="appt-customer">{appointment.salon_name}</p>
+          <p className="appt-datetime">
+            {appointment.appointment_date} – {appointment.start_time}
+          </p>
+          <p className="appt-service">{appointment.service_name}</p>
         </div>
-    )
+
+        <div className="appointment-middle">
+          <p className="appt-staff">{appointment.staff_name}</p>
+          <p className="appt-price">${formattedPrice}</p>
+        </div>
+
+        <div className="appointment-right">
+          <button
+            className="appt-btn appt-btn-cancel"
+            onClick={() => onCancel?.(appointment)}
+            disabled={appointment.status === 'completed' || appointment.status === 'cancelled'}
+          >
+            Cancel
+          </button>
+          <button
+            className="appt-btn appt-btn-reschedule"
+            onClick={() => onReschedule?.(appointment)}
+            disabled={appointment.status === 'completed' || appointment.status === 'cancelled'}
+          >
+            Reschedule
+          </button>
+          <button
+            className="appt-btn appt-btn-view"
+            onClick={() => onViewMore?.(appointment)}
+          >
+            View More
+          </button>
+        </div>
+      </div>
+
+      {/* Notes section */}
+      <div className="appointment-notes">
+        <p className="appt-notes-title">Customer Notes</p>
+
+        <div className="appt-notes-box">
+          {appointment.customer_notes ? (
+            <p className="appt-notes-text">
+              {appointment.customer_notes}
+            </p>
+          ) : (
+            <p className="appt-notes-empty">
+              No notes have been added yet.
+            </p>
+          )}
+
+          {!isReplying ? (
+            <button
+              className="appt-notes-reply-link"
+              onClick={() => canModify && setIsReplying(true)}
+              disabled={!canModify}
+            >
+              Reply or Send Note
+            </button>
+          ) : (
+            <div className="appt-reply-area">
+              <textarea
+                className="appt-reply-input"
+                placeholder="Write a note to the customer..."
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+              />
+              <div className="appt-reply-actions">
+                <button
+                  className="appt-reply-send"
+                  onClick={handleSendReply}
+                  disabled={!replyText.trim()}
+                >
+                  Send
+                </button>
+                <button
+                  className="appt-reply-cancel"
+                  onClick={() => {
+                    setReplyText('');
+                    setIsReplying(false);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
+
+export default AppointmentItem;
