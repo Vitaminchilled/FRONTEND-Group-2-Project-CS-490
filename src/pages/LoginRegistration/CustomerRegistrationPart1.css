@@ -90,7 +90,8 @@ h1, h2, h3, h4, h5, h6, p {
   color: #999;
 }
 
-label{
+/*NEEDED TO ADD THIS BECAUSE IT WAS MESSING UP MY REVIEWS*/
+.CustomerRegistrationBoxPart1 label{
   display: block;
   font-size: 15px;
   margin-bottom: 8px;
