@@ -35,6 +35,7 @@
     font-size: 18px;
     justify-self: start;
     width:100%;
+    margin: 0;
 }
 
 .service-item .item-price {

@@ -6,10 +6,10 @@ import tagRemove from '../assets/WhiteXIcon.png'
 
 function EmployeeItem({ 
     user, salon,
+    accountType, 
     employee, optionTags = [], 
-    newItem = false, 
-    onSaveEdit, onDelete, onCancelNew,
-    selected = false
+    newItem = false, selected = false,
+    onSaveEdit, onDelete, onCancelNew
 }) {
     const [editData, setEditData] = useState({
         ...employee,
@@ -23,7 +23,7 @@ function EmployeeItem({
     we're only the owner if we are the right account type 
     and have a matching salon id
     */
-    const owner = user.type === 'owner' && user.salon_id === salon.salon_id
+    const owner = user?.type === 'owner' && user.salon_id === salon.salon_id
     
     useEffect(() => {
         setEditData(employee)
@@ -80,7 +80,7 @@ function EmployeeItem({
     }
     
     return (
-        <div className={`staff-item ${(owner) ? "owner" : ""}`}>
+        <div className={`staff-item ${accountType === 'owner' ? "owner" : ""} ${selected ? 'selected' : ''}`}>
             {(owner) ? (
                 isEditing ? (
                     <div className='edit-grid-layout'>

@@ -1,0 +1,374 @@
+.ModalBackground {
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ViewModalContainer {
+    position: fixed;
+    z-index: 2000;
+    width: 80%;
+    max-width: 900px;
+    min-height: 80%;
+    max-height: 80%;
+    border-radius: 20px;
+    background-color: #fffaf5;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fadeIn 0.25s ease-out;
+}
+
+.ViewModalContainer .ViewModalTitle {
+    background-color: #efe6da;
+    height: auto;
+    padding: 20px;
+    display: flex;  
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+}
+
+.ViewModalContainer .ViewModalTitle .step-title {
+    font-size: 23px;
+    font-weight: 500;
+    color: #3b2b1e;
+    margin: 0;
+    padding: 0;
+}
+
+.ViewModalContainer .ViewModalTitle .appointment-close {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+}
+
+.ViewModalContainer .ViewModalBody {
+    flex: 1;
+    padding: 25px 30px;
+    overflow-y: auto;
+    text-align: left;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -48%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+.ViewModalContainer .ViewModalBody::-webkit-scrollbar {
+    width: 8px;
+}
+.ViewModalContainer .ViewModalBody::-webkit-scrollbar-thumb {
+    background-color: #d1bca0;
+    border-radius: 6px;
+}
+
+.ViewModalBody .edit-pencil {
+    background-color: transparent;
+    border: none;
+    margin: 0 0 0 5px;
+    padding: 5px 7px;
+    transform: translateY(12%);
+    transition: all 0.3s ease;
+    border-radius: 50%;
+}
+
+.ViewModalBody .edit-pencil:hover:not(:disabled) {
+    transform: scale(1.1);
+    background-color: #efe6da;
+}
+
+.ViewModalBody .edit-pencil:hover:disabled {
+    opacity: 50%;
+}
+
+.ViewModalBody .details-card {
+    border-radius: 6px;
+    border: 1px solid #e0d5c8;
+    background-color: #f3ece4;
+    padding: 10px 12px;
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/*VIEW APPOINTMENT DETAILS*/
+
+.ViewModalContainer .details-title {
+    font-family: 'Kumbh Sans';
+    font-weight: 400;
+    margin: 0;
+    font-size: 20px;
+    text-decoration: underline;
+}
+
+.ViewModalContainer .details-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 15px;
+}
+
+.ViewModalContainer .details-text {
+    margin: 0;
+}
+
+.ViewModalContainer .horizontal-divider {
+    height: 1px;
+    width: 90%;
+    background-color: rgb(168, 168, 168);
+    justify-self: center;
+    margin: 0;
+}
+
+.ViewModalContainer .ViewModalBody .note-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ViewModalContainer .edit-note {
+    background-color: #fdfbf8;
+    border-radius: 6px;
+    border: 1px solid #e0d5c8;
+    padding: 10px 12px;
+    position: relative;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 80px;
+    max-height: 150px;
+}
+
+.ViewModalContainer .image-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ViewModalContainer .img-preview {
+    max-width: 60%;
+    border-radius: 20px;
+    border: 1px solid #bfa47c;
+}
+
+.ViewModalContainer .button-section {
+    margin: 10px 0 0 25px;
+    display: flex;
+    gap: 10px;
+}
+
+.ViewModalContainer .button-section .save{
+    border: none;
+    background-color: #59b963;
+    border-radius: 10px;
+    padding: 8px 10px;
+    color: white;
+    font-size: 15px;
+    transition: background-color 0.5s ease;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.ViewModalContainer .button-section .cancel {
+    border: none;
+    background-color: #db5e5e;
+    border-radius: 10px;
+    padding: 8px 10px;
+    color: white;
+    font-size: 15px;
+    transition: background-color 0.5s ease;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.ViewModalContainer .button-section .cancel:hover:not(:disabled) {
+    background-color: #b83131;
+    cursor: pointer;
+    border: none;
+}
+
+.ViewModalContainer .button-section .save:hover:not(:disabled) {
+    background-color: #118c1e;
+    cursor: pointer;
+    border: none;
+}
+
+.ViewModalContainer .button-section .save:disabled {
+    background-color: #a2e4a8;
+    cursor: not-allowed;
+}
+
+/* ===== Cancel Appointment ===== */
+
+.CancelModalContainer {
+    position: fixed;
+    z-index: 2000;
+    width: 60%;
+    min-width: 500px;
+    max-width: 700px;
+    height: fit-content;
+    border-radius: 20px;
+    background-color: #fffaf5;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -48%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+.CancelModalContainer .CancelModalBody::-webkit-scrollbar {
+    width: 8px;
+}
+.CancelModalContainer .CancelModalBody::-webkit-scrollbar-thumb {
+    background-color: #d1bca0;
+    border-radius: 6px;
+}
+
+.CancelModalBody .horizontal-divider {
+    height: 1px;
+    width: 90%;
+    background-color: rgb(168, 168, 168);
+    justify-self: center;
+    margin: 10px 0;
+}
+
+.CancelModalContainer .CancelModalTitle {
+    background-color: #efe6da;
+    height: auto;
+    padding: 20px;
+    display: flex;  
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.CancelModalContainer .CancelModalTitle .cancel-title {
+    text-align: center;
+    font-size: 40px;
+    font-family: 'Kumbh Sans';
+    font-weight: 500;
+    margin: 0;
+    padding: 0;
+    color: #3b2b1e;
+}
+
+.CancelModalContainer .CancelModalBody {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    width: 90%;
+}
+
+.CancelModalBody .cancel-salon {
+    margin: 0;
+    text-align: center;
+    font-size: 27px;
+    font-family: 'Kumbh Sans';
+    font-weight: 400;
+    padding: 0;
+}
+
+.CancelModalBody .details-section {
+    margin: 0;
+    min-width: 90%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.CancelModalBody .details-section .details-text {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-size: 18px;
+    font-family: 'Kumbh Sans';
+    font-weight: 250;
+    padding: 0;
+}
+
+.CancelModalBody .details-warning {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-size: 16px;
+    font-family: 'Kumbh Sans';
+    font-weight: 400;
+    padding: 0;
+}
+
+.CancelModalContainer .CancelModalFooter {
+    padding: 20px 50px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    border-top: 1px solid #e8dccc;
+}
+
+.CancelModalContainer .CancelModalFooter .modal-btns {
+    font-family: 'Kumbh Sans';
+    font-size: 14px;
+    padding: 10px 14px;
+    width: 100px;
+    border-radius: 999px;
+    border: none;
+    background-color: #d2bba0;
+    color: #2f1e0f;
+    cursor: pointer;
+    transition: background-color 0.25s ease, transform 0.1s ease;
+    white-space: nowrap;
+}
+
+.CancelModalContainer .modal-btns:hover:not(:disabled) {
+    background-color: #a18763;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(191, 164, 124, 0.4);
+}
+
+.CancelModalContainer .modal-btns:disabled {
+    opacity: 70%;
+    cursor: not-allowed;
+    transform: none;
+    background-color: #bfa47c;
+    box-shadow: none;
+}

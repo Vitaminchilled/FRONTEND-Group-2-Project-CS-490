@@ -11,6 +11,7 @@ import SalonDashboard from './pages/SalonPages/SalonDashboard.jsx'
 import SalonServices from './pages/SalonPages/Services.jsx'
 import SalonProducts from './pages/SalonPages/Products.jsx'
 import SalonReviews from './pages/SalonPages/Reviews.jsx'
+import MyAppointments from './pages/MyAppointments.jsx'
 import Rewards from './pages/Rewards.jsx'
 import SalonRegistration from './pages/LoginRegistration/SalonRegistration.jsx'
 import CustomerRegistration from './pages/LoginRegistration/CustomerRegistration.jsx'
@@ -74,9 +75,9 @@ function App() {
 
             {/* CUSTOMER ROUTES */}
             <Route path="/rewards" element={<Rewards/>}/>
+            <Route path="/appointments" element={<MyAppointments/>} />
             {/* 
               Payment route 
-              My Appointments route
               ...?
             */}
             
