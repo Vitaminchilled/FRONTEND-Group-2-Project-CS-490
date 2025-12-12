@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://backend-group-2-project-cs-490.onrender.com/api/$1"
+      "destination": "https://backend-group-2-project-cs-490.onrender.com/$1"
     }
   ]
 }
