@@ -56,8 +56,8 @@ function SearchSalons() {
       console.log(currentFilter)
       console.log(filter)
 
-      const response = await fetch(`https://backend-group-2-project-cs-490.onrender.com/salon/all?${params.toString()}`)
-      const master_tag_response = await fetch("https://backend-group-2-project-cs-490.onrender.com/master-tags")
+      const response = await fetch(`/api/salon/all?${params.toString()}`)
+      const master_tag_response = await fetch("/api/master-tags")
 
       if(!response.ok) {
         const errorText = await response.text()
