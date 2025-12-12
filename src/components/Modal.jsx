@@ -232,11 +232,75 @@ export function ModalProductDelete ({setModalOpen, product, onConfirm}) {
     );
 };
 
+export function ModalReviewDelete ({setModalOpen, review, onConfirm}) {
+    if (!review) return null /* might remove this later */
+
+    return (
+        <div className='ModalBackground'>
+            <div className='ModalContainer'>
+                <div className='ModalTitle'>
+                    <h2>Delete Review</h2>
+                </div>
+                <div className='ModalBody'>
+                    <label>Are you sure you want to delete this review?</label>
+                </div>
+                <div className='ModalFooter'>
+                    <button 
+                        onClick={() => setModalOpen(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        onClick={() => {
+                            onConfirm(review.review_id)
+                            setModalOpen(false)
+                        }}
+                    >
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export function ModalReplyDelete ({setModalOpen, reply, onConfirm}) {
+    if (!reply) return null /* might remove this later */
+
+    return (
+        <div className='ModalBackground'>
+            <div className='ModalContainer'>
+                <div className='ModalTitle'>
+                    <h2>Delete Reply</h2>
+                </div>
+                <div className='ModalBody'>
+                    <label>Are you sure you want to delete this reply?</label>
+                </div>
+                <div className='ModalFooter'>
+                    <button 
+                        onClick={() => setModalOpen(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        onClick={() => {
+                            onConfirm(reply)
+                            setModalOpen(false)
+                        }}
+                    >
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 /* use for alerts like "New service created", "user deleted", etc */
 export function ModalMessage ({setModalOpen, title, content}) {
     return (
-        <div className='ModalBackground' onClick={() => setModalOpen(false)}>
-            <div className='ModalContainer' onClick={(event) => event.stopPropagation()}>
+        <div className='TopModalBackground' onClick={() => setModalOpen(false)}>
+            <div className='TopModalContainer' onClick={(event) => event.stopPropagation()}>
                 <div className='ModalTitle'>
                     <h2>{title}</h2>
                 </div>

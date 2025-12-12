@@ -6,7 +6,7 @@ import './Reviews.css'
 
 import { useUser } from "../../context/UserContext.jsx"
 
-import { ModalMessage } from '../../components/Modal.jsx';
+import { ModalReviewDelete, ModalMessage } from '../../components/Modal.jsx';
 import { WriteReview } from "../../components/WriteReview.jsx"
 
 export default function Reviews() {
@@ -34,16 +34,14 @@ export default function Reviews() {
         keywords: "", /* to be removed */
         direction: "desc",
         order_by: "review_date",
-        rating: -1,
-        has_img: false //all replies, true-> only replies with images
+        rating: -1
     })
     /* applied at the time */
     const [currentFilter, setCurrentFilter] = useState({ 
         keywords: "", /* to be removed */
         direction: "desc",
         order_by: "review_date",
-        rating: -1,
-        has_img: false //all replies, true-> only replies with images
+        rating: -1
     })
     const [hover, setHover] = useState(0)
 
@@ -82,11 +80,12 @@ export default function Reviews() {
         setNewReview(null)
     }
     const [modalMessage, setModalMessage] = useState(null)
+    const [modalReviewDelete, setModalReviewDelete] = useState(null)
 
     const [completedAppointments, setCompletedAppointments] = useState([])
 
     useEffect(() => {
-        if (newReview) {
+        if (newReview || modalMessage || modalReviewDelete) {
         document.body.style.overflow = "hidden";
         } else {
         document.body.style.overflow = "";
@@ -94,7 +93,7 @@ export default function Reviews() {
         return () => {
         document.body.style.overflow = "";
         };
-    }, [newReview]);
+    }, [newReview, modalMessage, modalReviewDelete]);
 
 
     function getStarString(rating) {
@@ -159,9 +158,6 @@ export default function Reviews() {
             if (filters.rating) {
                 params.append('rating', filters.rating)
             }
-            if (filters.has_img) {
-                params.append('has_img', filters.has_img)
-            }
             params.append('page', pageNumber)
 
             const reviews_response = await fetch(`/api/salon/${salon_id}/reviews/pagination?${params.toString()}`)
@@ -196,16 +192,15 @@ export default function Reviews() {
         }
     }
 
-    useEffect(() => {
-        console.log(reviews)
-    }, [reviews])
-
     const retrieveCompletedAppointments = async () => {
         setLoading(true)
         setError(null)
 
         try {
-            const appointments_response = await fetch(`/api/appointments/reviewless/${salon_id}?customer_id=${33}`)
+            const appointments_response = await fetch(`/api/appointments/reviewless/${salon_id}`, {
+                method: "GET",
+                credentials: "include"
+            })
             
             if(!appointments_response.ok) {
                 const errorText = await appointments_response.json()
@@ -245,22 +240,99 @@ export default function Reviews() {
         setPage(1)
     }
     
+    /* function called when you click Write Review button */
     const handleWriteReview = () => {
         if (completedAppointments.length > 0) {
             setNewReview({
                 review_id: "new",
                 appointment_id: -1,
-                user_id: 33, //change later
-                user: 'Jane Doe', //change later
+                user_id: user.user_id,
+                user: user.name, //look into alternative
                 salon_id: salon_id,
                 rating: -1,
-                comment: "",
-                image_url: ""
+                comment: ""
             })
         } else {
             setModalMessage({
                 title: "Error",
                 content: 'No available appointments to review'
+            })
+        }
+    }
+
+    /* Creates new review item and adds it to display */
+    const handleReviewSubmit = async (reviewData) => {
+        if (!reviewData.appointment_id) return
+
+        //fill in with data
+        const cleanedData = {
+            rating: reviewData.rating,
+            comment: reviewData.comment
+        }
+        console.log(cleanedData)
+
+        try {
+            const response = await fetch(`/api/appointments/${reviewData.appointment_id}/review`, {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(cleanedData),
+                credentials: "include"
+            })
+
+            if (!response.ok) {
+                const errorData = await response.json()
+                throw new Error(`Create Review fetch failed: HTTP error ${response.status}: ${errorData.error || errorData}`)
+            }
+            const data = await response.json()
+            setNewReview(null)
+            setModalMessage({
+                title: "Success",
+                content: data.message
+            })
+            retrieveCompletedAppointments() //not sure if this is necessary
+            await retrieveReviews()
+        } catch (err) {
+            console.error(err)
+            setModalMessage({
+                title: "Error",
+                content: err.message || 'This review could not be submitted.'
+            })
+        }
+    }
+
+    /* Confirmation to delete review */
+    const handleDeleteReviewClick = (review) => {
+        setModalReviewDelete(review)
+    }
+
+    /* Delete review and remove from display */
+    const handleDeleteReview = async (reviewID) => {
+        try {
+            const deleteResponse = await fetch(`/api/reviews/${reviewID}`, {
+                method: "DELETE",
+                credentials: "include"
+            })
+
+            if (!deleteResponse.ok) {
+                const errorData = await deleteResponse.json()
+                throw new Error(`Delete Review fetch failed: HTTP error ${deleteResponse.status}: ${errorData.error || errorData}`)
+            }
+
+            const data = await deleteResponse.json()
+
+            setModalMessage({
+                title: "Success",
+                content: data.message
+            })
+            retrieveCompletedAppointments()
+            await retrieveReviews()
+        } catch (err) {
+            console.error(err)
+            setModalMessage({
+                title: "Error",
+                content: err.message || 'This review could not be deleted.'
             })
         }
     }
@@ -342,26 +414,17 @@ export default function Reviews() {
                                         <option value="asc|review_date">Least Recent</option>
                                     </select>
                                 </label>
-                                <label className="check-section">
-                                    <p className="check-label">Includes image: </p>
-                                    <input className="check" 
-                                        id="has_img" 
-                                        type="checkbox" 
-                                        checked={filter.has_img}
-                                        onChange={event => setFilter({...filter, has_img: event.target.checked})}
-                                    />
-                                </label>
-                                
                             </div>
                             <div className="button-section">
                                 <button className="search-btn" 
                                     type="submit"
                                     disabled={
                                         !filter.keywords && 
-                                        !filter.has_img && 
                                         filter.rating === -1 &&
-                                        filter.order_by==='review_date' && 
-                                        filter.direction==='desc'
+                                        (filter.order_by==='review_date' && 
+                                        filter.direction==='desc') && 
+                                        (currentFilter.order_by ==='review_date' && 
+                                        currentFilter.direction==='desc')
                                     }
                                 >
                                     Search
@@ -373,8 +436,7 @@ export default function Reviews() {
                                             keywords: "",
                                             direction: "desc",
                                             order_by: "review_date",
-                                            rating: -1,
-                                            has_img: false
+                                            rating: -1
                                         }
                                         setFilter(emptyFilter)
                                         setCurrentFilter(emptyFilter)
@@ -395,6 +457,12 @@ export default function Reviews() {
                             </p>
                             <button className="write-btn"
                                 onClick={handleWriteReview}
+                                disabled={user.type !== 'customer'}
+                                title={
+                                    (user.type === 'none' && "Must be logged in" ) || 
+                                    ((user.type === "owner" || user.type === "admin") && "Must be a customer") ||
+                                    (user.type === "customer" && "Write a review")
+                                }
                             >
                                 Write Review
                             </button>
@@ -415,7 +483,8 @@ export default function Reviews() {
                                             stars={stars}
                                             isOpen={openReviews[review.review_id] || false}
                                             setOpenReviews={setOpenReviews}
-                                            salonID={salon_id}
+                                            setModalMessage={setModalMessage}
+                                            onDeleteReview={() => handleDeleteReviewClick(review)}
                                         />
                                     )
                                 })
@@ -456,19 +525,21 @@ export default function Reviews() {
                     setModalOpen={setModalMessage}
                     />
                 )}
+                {modalReviewDelete && (
+                    <ModalReviewDelete 
+                        review={modalReviewDelete}
+                        setModalOpen={setModalReviewDelete}
+                        onConfirm={handleDeleteReview}
+                    />
+                )}
                 {newReview && (
                     <WriteReview
                         salon={salon}
-                        user={{
-                            user_id: 33,
-                            role: 'customer'
-                        }}
-                        newItem={true}
+                        user={user}
                         appointments={completedAppointments}
                         review={newReview}
-                        setModalOpen={setNewReview}
-                        setModalMessage={setModalMessage}
                         onCancelNew={handleCancelNewReview}
+                        handleReviewSubmit={handleReviewSubmit}
                     />
                 )}
             </div>

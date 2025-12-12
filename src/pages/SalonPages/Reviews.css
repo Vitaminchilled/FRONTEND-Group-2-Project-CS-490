@@ -127,6 +127,11 @@
     cursor: pointer;
 }
 
+.reviews-page .review-action .write-btn:disabled {
+    background-color: #d8ae82;
+    cursor: not-allowed;
+}
+
 .reviews-page .reviews-content .review-action .review-form {
     display: flex;
     flex-direction: column;

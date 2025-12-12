@@ -4,10 +4,10 @@ import AppointmentItem from './AppointmentItem.jsx'
 import './WriteReview.css'
 
 export function WriteReview ({
-    setModalOpen, user, 
-    newItem = false,
-    salon, appointments, review,
-    setModalMessage, onCancelNew
+    user, salon, 
+    appointments, review,
+    onCancelNew,
+    handleReviewSubmit
 }) {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
@@ -15,12 +15,6 @@ export function WriteReview ({
 
     const nextStep = () => setStep((s) => s+1)
     const prevStep = () => setStep((s) => s-1)
-
-    const handleCancelNew = () => {
-        if (newItem) {
-            onCancelNew?.()
-        }
-    }
 
     /* STEP 1: PICK A COMPLETED APPOINTMENT */
     const [chosenAppointment, setChosenAppointment] = useState({})
@@ -33,86 +27,11 @@ export function WriteReview ({
 
     const [hover, setHover] = useState(0)
     const [newReview, setNewReview] = useState({...review})
-    const [imagePreview, setImagePreview] = useState(null)
+    
 
     const handleChange = (event) => {
         const { name, value } = event.target
         setNewReview((prev) => ({ ...prev, [name]: value }))
-    }
-
-    useEffect(() => {
-        return () => {
-            if (imagePreview) {
-                URL.revokeObjectURL(imagePreview)
-            }
-        }
-    }, [imagePreview])
-
-    function handleImageChange(event) {
-        const file = event.target.files[0]
-
-        if (!file) {
-            if (imagePreview) {
-                URL.revokeObjectURL(imagePreview)
-            }
-            setNewReview(prev => ({ ...prev, image_url: null }))
-            setImagePreview(null)
-            return
-        }
-
-        if (imagePreview) {
-            URL.revokeObjectURL(imagePreview)
-        }
-
-        setNewReview((prev) => ({ ...prev, image_url: file }))
-        setImagePreview(URL.createObjectURL(file)) // show preview immediately
-    }
-
-    /* STEP 3: CONFIRM DETAILS */
-
-
-    const handleReviewSubmit = async () => {
-        if (!chosenAppointment.appointment_id) return
-
-        //fill in with data
-        const cleanedData = {
-            review_id: null,
-            appointment_id: chosenAppointment.appointment_id,
-            user_id: user.user_id, //temporary
-            salon_id: salon.salon_id,
-            rating: newReview.rating,
-            comment: newReview.comment,
-            image_url: '',
-            review_date: new Date().toISOString().split('T')[0]
-        }
-        console.log(cleanedData)
-
-        try {
-            const response = await fetch(`/api/appointments/${cleanedData.appointment_id}/review`, {
-                method: 'POST',
-                headers: {
-                'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(cleanedData)
-            })
-
-            if (!response.ok) {
-                const errorData = await response.json()
-                throw new Error(`Create Appointment fetch failed: HTTP error ${response.status}: ${errorData.error || errorData}`)
-            }
-            const data = await response.json()
-            setModalOpen(null)
-            setModalMessage({
-                title: "Success",
-                content: data.message
-            })
-        } catch (err) {
-            console.error(err)
-            setModalMessage({
-                title: "Error",
-                content: err.message || 'This review could not be submitted.'
-            })
-        }
     }
 
     return (
@@ -128,7 +47,7 @@ export function WriteReview ({
                     <img className='review-close'
                         src={deleteIcon}
                         alt='X'
-                        onClick={handleCancelNew}
+                        onClick={onCancelNew}
                     />
                 </div>
                 {step === 1 && (
@@ -141,7 +60,7 @@ export function WriteReview ({
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <AppointmentItem
-                                        accountType="customer" //user.role
+                                        accountType={user.role}
                                         appointment={appointment}
                                         selected={appointment===chosenAppointment}
                                     />
@@ -177,19 +96,6 @@ export function WriteReview ({
                             value={newReview.comment}
                             onChange={handleChange}
                         />
-                        <div className='img-section'>
-                            <input className='edit-input img'
-                                onChange={handleImageChange}
-                                type='file'
-                                accept='image/*'
-                            />
-                            {imagePreview && 
-                                <img className='img-preview'
-                                    src={imagePreview || review.image_url} 
-                                    alt="Preview"
-                                />
-                            }
-                        </div>
                     </div>
                 )}
                 <div className='ReviewModalFooter'>
@@ -201,10 +107,21 @@ export function WriteReview ({
                     </button>
                     <button className="modal-btns" 
                         disabled={
-                            (step === 1 && !chosenAppointment.appointment_id) ||
-                            (step === 2 && !chosenAppointment.appointment_id && !newReview.comment && newReview.rating !== -1)
+                            step === 1
+                                ? !chosenAppointment.appointment_id
+                                : newReview.rating <= 0 || newReview.comment.trim() === ""
                         }
-                        onClick={step === 2 ? handleReviewSubmit : nextStep}
+                        onClick={() => {
+                            if (step === 2) {
+                                handleReviewSubmit({
+                                    appointment_id: chosenAppointment.appointment_id,
+                                    rating: newReview.rating,
+                                    comment: newReview.comment
+                                })
+                            } else {
+                                nextStep()
+                            }
+                        }}
                     >
                         {step === 2 ? "SUBMIT" : "Next >>" }
                     </button>
