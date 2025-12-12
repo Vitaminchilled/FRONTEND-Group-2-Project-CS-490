@@ -45,36 +45,6 @@ export default function Reviews() {
     })
     const [hover, setHover] = useState(0)
 
-    const [imagePreview, setImagePreview] = useState(null)
-    const [chosenReferenceImg, setChosenReferenceImg] = useState(null)
-    useEffect(() => {
-        return () => {
-            if (imagePreview) {
-                URL.revokeObjectURL(imagePreview)
-            }
-        }
-    }, [imagePreview])
-
-    function handleImageChange(event) {
-        const file = event.target.files[0]
-
-        if (!file) {
-            if (imagePreview) {
-                URL.revokeObjectURL(imagePreview)
-            }
-            setChosenReferenceImg(null)
-            setImagePreview(null)
-            return
-        }
-
-        if (imagePreview) {
-            URL.revokeObjectURL(imagePreview)
-        }
-
-        setChosenReferenceImg(file)
-        setImagePreview(URL.createObjectURL(file)) // show preview immediately
-    }
-
     const [newReview, setNewReview] = useState(null)
     const handleCancelNewReview = () => {
         setNewReview(null)

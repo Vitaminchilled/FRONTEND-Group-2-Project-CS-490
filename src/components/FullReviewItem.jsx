@@ -166,7 +166,7 @@ export default function FullReviewItem({
                 <div className='grid-layout'>
                     <div className="header-section">
                         <h3 className='review-name'>{review.user}</h3>
-                        {user.type !== 'none' && user.user_id === review.user_id && (
+                        {(user.type === 'admin' || (user.type !== 'none' && user.user_id === review.user_id)) && (
                             <button className="edit-trash"
                                 onClick={() => {
                                     onDeleteReview(review)
@@ -272,7 +272,7 @@ function ReplyList({
                     <div className='grid-layout'>
                         <div className="header-section">
                             <h3 className='review-name'>{reply.user}</h3>
-                            {user.type !== 'none' && user.user_id === reply.user_id && (
+                            {(user.type === 'admin' || (user.type !== 'none' && user.user_id === reply.user_id)) && (
                                 <button className="edit-trash"
                                     onClick={() => handleDeleteReplyClick(reply)}
                                     title='Delete Reply'
