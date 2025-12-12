@@ -3,14 +3,15 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useUser } from "../../context/UserContext";
 import SalonHeader from '../../components/SalonHeader.jsx'
-import stripeBackground from "../../assets/StripeBackground.png"
+import stripeBackground from "../../assets/stripeBackground.png"
 import ServiceItem from '../../components/ServiceItem.jsx'
 
-import {ModalServiceDelete, ModalMessage} from '../../components/Modal.jsx';
+import { ModalServiceDelete, ModalMessage } from '../../components/Modal.jsx';
+import { BookAppointment } from '../../components/BookAppointment.jsx'
 
 function Services() {
   const { salon_id } = useParams()
-  const {user} = useUser(); /* will eventually be removed for other method */
+  const {user, setUser} = useUser(); /* will eventually be removed for other method */
   const [salon, setSalon] = useState({})
   const [tags, setTags] = useState([])
   const [services, setServices] = useState([])
@@ -25,9 +26,10 @@ function Services() {
     setModalService(service); // open modal for this service
   }
   const [modalMessage, setModalMessage] = useState(null)
+  const [bookAppointment, setBookAppointment] = useState(null)
 
   useEffect(() => {
-    if (modalService || modalMessage) {
+    if (modalService || modalMessage || bookAppointment) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "";
@@ -35,7 +37,7 @@ function Services() {
     return () => {
       document.body.style.overflow = "";
     };
-  }, [modalService, modalMessage]);
+  }, [modalService, modalMessage, bookAppointment]);
 
   const retrieveServices = async () => {
     setLoading(true);
@@ -93,7 +95,30 @@ function Services() {
     retrieveServices()
   }, [salon_id])
 
+  const isOwner = user.type === 'owner'
+  const isOwnerOfThisSalon = isOwner && user.salon_id === parseInt(salon_id)
+  const isVerified = Boolean(salon.is_verified)
+  const canEdit = isOwnerOfThisSalon && isVerified
+
+  useEffect(() => {
+    if (salon.salon_id) {
+      console.log('=== SERVICES PAGE VERIFICATION DEBUG ===');
+      console.log('user.type:', user.type);
+      console.log('user.salon_id:', user.salon_id);
+      console.log('current salon_id:', salon_id);
+      console.log('salon.is_verified:', salon.is_verified);
+      console.log('user.is_verified:', user.is_verified);
+      console.log('isOwner:', isOwner);
+      console.log('isOwnerOfThisSalon:', isOwnerOfThisSalon);
+      console.log('isVerified:', isVerified);
+      console.log('canEdit:', canEdit);
+      console.log('Should show banner:', isOwnerOfThisSalon && !isVerified);
+    }
+  }, [salon, user, salon_id, isOwner, isOwnerOfThisSalon, isVerified, canEdit]);
+
   const handleAddService = async (serviceData) => {
+    if (!canEdit) return;
+
     try {
       const cleanedData = {
         ...serviceData,
@@ -139,6 +164,8 @@ function Services() {
   }
 
   const handleSaveEdit = async (updatedService) => {
+    if (!canEdit) return;
+
     try {
       const cleanedData = {
         ...updatedService,
@@ -180,6 +207,8 @@ function Services() {
   }
 
   const handleDeleteService = async (serviceID) => {
+    if (!canEdit) return;
+
     try {
       const deleteResponse = await fetch(`/api/salon/${salon_id}/services/${serviceID}`, {
         method: 'DELETE'
@@ -213,6 +242,10 @@ function Services() {
     }
   }
 
+  const handleBookClick = async (service) => {
+    setBookAppointment(service)
+  }
+
   return (
     <>
       {(!loading && error ? (
@@ -235,6 +268,27 @@ function Services() {
               headerRatingValue={salon.average_rating}
             />
 
+            {isOwnerOfThisSalon && !isVerified && (
+              <div style={{
+                backgroundColor: '#fff3cd',
+                border: '2px solid #ffc107',
+                borderRadius: '8px',
+                padding: '15px 20px',
+                marginBottom: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px'
+              }}>
+                <span style={{ fontSize: '24px' }}>⚠️</span>
+                <div>
+                  <h3 style={{ margin: '0 0 5px 0', color: '#856404' }}>Verification Required</h3>
+                  <p style={{ margin: 0, color: '#856404' }}>
+                    Your salon must be verified before you can add or edit services. Please wait for admin approval.
+                  </p>
+                </div>
+              </div>
+            )}
+
             <h2 className="page-title">
               Services
             </h2>
@@ -249,10 +303,10 @@ function Services() {
                   accountType={user.type}
                   service={service}
                   optionTags={tags}
-                  
+                  canEdit={canEdit}
                   onSaveEdit={handleSaveEdit}
                   onDelete={() => handleDeleteClick(service)} 
-                  /* onDelete={() => handleDeleteService(service.service_id)} */
+                  onBook={() => handleBookClick(service)}
                 />
               ))}
               {newService && (
@@ -262,6 +316,7 @@ function Services() {
                   service={newService}
                   optionTags={tags}
                   newItem={true}
+                  canEdit={canEdit}
                   /* onStartEdit not necessary? */
                   onSaveEdit={handleAddService}
                   onCancelNew={handleCancelNewService}
@@ -269,7 +324,7 @@ function Services() {
                 />
               )}
             </div>
-            {(user.type === 'owner') && (
+            {(isOwnerOfThisSalon) && (
               <button className='add-salon-item'
                 onClick={() => setNewService({
                   service_id: null,
@@ -280,7 +335,11 @@ function Services() {
                   tags: [],
                   is_active: 1
                 })}
-                disabled={newService !== null}
+                disabled={newService !== null || !isVerified}
+                style={{
+                  opacity: (!isVerified || newService !== null) ? 0.5 : 1,
+                  cursor: (!isVerified || newService !== null) ? 'not-allowed' : 'pointer'
+                }}
               >
                 Add Service
               </button>
@@ -298,6 +357,17 @@ function Services() {
               content={modalMessage.content}
               title={modalMessage.title}
               setModalOpen={setModalMessage}
+            />
+          )}
+          {bookAppointment && (
+            <BookAppointment 
+              accountType={"customer"} /* change later */
+              salon={salon}
+              tags={tags}
+              selectedService={bookAppointment}
+              services={services}
+              setModalOpen={setBookAppointment}
+              setModalMessage={setModalMessage}
             />
           )}
         </div>

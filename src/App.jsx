@@ -10,6 +10,8 @@ import { useUser } from "./context/UserContext";
 import SalonDashboard from './pages/SalonPages/SalonDashboard.jsx'
 import SalonServices from './pages/SalonPages/Services.jsx'
 import SalonProducts from './pages/SalonPages/Products.jsx'
+import SalonReviews from './pages/SalonPages/Reviews.jsx'
+import MyAppointments from './pages/MyAppointments.jsx'
 import Rewards from './pages/Rewards.jsx'
 import Cart from './pages/Cart.jsx'
 import SalonRegistration from './pages/LoginRegistration/SalonRegistration.jsx'
@@ -68,11 +70,26 @@ function App() {
             <Route path="/salon/:salon_id/products" element={<SalonProducts />} />
             <Route path="/rewards" element={<Rewards />}/>
             <Route path="/shopping-cart" element={<Cart />}/>
+            <Route path="/salon/:salon_id/reviews" element={<SalonReviews />} />
+            {/* 
+              gallery
+              business calendar
+            */}
+
+            {/* CUSTOMER ROUTES */}
+            <Route path="/rewards" element={<Rewards/>}/>
+            <Route path="/appointments" element={<MyAppointments/>} />
+            {/* 
+              Payment route 
+              ...?
+            */}
             
             {/* ADMIN ROUTES */}
             <Route path="/verify" element={<Verify />}/>
             <Route path="/users" element={<Users />}/>
-            
+            {/* 
+              admin analytics (salon also should be able to see their own analytics??)
+            */}
           </Routes>
         </div>
     </div>
