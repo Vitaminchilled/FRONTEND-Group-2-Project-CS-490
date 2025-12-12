@@ -11,6 +11,7 @@ import SalonDashboard from './pages/SalonPages/SalonDashboard.jsx'
 import SalonServices from './pages/SalonPages/Services.jsx'
 import SalonProducts from './pages/SalonPages/Products.jsx'
 import Rewards from './pages/Rewards.jsx'
+import Cart from './pages/Cart.jsx'
 import SalonRegistration from './pages/LoginRegistration/SalonRegistration.jsx'
 import CustomerRegistration from './pages/LoginRegistration/CustomerRegistration.jsx'
 import Logout from './pages/LoginRegistration/Logout.jsx'
@@ -66,6 +67,7 @@ function App() {
             <Route path="/salon/:salon_id/services" element={<SalonServices />} />
             <Route path="/salon/:salon_id/products" element={<SalonProducts />} />
             <Route path="/rewards" element={<Rewards />}/>
+            <Route path="/shopping-cart" element={<Cart />}/>
             
             {/* ADMIN ROUTES */}
             <Route path="/verify" element={<Verify />}/>

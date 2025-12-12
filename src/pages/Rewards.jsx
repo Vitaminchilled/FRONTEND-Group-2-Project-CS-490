@@ -37,7 +37,6 @@ function Rewards() {
         <div className="AccountDetails">
             <h1>Loyalty Rewards</h1>
             <hr />
-            <h3 style={{ display: 'none' }}><u>Personal Information</u></h3>
             
             <div className="RewardsList">
                 {Object.keys(rewardsData).length === 0 ? (
