@@ -252,7 +252,6 @@ function Services() {
                   
                   onSaveEdit={handleSaveEdit}
                   onDelete={() => handleDeleteClick(service)} 
-                  /* onDelete={() => handleDeleteService(service.service_id)} */
                 />
               ))}
               {newService && (
@@ -269,7 +268,7 @@ function Services() {
                 />
               )}
             </div>
-            {(user.type === 'owner') && (
+            {(user.type === 'owner' && user.salon_id === salon_id) && (
               <button className='add-salon-item'
                 onClick={() => setNewService({
                   service_id: null,

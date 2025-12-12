@@ -117,3 +117,118 @@
     background-color: #d1bca0;
     border-radius: 6px;
 }
+
+/*stuff for modal message disregard for now 
+its mostly copy paste with new z indexes
+necessary to have modal message appear above other modals.
+*/
+
+.TopModalBackground {
+    position: fixed;
+    z-index: 3000;
+    width: 100vw;
+    height: 100vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.TopModalContainer {
+    position: fixed;
+    z-index: 4000;
+    width: 45vw;
+    max-height: 36vw;
+    border-radius: 20px;
+    background-color: #fffaf5;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fadeIn 0.25s ease-out;
+}
+
+.TopModalContainer .ModalTitle {
+    background-color: #efe6da;
+    height: auto;
+    padding: 20px;
+    display: flex;  
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.TopModalContainer .ModalTitle h2 {
+    font-size: 2vw;
+    color: #3b2b1e;
+    margin: 0;
+    padding: 0;
+}
+
+.TopModalContainer .ModalBody {
+    flex: 1;
+    padding: 25px 30px;
+    overflow-y: auto;
+    text-align: left;
+    line-height: 1.5;
+}
+
+.TopModalContainer .ModalBody h3 {
+    margin: 4px 0;
+    color: #6d4c41;
+    font-size: 1.2vw;
+}
+.TopModalContainer .ModalBody label {
+    margin: 4px 0;
+    color: #6d4c41;
+    font-size: 1.2vw;
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+}
+.TopModalContainer .ModalBody p {
+    margin: 4px 0;
+    font-size: 1.1vw;
+}
+
+.TopModalContainer .ModalFooter {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    border-top: 1px solid #e8dccc;
+}
+
+.TopModalContainer .ModalFooter button {
+    width: 9vw;
+    height: 3vw;
+    font-size: 1.2vw;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: white;
+    background-color: #bfa47c;
+}
+
+.TopModalContainer .ModalFooter button:hover {
+    background-color: #a18763;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(191, 164, 124, 0.4);
+}
+
+.TopModalContainer .ModalBody::-webkit-scrollbar {
+    width: 8px;
+}
+.TopModalContainer .ModalBody::-webkit-scrollbar-thumb {
+    background-color: #d1bca0;
+    border-radius: 6px;
+}

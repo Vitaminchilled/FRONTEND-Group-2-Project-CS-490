@@ -1,0 +1,261 @@
+.appointment-card {
+  background-color: #ffffff;
+  border: 1px solid #d8cfc3;
+  border-radius: 10px;
+  min-width: 480px;
+  max-width: 720px;
+  width: 60vw;
+  padding: 18px 22px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
+  box-sizing: border-box;
+  font-family: 'Kumbh Sans', system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', sans-serif;
+  transition: all 0.3s ease-in;
+}
+
+.appointment-card:hover {
+  background-color: #f0f0f0;
+}
+
+.appointment-card.selected {
+  background-color: #eedec4;
+  border: 1px solid #e1ceaf;
+}
+
+.appointment-card.selected:hover {
+    background-color: #e5d2b2;
+}
+
+/* Top layout */
+
+.appointment-main {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr) auto;
+  column-gap: 24px;
+  row-gap: 4px;
+  align-items: flex-start;
+}
+
+.appointment-left p,
+.appointment-middle p {
+  margin: 0;
+}
+
+/* Left column */
+
+.appt-customer {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.appt-datetime {
+  margin-top: 4px;
+  font-weight: 300;
+  font-size: 14px;
+  color: #555;
+}
+
+.appt-service {
+  margin-top: 2px;
+  font-weight: 300;
+  font-size: 14px;
+  color: #777;
+}
+
+/* Middle column */
+
+.appt-staff {
+  font-weight: 400;
+  font-size: 14px;
+  color: #333;
+}
+
+.appt-price {
+  margin-top: 4px;
+  font-weight: 400;
+  font-size: 14px;
+}
+
+/* Right column – buttons */
+
+.appointment-right {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.appt-btn {
+  font-family: 'Kumbh Sans', system-ui, sans-serif;
+  font-size: 14px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: none;
+  background-color: #d2bba0;
+  color: #2f1e0f;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.appt-btn:hover:not(:disabled) {
+  background-color: #cba170;
+  transform: translateY(-1px);
+}
+
+.appt-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.appt-btn-cancel {
+  background-color: #f3dfcf;
+}
+
+.appt-btn-cancel:hover:not(:disabled) {
+  background-color: #eccfb6;
+}
+
+.appt-btn-reschedule {
+  background-color: #d2bba0;
+}
+
+.appt-btn-view {
+  background-color: #f2eee8;
+}
+
+/* Notes section */
+
+.appointment-notes {
+  margin-top: 16px;
+  border-top: 1px solid #e6ded2;
+  padding-top: 12px;
+}
+
+.appt-notes-title {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b3a2c;
+}
+
+.appt-notes-box {
+  background-color: #fdfbf8;
+  border-radius: 6px;
+  border: 1px solid #e0d5c8;
+  padding: 10px 12px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.appt-notes-text,
+.appt-notes-empty {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #333;
+}
+
+.appt-notes-empty {
+  font-style: italic;
+  color: #9a8c7c;
+}
+
+/* "Reply or Send Note" link */
+
+.appt-notes-reply-link {
+  position: absolute;
+  right: 8px;
+  bottom: 6px;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 400;
+  color: #7e6853;
+  cursor: pointer;
+  padding: 0;
+}
+
+.appt-notes-reply-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Reply mode */
+
+.appt-reply-area {
+  margin-top: 8px;
+}
+
+.appt-reply-input {
+  width: 100%;
+  min-height: 70px;
+  border-radius: 5px;
+  border: 1px solid #d3c7b8;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+
+.appt-reply-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.appt-reply-send,
+.appt-reply-cancel {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.appt-reply-send {
+  background-color: #59b963;
+  color: #fff;
+}
+
+.appt-reply-send:disabled {
+  background-color: #a2e4a8;
+  cursor: not-allowed;
+}
+
+.appt-reply-send:not(:disabled):hover {
+  background-color: #118c1e;
+}
+
+.appt-reply-cancel {
+  background-color: #db5e5e;
+  color: #fff;
+}
+
+.appt-reply-cancel:hover {
+  background-color: #b83131;
+}
+
+/* Simple responsiveness */
+
+@media (max-width: 720px) {
+  .appointment-card {
+    min-width: 100%;
+    width: 100%;
+  }
+
+  .appointment-main {
+    grid-template-columns: 1fr;
+    row-gap: 10px;
+  }
+
+  .appointment-right {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}

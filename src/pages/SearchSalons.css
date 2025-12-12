@@ -1,10 +1,10 @@
-.nav-border {
+.search-page .nav-border {
     background-color: #f0d7bd; 
     height: 20px; 
     width: 100%;
 }
 
-.inner-format {
+.search-page .inner-format {
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -13,7 +13,7 @@
     margin:30px 20px;
 }
 
-.search-filter {
+.search-page .search-filter {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -25,7 +25,7 @@
     box-shadow: 5px 5px 10px #b0b0b0ff;
 }
 
-.filter-section {
+.search-page .filter-section {
     background-color: #f0d7bd;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
@@ -33,7 +33,7 @@
     flex-grow: 1; /*look into this*/
 }
 
-.filter-title {
+.search-page .filter-title {
     font-weight: 800;
     font-size: 20px;
     font-family: Kumbh Sans;
@@ -43,25 +43,25 @@
     text-align: center;
 }
 
-.search-form {
+.search-page .search-form {
     display: flex;
     flex-direction: column;
     justify-content: left;
     gap: 14px;
 }
 
-.search-form .input-title {
+.search-page .search-form .input-title {
     padding: 0 0 8px 4px;
     margin: 0;
     font-weight: 500;
     font-size: 13px;
 }
 
-.search-form label {
+.search-page .search-form label {
     margin: 0;
 }
 
-.search-form input {
+.search-page .search-form input {
     border: 0;
     padding: 10px;
     width: 90%;
@@ -70,20 +70,19 @@
     border-radius: 10px;
 }
 
-/*i think I can delete this*/
-.search-form .tag-section {
+.search-page .search-form .tag-section {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.search-form .category-section {
+.search-page .search-form .category-section {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-.search-form .current-categories {
+.search-page .search-form .current-categories {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
@@ -92,7 +91,7 @@
     padding: 0;
 }
 
-.search-form .tag-item {
+.search-page .search-form .tag-item {
     display: inline-flex;
     align-items: center;
     gap: 10px;
@@ -102,28 +101,28 @@
     margin: 0;
 }
 
-.search-form .tag-item .tag-title {
+.search-page .search-form .tag-item .tag-title {
     margin: 0;
     padding: 0;
     font-family: Kumbh Sans;
     color: #6d6d6d;
 }
 
-.search-form .tag-item .tag-remove {
+.search-page .search-form .tag-item .tag-remove {
     width: 15px;
     height: 15px;
     cursor: pointer;
 }
 
-.search-form .add-categories {
+.search-page .search-form .add-categories {
     margin: 0;
     padding: 0;
     width: 100%;
 }
 
-.search-form .input-category {
+.search-page .search-form .input-category {
     border-radius: 10px 0 0 10px;
-    font-family: Kumbh Sans;
+    font-family: 'Kumbh Sans';
     background-color: white;
     width: 70%;
     border: none;
@@ -131,7 +130,7 @@
     font-weight: 500;
 }
 
-.search-form .btn-category {
+.search-page .search-form .btn-category {
     border-radius: 0 10px 10px 0;
     width: 30%;
     border: none;
@@ -142,19 +141,18 @@
     transition: background-color 0.3s ease;
 }
 
-.search-form .btn-category:hover:not(:disabled) {
+.search-page .search-form .btn-category:hover:not(:disabled) {
     background-color: #d8ae82;
     cursor: pointer;
 }
 
-.search-form .btn-category:disabled {
+.search-page .search-form .btn-category:disabled {
     background-color: #b98a59;
     cursor: not-allowed;
     opacity: 0.7;
 }
 
-/*i think I can delete this*/
-.search-form .input-object-title {
+.search-page .search-form .input-object-title {
     text-align: start;
     font-weight: 600;
     font-family: Kumbh Sans;
@@ -162,7 +160,7 @@
     margin: 0;
 }
 
-.button-section {
+.search-page .button-section {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -174,7 +172,7 @@
     flex-shrink: 0;
 }
 
-.button-section .search-btn {
+.search-page .button-section .search-btn {
     border-radius: 10px;
     width: 100%;
     padding: 10px;
@@ -187,12 +185,12 @@
     transition: background-color 0.3s ease;
 }
 
-.button-section .search-btn:hover:not(:disabled) {
+.search-page .button-section .search-btn:hover:not(:disabled) {
     background-color: #d8ae82;
     cursor: pointer;
 }
 
-.button-section .search-btn:disabled{
+.search-page .button-section .search-btn:disabled{
   background-color: #b98a59;
   cursor: not-allowed;
   opacity: 0.7;
@@ -201,7 +199,7 @@
 /*Search Results*/
 
 
-.search-results {
+.search-page .search-results {
     background-color: #f0d7bd;
     border-radius:20px;
     text-align: center;
@@ -212,14 +210,14 @@
     padding: 20px;
 }
 
-.search-results .title-section {
+.search-page .search-results .title-section {
     background-color: #f7ede3;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
     padding:0;
 }
 
-.title-section .results-title{
+.search-page .title-section .results-title{
     font-weight: 800;
     font-size: 20px;
     font-family: Kumbh Sans; 
@@ -227,7 +225,7 @@
     margin: 0;
 }
 
-.results-selection {
+.search-page .results-selection {
     display: flex;
     flex-direction: column;
     justify-content: center; 
@@ -239,7 +237,7 @@
     padding: 25px 20px 30px 20px;
 }
 
-.results-selection .result-item {
+.search-page .results-selection .result-item {
     background-color: #f0d7bd;
     border-radius: 15px;
     width: 95%;
@@ -258,11 +256,11 @@
     color: black;
 }
 
-.results-selection .result-item:hover {
+.search-page .results-selection .result-item:hover {
     background-color: #dfba93;
 }
 
-.item-title {
+.search-page .item-title {
     flex: 0 0 30%;
     margin: 0;
     padding: 0;
@@ -273,7 +271,7 @@
     font-weight: 600;
 }
 
-.item-category {
+.search-page .item-category {
     flex: 0 0 20%;
     margin: 0;
     padding: 0;
@@ -282,7 +280,7 @@
     text-overflow: ellipsis;
 }
 
-.item-rating {
+.search-page .item-rating {
     flex: 0 0 30%;
     margin: 0;
     padding: 0;
@@ -292,11 +290,11 @@
     text-align: end;
 }
 
-.stars {
+.search-page .stars {
     color: #E6AF50;
 }
 
-.white-divider {
+.search-page .white-divider {
     background-color: white;
     width: 1px;
     height: 40px;
