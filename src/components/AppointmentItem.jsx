@@ -23,6 +23,31 @@ function AppointmentItem({
       ? Number(appointment.price).toFixed(2)
       : '0.00';
 
+  // ✅ Show customer name for business/staff/admin views, salon name for customer view
+  const getPrimaryName = () => {
+    const firstLast =
+      `${appointment?.first_name || ''} ${appointment?.last_name || ''}`.trim();
+
+    // Customer-facing pages: show salon name
+    if (accountType === 'customer' || accountType === 'user') {
+      return (
+        appointment?.salon_name ||
+        appointment?.salon ||
+        'Salon'
+      );
+    }
+
+    // Business-facing pages: show customer name
+    return (
+      appointment?.customer_name ||
+      appointment?.customerName ||
+      appointment?.client_name ||
+      appointment?.clientName ||
+      (firstLast ? firstLast : null) ||
+      'Customer'
+    );
+  };
+
   const handleSendReply = () => {
     if (!replyText.trim()) return;
     onSendNote?.(appointment, replyText.trim());
@@ -35,15 +60,15 @@ function AppointmentItem({
       {/* Top row with basic info */}
       <div className="appointment-main">
         <div className="appointment-left">
-          <p className="appt-customer">{appointment.salon_name}</p>
+          <p className="appt-customer">{getPrimaryName()}</p>
           <p className="appt-datetime">
-            {appointment.appointment_date} – {appointment.start_time}
+            {appointment?.appointment_date} – {appointment?.start_time}
           </p>
-          <p className="appt-service">{appointment.service_name}</p>
+          <p className="appt-service">{appointment?.service_name}</p>
         </div>
 
         <div className="appointment-middle">
-          <p className="appt-staff">{appointment.staff_name}</p>
+          <p className="appt-staff">{appointment?.staff_name}</p>
           <p className="appt-price">${formattedPrice}</p>
         </div>
 
@@ -51,14 +76,14 @@ function AppointmentItem({
           <button
             className="appt-btn appt-btn-cancel"
             onClick={() => onCancel?.(appointment)}
-            disabled={!onCancel || appointment.status === 'completed' || appointment.status === 'cancelled'}
+            disabled={!onCancel || appointment?.status === 'completed' || appointment?.status === 'cancelled'}
           >
             Cancel
           </button>
           <button
             className="appt-btn appt-btn-reschedule"
             onClick={() => onReschedule?.(appointment)}
-            disabled={!onReschedule || appointment.status === 'completed' || appointment.status === 'cancelled'}
+            disabled={!onReschedule || appointment?.status === 'completed' || appointment?.status === 'cancelled'}
           >
             Reschedule
           </button>
@@ -77,7 +102,7 @@ function AppointmentItem({
         <p className="appt-notes-title">Customer Notes</p>
 
         <div className="appt-notes-box">
-          {appointment.customer_notes ? (
+          {appointment?.customer_notes ? (
             <p className="appt-notes-text">
               {appointment.customer_notes}
             </p>
