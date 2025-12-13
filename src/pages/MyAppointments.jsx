@@ -43,13 +43,14 @@ export default function MyAppointments() {
     }, [modalMessage, viewAppointment, cancelAppointment, rescheduleOpen]);
 
     useEffect(() => {
-        authorizeStatus()
-        retrieveAllAppointments()
-    }, [])
+        if (user?.user_id) {
+            retrieveAllAppointments()
+        }
+    }, [user?.user_id])
 
     const retrieveAllAppointments = async () => {
         try {
-            const appt_response = await fetch(`/api/appointments/view?role=customer&id=${user.user_id}`)
+            const appt_response = await fetch(`/api/appointments/view?role=customer&id=${user?.user_id}`)
             
             if(!appt_response.ok) {
                 const errorText = await appt_response.json()
@@ -69,27 +70,6 @@ export default function MyAppointments() {
             setPastAppts(completedItems)
         } catch (err) {
             console.error('Fetch error:', err)
-        }
-    }
-
-    const authorizeStatus = async () => {
-        try {
-            const authResponse = await fetch('/api/auth/status', { credentials: 'include' });
-            const authData = await authResponse.json();
-            
-            // ADD THESE DEBUG LOGS
-            console.log('Auth response:', authData);
-            console.log('Authenticated?', authData.authenticated);
-            console.log('User ID from auth:', authData.user_id);
-            
-            if (!authData.authenticated || !authData.user_id) {
-                throw new Error('You must be logged in to view your appointments');
-            }
-        } catch (err) {
-            setModalMessage({
-                title: "Error",
-                content: err.message || 'Login error: refresh the page.'
-            })
         }
     }
 
@@ -138,9 +118,9 @@ export default function MyAppointments() {
 
     return (
         <>
-            {(user.type !== "customer" || allAppts.length === 0 ? (
+            {(user?.type !== "customer" ? (
                 <p className='not-found'>
-                    {user.type === 'none' 
+                    {user?.type === 'none' 
                         ? 'Not logged in. Create an accout or login to view your appointments.' 
                         : 'Not authorized'
                     }

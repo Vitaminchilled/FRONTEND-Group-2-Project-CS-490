@@ -269,7 +269,7 @@ function ServiceItem({
                         {service.description}
                     </p>
                     <button className='item-btn'
-                        disabled={!onBook || accountType==='none' || accountType==='admin'}
+                        disabled={accountType==='none' || accountType==='admin'}
                         onClick={onBook}
                     >
                         Book

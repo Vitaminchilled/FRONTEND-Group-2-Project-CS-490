@@ -48,7 +48,13 @@ export function RescheduleAppointment({
   const [weeklyMap, setWeeklyMap] = useState({});
   const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-  const formatDate = (d) => d.toISOString().split("T")[0];
+  const formatDate = (d) => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
 
   const today = new Date();
   const currentWeekStart = new Date(today);
@@ -582,6 +588,7 @@ export function RescheduleAppointmentVer2({
     if (dayIndex === -1) return;
 
     const targetDate = new Date(weekStart);
+    targetDate.setHours(0, 0, 0, 0);
     targetDate.setDate(weekStart.getDate() + dayIndex);
     const dateString = formatDate(targetDate);
 

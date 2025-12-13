@@ -196,8 +196,10 @@ export default function Reviews() {
     /* runs once on mount */
     useEffect(() => {
         retrieveSalon()
-        retrieveCompletedAppointments()
-    }, [])
+        if (user?.user_id && user?.type === 'customer') {
+            retrieveCompletedAppointments()
+        }
+    }, [user?.user_id])
 
     /* runs once on mount then every time dependencies update*/
     useEffect(() => {
@@ -216,8 +218,8 @@ export default function Reviews() {
             setNewReview({
                 review_id: "new",
                 appointment_id: -1,
-                user_id: user.user_id,
-                user: user.name, //look into alternative
+                user_id: user?.user_id,
+                user: user?.name, //look into alternative
                 salon_id: salon_id,
                 rating: -1,
                 comment: ""
@@ -427,11 +429,11 @@ export default function Reviews() {
                             </p>
                             <button className="write-btn"
                                 onClick={handleWriteReview}
-                                disabled={user.type !== 'customer'}
+                                disabled={user?.type !== 'customer'}
                                 title={
-                                    (user.type === 'none' && "Must be logged in" ) || 
-                                    ((user.type === "owner" || user.type === "admin") && "Must be a customer") ||
-                                    (user.type === "customer" && "Write a review")
+                                    (user?.type === 'none' && "Must be logged in" ) || 
+                                    ((user?.type === "owner" || user?.type === "admin") && "Must be a customer") ||
+                                    (user?.type === "customer" && "Write a review")
                                 }
                             >
                                 Write Review

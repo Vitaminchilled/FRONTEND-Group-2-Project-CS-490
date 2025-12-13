@@ -1,20 +1,25 @@
 import { useState, useEffect } from 'react'
-import { useParams, NavLink } from 'react-router-dom'
+import { useParams, NavLink, useNavigate, Navigate } from 'react-router-dom'
 import { useUser } from "../../context/UserContext";
 import SalonHeader from '../../components/SalonHeader.jsx'
 import employeeIcon from '../../assets/PersonIcon.png'
 import EmployeeItem from '../../components/EmployeeItem.jsx'
+
 import './SalonDashboard.css'
 import {ModalEmployeeDelete, ModalMessage} from '../../components/Modal.jsx';
 
+
+
 function SalonDashboard() {
   const { salon_id } = useParams()
-  const {user} = useUser();
+  const {user, setUser, loading: userLoading} = useUser();
+  const navigate = useNavigate();
   const [salon, setSalon] = useState({})
   const [tags, setTags] = useState([])
   const [masterTags, setMasterTags] = useState([])
   const [employees, setEmployees] = useState([])
   const [reviews, setReviews] = useState([])
+  const [startIndex, setStartIndex] = useState(0)
   const [reviewCount, setReviewCount] = useState(0)
   const [rating, setRating] = useState()
 
@@ -25,7 +30,7 @@ function SalonDashboard() {
 
   const [ModalEmployee, setModalEmployee] = useState(null);
   const handleDeleteClick = (employee) => {
-    setModalEmployee(employee); // open modal for this employee
+    setModalEmployee(employee);
   }
   const [modalMessage, setModalMessage] = useState(null)
 
@@ -39,6 +44,20 @@ function SalonDashboard() {
     return stars
   }
 
+  if (userLoading) {
+    return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>;
+  }
+
+  const isOwnerOfThisSalon = user.type === 'owner' && String(user.salon_id) === String(salon_id);
+  
+  if (isOwnerOfThisSalon && !user.is_verified) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        <p>Hold tight, your account has not been verified yet. You'll receive an email once your account has been verified and you can access all features.</p>
+      </div>
+    );
+  }
+
   const retrieveSalons = async () => {
     setLoading(true);
     setError(null);
@@ -46,7 +65,7 @@ function SalonDashboard() {
     try {
       const salon_response = await fetch(`/api/salon/${salon_id}/header`)
       const employees_response = await fetch(`/api/salon/${salon_id}/employees`)
-      const reviews_response = await fetch(`/api/salon/${salon_id}/dashboard/reviews`)
+      const reviews_response = await fetch(`/api/salon/${salon_id}/reviews`)
 
       if (salon_response.status === 404) {
         setError("Salon not found")
@@ -71,12 +90,7 @@ function SalonDashboard() {
       const salon_data = await salon_response.json()
       const employees_data = await employees_response.json()
       const reviews_data = await reviews_response.json()
-      
-      console.log(salon_data)
-      console.log(employees_data)
-      console.log(reviews_data)
 
-      //destructuring data in the case that if it is null/undefined it defaults as a {} with default salon and total_page values
       const { 
         salon: retrievedSalon=[], 
         tags: retrievedTags=[], 
@@ -104,7 +118,7 @@ function SalonDashboard() {
       } else {
         setRating("No Rating Available")
       }
-      console.log(rating)
+      
     } catch (err) {
       console.error('Fetch error:', err)
       setError(err.message || "Unexpected Error Occurred")
@@ -116,6 +130,27 @@ function SalonDashboard() {
   useEffect(() => {
     retrieveSalons()
   }, [salon_id])
+
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      setUser({
+        type: 'none',
+        name: null,
+        username: null,
+        user_id: null,
+        salon_id: null,
+        is_verified: null
+      });
+      navigate('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      navigate('/login');
+    }
+  };
 
   /* employees */
 
@@ -226,16 +261,15 @@ function SalonDashboard() {
         throw new Error(`Employee fetch failed: HTTP error ${edit_employee_response.status}: ${errorText.error || errorText}`)
       }
 
-      let salaryMessage = ""
-      if (newSalaryValue  !== oldSalaryValue) {
+      const employee_data = await edit_employee_response.json()
+
+      if (newSalaryValue !== oldSalaryValue) {
         const cleanedSalaryData = {
-          salary_value: newSalaryValue,
+          salary_value: parseFloat(updatedEmployee.salary_value),
           effective_date: new Date().toISOString().split('T')[0]
         }
 
-        console.log("Sending salary update data:", cleanedSalaryData)
-
-        const create_salary_response = await fetch(`/api/salon/${salon_id}/employees/${updatedEmployee.employee_id}/salaries`, {
+        const edit_salary_response = await fetch(`/api/salon/${salon_id}/employees/${updatedEmployee.employee_id}/salaries`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -243,49 +277,60 @@ function SalonDashboard() {
           body: JSON.stringify(cleanedSalaryData)
         })
 
-        if (!create_salary_response.ok) {
-          const errorText = await create_salary_response.json()
-          throw new Error(`Salary fetch failed: HTTP error ${create_salary_response.status}: ${errorText.error || errorText}`)
+        if (!edit_salary_response.ok) {
+          const errorText = await edit_salary_response.json()
+          throw new Error(`Salary fetch failed: HTTP error ${edit_salary_response.status}: ${errorText.error || errorText}`)
         }
+        const salary_data = await edit_salary_response.json()
 
-        const salary_data = await create_salary_response.json()
-        salaryMessage = `\n${salary_data.message || 'Salary updated successfully.'}`
+        setModalMessage({
+          title: "Success",
+          content: employee_data.message + `\n` + salary_data.message,
+        })
+      } else {
+        setModalMessage({
+          title: "Success",
+          content: employee_data.message,
+        })
       }
 
-      const employeeData = await edit_employee_response.json()
-      setModalMessage({ 
-        title: "Success",
-        content: employeeData.message + salaryMessage
-      })
       await retrieveSalons()
     } catch (err) {
       console.error(err)
-
       setModalMessage({
         title: "Error",
-        content: err.message || 'This employee could not be updated.'
+        content: err.message || 'This employee could not be edited.'
       })
     }
   }
 
-  const handleDeleteEmployee = async (employeeID) => {
+  const handleDeleteEmployee = async (employee) => {
     try {
-      const deleteResponse = await fetch(`/api/salon/${salon_id}/employees/${employeeID}`, {
-        method: 'DELETE'
+      const delete_salary_response = await fetch(`/api/salon/${salon_id}/employees/${employee.employee_id}/salaries/${employee.salary_id}`, {
+        method: 'DELETE',
       })
 
-      if (!deleteResponse.ok) {
-        const errorData = await deleteResponse.json()
-        throw new Error(`Delete Employee fetch failed: HTTP error ${deleteResponse.status}: ${errorData.error || errorData}`)
+      if (!delete_salary_response.ok) {
+        const errorText = await delete_salary_response.json()
+        throw new Error(`Salary delete failed: HTTP error ${delete_salary_response.status}: ${errorText.error || errorText}`)
       }
-      const data = await deleteResponse.json()
 
-      setModalEmployee(null)
-      setModalMessage({
-        title: 'Success',
-        content: data.message
+      const delete_employee_response = await fetch(`/api/salon/${salon_id}/employees/${employee.employee_id}`, {
+        method: 'DELETE',
       })
 
+      if (!delete_employee_response.ok) {
+        const errorText = await delete_employee_response.json()
+        throw new Error(`Employee delete failed: HTTP error ${delete_employee_response.status}: ${errorText.error || errorText}`)
+      }
+
+      const employee_data = await delete_employee_response.json()
+
+      setModalMessage({
+        title: "Success",
+        content: employee_data.message
+      })
+      setModalEmployee(null)
       await retrieveSalons()
     } catch (err) {
       console.error(err)
@@ -295,6 +340,20 @@ function SalonDashboard() {
         content: err.message || 'This employee could not be deleted.'
       })
     }
+  }
+
+  /* reviews */
+  const reviewsPerPage = 3
+  const visibleReviews = reviews.slice(startIndex, startIndex + reviewsPerPage)
+
+  const handlePrev = () => {
+    setStartIndex((prev) => Math.max(0, prev - reviewsPerPage))
+  }
+
+  const handleNext = () => {
+    setStartIndex((prev) =>
+      Math.min(reviews.length - reviewsPerPage, prev + reviewsPerPage)
+    )
   }
 
   return (
@@ -377,9 +436,7 @@ function SalonDashboard() {
               {employees.map((employee) => (
                 <EmployeeItem
                   key={employee.employee_id}
-                  user={user}
-                  salon={salon}
-
+                  accountType={user.type}
                   employee={employee}
                   optionTags={masterTags}
                   onSaveEdit={handleSaveEdit}
@@ -421,6 +478,9 @@ function SalonDashboard() {
                 <h2 className="group-title">
                   Reviews
                 </h2>
+                <p className="group-extra">
+                  {`${reviewCount} Review(s)`}
+                </p>
                 <div className="rating-div">
                   <p className={salon.average_rating ? "rating-available" : "rating-unavailable"}>{rating}</p>
                 </div>
@@ -429,11 +489,25 @@ function SalonDashboard() {
             </div>
 
             <div className='review-content'>
+              <div className='review-btn'>
+                <button className='prev-next'
+                  onClick={handlePrev}
+                  disabled={startIndex === 0}
+                >
+                  Prev
+                </button>
+                <button className='prev-next'
+                  onClick={handleNext}
+                  disabled={startIndex + reviewsPerPage >= reviews.length}
+                >
+                  Next
+                </button>
+              </div>
               <div className='reviews'>
-                {!reviews || reviews.length === 0 ? (
+                {!visibleReviews || visibleReviews.length === 0 ? (
                   <p>No reviews available</p>
                 ) : (
-                  reviews.map((review) => {
+                  visibleReviews.map((review) => {
                     const stars = review.rating ? getStarString(review.rating) : "No rating available"
 
                     return (
@@ -460,7 +534,6 @@ function SalonDashboard() {
                 </h2>
                 <p className="group-extra">
                   200 Points in Account 
-                  {/* need endpoint and conditional for if user or owner */}
                 </p>
               </div>
               <div className='grey-divider'></div>

@@ -60,7 +60,7 @@ export function WriteReview ({
                                     style={{ cursor: 'pointer' }}
                                 >
                                     <AppointmentItem
-                                        accountType={user.role}
+                                        accountType={user?.role}
                                         appointment={appointment}
                                         selected={appointment===chosenAppointment}
                                     />

@@ -7,15 +7,20 @@ import emptyHeartIcon from '../assets/EmptyHeartIcon.png'
 import fullHeartIcon from '../assets/FullHeartIcon.png'
 import { useUser } from '../context/UserContext';
 import { ModalMessage } from './Modal.jsx'
+import { Pen, Pencil } from 'lucide-react'
 
 
 /* ({ salon_id, headerImage, headerTitle, headerTags, headerRating }) */
 function SalonHeader({ 
-  salonID, headerTitle, headerTags, headerRatingValue
+  salonID, headerTitle, headerTags, headerRatingValue//,
+  //user, setModalMessage
 }) {
   const { user } = useUser();
   const [favorites, setFavorites] = useState([])
   const [isFavorite, setIsFavorite] = useState(false)
+  const [galleryID, setGalleryID] = useState(0)
+  const [bannerImg, setBannerImg] = useState(null)
+  const [modifiedOn, setModifiedOn] = useState(null)
   
   function getStarString(rating) {
     let stars = ''
@@ -27,37 +32,77 @@ function SalonHeader({
     return stars
   }
 
-  const getFavoritedSalons = async (customerId = user.user_id) => {
-      try {
-          const response = await fetch(`/api/user_dashboard/favorited_salons?customer_id=${customerId}`, {
-              method: 'GET',
-              credentials: 'include'
-          });
+  useEffect(() => {
+    if (user?.user_id && user?.type === 'customer' && salonID) {
+      getFavoritedSalons();
+    }
+  }, [user?.user_id, salonID])
 
-          if (!response.ok) {
-              const errorData = await response.json();
-              throw new Error(errorData.error || 'Failed to fetch favorited salons');
-          }
+  const getSalonPrimaryImage = async () => {
+    try {
+      const primaryImg_response = await fetch(`/api/salon/${salonID}/image`, {
+        credentials: 'include'
+      })
 
-          const data = await response.json();
-          setFavorites(data.favorited_salons || [])
-          const favoriteExists = data.favorited_salons.some(
-            (salon) => salon.salon_id === salonID
-          )
-          setIsFavorite(favoriteExists)
-      } catch (err) {
-          console.error('getFavoritedSalons error:', err);
-          throw err;
+      if(!primaryImg_response.ok) {
+        const errorText = await primaryImg_response.json()
+        throw new Error(`Banner Image fetch failed: HTTP error ${primaryImg_response.status}: ${errorText || errorText}`)
       }
+      const primaryImg_data = await primaryImg_response.json()
+      const {
+        gallery_id: retrievedGalleryID=0,
+        image_url: retrievedImageURL,
+        last_modified: retrievedLastModified
+      } = primaryImg_data || {}
+
+      setBannerImg(retrievedImageURL)
+      setGalleryID(retrievedGalleryID)
+      setModifiedOn(retrievedLastModified)
+
+    } catch (err) {
+      console.error('Fetch error:', err)
+    }
   }
 
-  const favoriteSalon = async (customerId = user.user_id, salonId = salonID) => {
+  const getFavoritedSalons = async () => {
     try {
-        const response = await fetch('/api/user_dashboard/favorite_salon', {
+      const response = await fetch(`/api/session/favorited_salons`, {
+        method: 'GET',
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch favorited salons')
+      }
+
+      const data = await response.json()
+      console.log(data.favorited_salons)
+
+      setFavorites(data.favorited_salons || [])
+
+      const favoriteExists = data.favorited_salons.some(
+        (salon) => Number(salon.salon_id) === Number(salonID)
+      )
+      
+      setIsFavorite(favoriteExists)
+    } catch (err) {
+      console.error('getFavoritedSalons error:', err);
+    }
+  }
+
+  const favoriteSalon = async () => {
+    try {
+        const response = await fetch('/api/session/favorite_salon', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json'
+            },
             credentials: 'include',
-            body: JSON.stringify({ customer_id: customerId, salon_id: salonId })
+            body: JSON.stringify({ 
+              customer_id: user.user_id,
+              salon_id: salonID 
+            })
         });
 
         if (!response.ok) {
@@ -66,20 +111,20 @@ function SalonHeader({
         }
 
         const data = await response.json();
-        return data; // { message: 'Salon favorited successfully' }
+        setIsFavorite(true)
     } catch (err) {
-        console.error('favoriteSalon error:', err);
+        console.error('favoriteSalon error:', err.message);
         throw err;
     }
   }
 
-  const unfavoriteSalon = async (customerId, salonId) => {
+  const unfavoriteSalon = async () => {
     try {
-        const response = await fetch('/api/user_dashboard/unfavorite_salon', {
+        const response = await fetch('/api/session/unfavorite_salon', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body: JSON.stringify({ customer_id: customerId, salon_id: salonId })
+            body: JSON.stringify({ customer_id: user.user_id, salon_id: salonID })
         });
 
         if (!response.ok) {
@@ -88,7 +133,7 @@ function SalonHeader({
         }
 
         const data = await response.json();
-        return data; // { message: 'Salon unfavorited successfully' }
+        setIsFavorite(false)
     } catch (err) {
         console.error('unfavoriteSalon error:', err);
         throw err;
@@ -111,21 +156,37 @@ function SalonHeader({
             alt="<"
           />
         </NavLink>
-        {/* <div className="header-btn">
-          <img
-            className='image'
-            src={emptyHeartIcon}
-            alt="<3"
-          />
-        </div> */}
         {user.type === 'customer' && (
-          <button className="header-btn">
-            <img
-              className='image'
-              src={emptyHeartIcon}
-              alt="<3"
-            />
-          </button>
+          (isFavorite) ? (
+            <button className="header-btn"
+              onClick={unfavoriteSalon}
+            >
+              <img
+                className='image'
+                src={fullHeartIcon}
+                alt="<3"
+              />
+            </button>
+          ) : (
+            <button className="header-btn"
+              onClick={favoriteSalon}
+            >
+              <img
+                className='image'
+                src={emptyHeartIcon}
+                alt="<3"
+              />
+            </button>
+          )
+        )}
+        {user.type === 'owner' && Number(user.salon_id) === Number(salonID) && (
+          
+            <button className="header-btn"
+              //onClick={favoriteSalon}
+            >
+              <Pencil size={20}/>
+            </button>
+          
         )}
       </div>
       

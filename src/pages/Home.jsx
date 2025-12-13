@@ -77,11 +77,19 @@ function Home() {
   const tagRefs = useRef({});
 
   const scrollToTag = (tag) => {
-    const element = tagRefs.current[tag];
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
+  const element = tagRefs.current[tag];
+  if (!element) return;
+
+  const yOffset = -70; // adjust this value 👈
+  const y =
+    element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+
+  window.scrollTo({
+    top: y,
+    behavior: "smooth"
+  });
+};
+
 
   const tags = [
     "Hair Salon",
@@ -100,6 +108,33 @@ function Home() {
       state: { filter: { business_name: businessName, categories: [], employee_first: "", employee_last: "" } }
     })
   }
+  
+  const [favorites, setFavorites] = useState([])
+
+  const getFavoritedSalons = async () => {
+    try {
+      const response = await fetch(`/api/session/favorited_salons`, {
+        method: 'GET',
+        credentials: 'include'
+      })
+
+      if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch favorited salons')
+      }
+
+      const data = await response.json()
+      console.log(data.favorited_salons)
+
+      setFavorites(data.favorited_salons || [])
+    } catch (err) {
+      console.error('getFavoritedSalons error:', err);
+    }
+  }
+
+  useEffect(() => {
+    getFavoritedSalons()
+  },[])
 
   return (
     <div className="Home">
@@ -121,6 +156,18 @@ function Home() {
           <button key={index} onClick={() => scrollToTag(tag)}>{tag}</button>
         ))}
       </div>
+
+      {favorites.length > 0 && (
+        <div className="TagGroup">
+          <h1>Favorites</h1>
+          <hr />
+          <div className="TagGroupSalons">
+            {favorites.slice(0, 6).map((salon) => (
+              <Salon key={salon.salon_id} salon={salon} />
+            ))}
+          </div>
+        </div>
+      )}
 
       <div>
         {tags.map((tag, index) => (

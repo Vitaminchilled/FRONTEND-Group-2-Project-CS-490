@@ -36,32 +36,25 @@ function Login() {
 
       const data = await res.json();
       
-      // DEBUG: Log the entire response
-      console.log("=== LOGIN RESPONSE ===");
-      console.log("Status:", res.status);
-      console.log("Response data:", JSON.stringify(data, null, 2));
-      console.log("Role:", data.role);
-      console.log("Salon ID:", data.salon_id);
-      console.log("First Name:", data.first_name);
-      
       if (res.ok) {
         let role = data.role || "customer";
         let salonId = data.salon_id || null;
+        let userId = data.user_id || null;
+        let isVerified = data.is_verified || null;
         let displayName =
           (data.first_name && data.first_name.trim()) || user.username;
 
         // If data is incomplete, try to fetch from auth/status
         if (!data.role || !data.first_name) {
-          console.log("=== FETCHING AUTH STATUS ===");
           try {
             const who = await fetch("/api/auth/status", {
               credentials: "include",
             }).then((r) => r.json());
             
-            console.log("Auth status response:", JSON.stringify(who, null, 2));
-            
             role = who.role || role;
             salonId = who.salon_id || salonId;
+            userId = who.user_id || userId;
+            isVerified = who.is_verified || isVerified;
             displayName =
               (who.first_name && who.first_name.trim()) ||
               who.username ||
@@ -71,23 +64,11 @@ function Login() {
           }
         }
 
-        console.log("=== FINAL VALUES ===");
-        console.log("Role:", role);
-        console.log("Salon ID:", salonId);
-        console.log("Display Name:", displayName);
+        login(displayName, role, user.username, userId, salonId, isVerified);
 
-        login(displayName, role, user.username, salonId);
-
-        // Redirect based on role - with debug logging
-        console.log("=== REDIRECT LOGIC ===");
-        console.log("Is salon/owner?", role === "salon" || role === "owner");
-        console.log("Has salon ID?", !!salonId);
-        
         if ((role === "salon" || role === "owner") && salonId) {
-          console.log(`Redirecting to: /salon/${salonId}`);
           navigate(`/salon/${salonId}`);
         } else {
-          console.log("Redirecting to: /");
           navigate("/");
         }
       } else {
