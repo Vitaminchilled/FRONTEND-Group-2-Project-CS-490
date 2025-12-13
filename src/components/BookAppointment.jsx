@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import deleteIcon from '../assets/BlackXIcon.png'
 import ServiceItem from './ServiceItem'
 import EmployeeItem from './EmployeeItem'
@@ -12,6 +13,7 @@ export function BookAppointment({
 }) {
     /* GENERAL */
     const { user } = useUser();
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
     const [step, setStep] = useState(1) 
@@ -21,19 +23,19 @@ export function BookAppointment({
 
     /* STEP 1: SERVICE */
 
-    const [chosenService, setChosenService] = useState({...selectedService}) //service you pick
+    const [chosenService, setChosenService] = useState({...selectedService})
     const [otherServices, setOtherServices] = useState(() => 
-        services.filter((service) => service.service_id !== selectedService.service_id) //other services available to swap
+        services.filter((service) => service.service_id !== selectedService.service_id)
     )
-    const [showOtherServices, setShowOtherServices] = useState(false) //bool to show others
-    const toggleOtherServices = () => setShowOtherServices(prev => !prev) //toggle the visibility of other services
+    const [showOtherServices, setShowOtherServices] = useState(false)
+    const toggleOtherServices = () => setShowOtherServices(prev => !prev)
 
     const handleChangeService = (service) => {
         if (chosenService.service_id && service.service_id === chosenService.service_id) return
 
         setOtherServices(prev => {
             const newOthers = prev.filter(s => s.service_id !== service.service_id)
-            return [...newOthers, chosenService] // put old chosen service back
+            return [...newOthers, chosenService]
         })
         setChosenService(service)
         setChosenEmployee({})
@@ -296,59 +298,35 @@ export function BookAppointment({
         setEditData(prev => ({...prev, notes: event.target.value}))
     }
 
-    const handleAppointmentSubmit = async () => {
-    try {
-        // FETCH THE CURRENT USER ID
-        const authResponse = await fetch('/api/auth/status', { credentials: 'include' });
-        const authData = await authResponse.json();
-        
-        // ADD THESE DEBUG LOGS
-        console.log('Auth response:', authData);
-        console.log('Authenticated?', authData.authenticated);
-        console.log('User ID from auth:', authData.user_id);
-        
-        if (!authData.authenticated || !authData.user_id) {
-            throw new Error('You must be logged in to book an appointment');
-        }
-        
-        const cleanedData = {
+    const handleAddAppointmentToCart = () => {
+        console.log('=== ADDING APPOINTMENT TO CART ===')
+        const appointmentCartItem = {
+            type: 'appointment',
             salon_id: salon.salon_id,
-            customer_id: authData.user_id,
-            employee_id: chosenEmployee.employee_id,
+            salon_name: salon.salon_name,
             service_id: chosenService.service_id,
+            service_name: chosenService.service_name,
+            service_price: chosenService.price,
+            employee_id: chosenEmployee.employee_id,
+            employee_name: `${chosenEmployee.first_name} ${chosenEmployee.last_name}`,
             appointment_date: chosenDateTime.appointment_date,
             start_time: chosenDateTime.start_time,
-            notes: note.trim()
+            end_time: chosenDateTime.end_time,
+            notes: note.trim(),
+            cart_item_id: `temp_appt_${Date.now()}`
         }
-        console.log('Cleaned Data being sent:', cleanedData);
 
-        const response = await fetch(`/api/appointments/book`, {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(cleanedData)
-        })
+        console.log('Appointment cart item:', appointmentCartItem)
+        const existingCart = JSON.parse(sessionStorage.getItem('appointmentCart') || '[]')
+        const updatedCart = [...existingCart, appointmentCartItem]
+        sessionStorage.setItem('appointmentCart', JSON.stringify(updatedCart))
 
-        if (!response.ok) {
-            const errorData = await response.json()
-            throw new Error(`Create Appointment fetch failed: HTTP error ${response.status}: ${errorData.error || errorData}`)
-        }
-        const data = await response.json()
+        console.log('Updated cart:', updatedCart)
+        console.log('Appointment added to cart successfully')
+
         setModalOpen(null)
-        setModalMessage({
-            title: "Success",
-            content: data.message
-        })
-    } catch (err) {
-        console.error(err)
-        setModalMessage({
-            title: "Error",
-            content: err.message || 'Failed to book appointment.'
-        })
+        navigate('/shopping-cart')
     }
-}
-
 
     useEffect(() => {
         console.log(weeklyMap)
@@ -387,7 +365,6 @@ export function BookAppointment({
                         </div>
                         <button className='add-service'
                             onClick={toggleOtherServices}
-                            /* click should display all the other services for this salon so you can add it to the top chosenServices */
                         >
                             {showOtherServices ? "- Hide Services" : "+ Change Service"}
                         </button>
@@ -440,7 +417,6 @@ export function BookAppointment({
                         
                         {!loadingSlots && !slotError && weeklyAvailability.length > 0 && (
                             <div className="weekly-container">
-                                {/* navigation between weeks */}
                                 <div className="week-nav">
                                     <button className="modal-btns"
                                         onClick={prevWeek}
@@ -487,7 +463,7 @@ export function BookAppointment({
                                                     const status = slot?.status || "unavailable"
 
                                                     const dateForDay = new Date(weekStart)
-                                                    dateForDay.setHours(0,0,0,0) /* for some reason if this is missing, CSS selected off by a day */
+                                                    dateForDay.setHours(0,0,0,0)
                                                     dateForDay.setDate(weekStart.getDate() + index)
 
                                                     const past = isPastSlot(day, time)
@@ -541,36 +517,6 @@ export function BookAppointment({
                             placeholder='Note for the stylist'
                             name='note'
                         />
-                        <h3 className='details-title'>Optional Reference/Before Photo:</h3>
-                        <div className='image-section'>
-                            <input className='input-img'
-                                onChange={handleImageChange}
-                                type='file'
-                                accept='image/*'
-                                name='image_url'
-                            />
-                            {imagePreview1 && 
-                                <img className='img-preview'
-                                    src={imagePreview1} 
-                                    alt="Preview"
-                                />
-                            }
-                        </div>
-                        <h3 className='details-title'>Optional After Photo:</h3>
-                        <div className='image-section'>
-                            <input className='input-img'
-                                onChange={handleImageChange}
-                                type='file'
-                                accept='image/*'
-                                name='image_after_url'
-                            />
-                            {imagePreview2 && 
-                                <img className='img-preview'
-                                    src={imagePreview2} 
-                                    alt="Preview"
-                                />
-                            }
-                        </div>
                     </div>
                 )}
                 <div className='AppointmentModalFooter'>
@@ -587,9 +533,9 @@ export function BookAppointment({
                             (step === 3 && !chosenDateTime.appointment_date) ||
                             (step === 4 && (!chosenService.service_id || !chosenEmployee.employee_id || !chosenDateTime.appointment_date))
                         }
-                        onClick={step === 4 ? handleAppointmentSubmit : nextStep}
+                        onClick={step === 4 ? handleAddAppointmentToCart : nextStep}
                     >
-                        {step === 4 ? "SUBMIT APPOINTMENT" : "Next >>" }
+                        {step === 4 ? "ADD TO CART" : "Next >>" }
                     </button>
                 </div>
             </div>

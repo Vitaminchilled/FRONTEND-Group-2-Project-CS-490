@@ -174,7 +174,6 @@ function NavBar() {
                   src={emptyCart}
                   alt="Cart"
                 />
-                {`(0)`} {/* eventually add the number of cart items here and add if for when cart isnt empty for different icon*/}
               </NavLink>
             </li>
           </>
