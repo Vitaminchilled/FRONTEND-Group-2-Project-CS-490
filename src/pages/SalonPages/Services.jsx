@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useUser } from "../../context/UserContext";
 import SalonHeader from '../../components/SalonHeader.jsx'
-import stripeBackground from "../../assets/stripeBackground.png"
+import stripeBackground from "../../assets/StripeBackground.png"
 import ServiceItem from '../../components/ServiceItem.jsx'
 
 import { ModalServiceDelete, ModalMessage } from '../../components/Modal.jsx';
