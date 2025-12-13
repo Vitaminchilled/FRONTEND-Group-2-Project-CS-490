@@ -90,6 +90,7 @@ function Login() {
           console.log("Redirecting to: /");
           navigate("/");
         }
+        window.location.reload();
       } else {
         setMessage(data.error || "Login failed.");
       }
