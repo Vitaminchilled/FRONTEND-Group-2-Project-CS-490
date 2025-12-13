@@ -7,7 +7,7 @@ function ProductItem({
     user, salon,
     product, 
     newItem = false, 
-    onSaveEdit, onDelete, onCancelNew
+    onSaveEdit, onDelete, onCancelNew, onAddToCart
 }){
     const [editData, setEditData] = useState({
         ...product
@@ -53,6 +53,18 @@ function ProductItem({
     const handleChange = (event) => {
         const { name, value } = event.target
         setEditData((prev) => ({ ...prev, [name]: value }))
+    }
+
+    const handleAddToCartClick = () => {
+        console.log('Add to Cart button clicked!')
+        console.log('Product:', product)
+        console.log('onAddToCart function exists?', !!onAddToCart)
+        
+        if (onAddToCart && product.product_id) {
+            onAddToCart(product.product_id, 1)
+        } else {
+            console.error('Cannot add to cart - missing onAddToCart function or product_id')
+        }
     }
 
     useEffect(() => {
@@ -246,6 +258,7 @@ function ProductItem({
                         {product.description}
                     </p>
                     <button className='item-btn'
+                        onClick={handleAddToCartClick}
                         disabled={user.type !== 'customer' || product.stock_quantity === 0}
                     >
                         Add to Cart

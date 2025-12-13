@@ -6,6 +6,7 @@ function Cart() {
     const [currentStep, setCurrentStep] = useState(1);
     const { user } = useUser();
     const [items, setItems] = useState([]);
+    const [appointmentItems, setAppointmentItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [appliedRewards, setAppliedRewards] = useState({});
     const [eligibleRewards, setEligibleRewards] = useState({}); 
@@ -16,6 +17,44 @@ function Cart() {
     const [selectedWallet, setSelectedWallet] = useState(null);
     const [orderComplete, setOrderComplete] = useState(false);
     const [orderDetails, setOrderDetails] = useState(null);
+
+    const [promoInputs, setPromoInputs] = useState({});
+    const [appliedPromos, setAppliedPromos] = useState({});
+    const [promoValidation, setPromoValidation] = useState({});
+
+    useEffect(() => {
+        const loadAppointments = () => {
+            const storedAppointments = JSON.parse(sessionStorage.getItem('appointmentCart') || '[]');
+            console.log('Loaded appointments from sessionStorage:', storedAppointments);
+            setAppointmentItems(storedAppointments);
+        };
+        
+        loadAppointments();
+        
+        window.addEventListener('storage', loadAppointments);
+        return () => window.removeEventListener('storage', loadAppointments);
+    }, []);
+
+    const allCartItems = useMemo(() => {
+        const productItems = items.map(item => ({
+            ...item,
+            type: 'product',
+            item_name: item.product_name,
+            item_price: item.unit_price,
+            total: item.line_total
+        }));
+        
+        const apptItems = appointmentItems.map(item => ({
+            ...item,
+            type: 'appointment',
+            item_name: item.service_name,
+            item_price: item.service_price,
+            quantity: 1,
+            total: item.service_price
+        }));
+        
+        return [...productItems, ...apptItems];
+    }, [items, appointmentItems]);
 
     const handleApplyReward = (salonId, rewardData) => {
         setAppliedRewards(prev => {
@@ -63,13 +102,109 @@ function Cart() {
         }
     }, [user?.user_id]);
 
+    const handlePromoInput = (salonId, value) => {
+        setPromoInputs(prev => ({
+            ...prev,
+            [salonId]: value
+        }));
+    };
+
+const validatePromoCode = async (salonId) => {
+    const promoCode = promoInputs[salonId]?.trim();
+    
+    if (!promoCode) {
+        setPromoValidation(prev => ({
+            ...prev,
+            [salonId]: null
+        }));
+        return;
+    }
+    
+    try {
+        const response = await fetch("/api/cart/validatePromo", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                promo_code: promoCode,
+                salon_id: salonId
+            }),
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to validate promo code');
+        }
+        
+        const result = await response.json();
+        
+        setPromoValidation(prev => ({
+            ...prev,
+            [salonId]: result
+        }));
+        
+        if (result.valid) {
+            setAppliedPromos(prev => ({
+                ...prev,
+                [salonId]: {
+                    promo_id: result.promo_id,
+                    name: result.name,
+                    discount_value: result.discount_value,
+                    is_percentage: result.is_percentage
+                }
+            }));
+        } else {
+            setAppliedPromos(prev => {
+                const newPromos = { ...prev };
+                delete newPromos[salonId];
+                return newPromos;
+            });
+        }
+    } catch (error) {
+        console.error('Error validating promo code:', error);
+        setPromoValidation(prev => ({
+            ...prev,
+            [salonId]: { valid: false, message: 'Error validating code' }
+        }));
+    }
+};
+
+const calculateSalonTotalWithDiscount = (salonTotal, salonId) => {
+    let total = salonTotal;
+    const reward = appliedRewards[salonId];
+    if (reward) {
+        let discount = 0;
+        if (reward.is_percentage) {
+            discount = total * (reward.discount_value / 100);
+        } else {
+            discount = Math.min(reward.discount_value, total);
+        }
+        total -= discount;
+    }
+    
+    const promo = appliedPromos[salonId];
+    if (promo) {
+        let discount = 0;
+        if (promo.is_percentage) {
+            discount = total * (promo.discount_value / 100);
+        } else {
+            discount = Math.min(promo.discount_value, total);
+        }
+        total -= discount;
+    }
+    
+    return total;
+};
+
     const grandTotal = useMemo(() => {
-        return items.reduce((total, item) => 
+        const productTotal = items.reduce((total, item) => 
             total + parseFloat(item.line_total), 0);
-    }, [items]);
+        const appointmentTotal = appointmentItems.reduce((total, item) => 
+            total + parseFloat(item.service_price), 0);
+        return productTotal + appointmentTotal;
+    }, [items, appointmentItems]);
 
     const itemsGroupedBySalon = useMemo(() => {
         const salonMap = {};
+        
         items.forEach(item => {
             const salonId = item.salon_id;
             const salonName = item.salon_name;
@@ -82,25 +217,46 @@ function Cart() {
                     items: []
                 };
             }
-            salonMap[salonId].items.push(item);
+            salonMap[salonId].items.push({
+                ...item,
+                type: 'product',
+                item_name: item.product_name
+            });
             salonMap[salonId].total += parseFloat(item.line_total);
         });
+        
+        appointmentItems.forEach(item => {
+            const salonId = item.salon_id;
+            const salonName = item.salon_name;
+            
+            if (!salonMap[salonId]) {
+                salonMap[salonId] = {
+                    id: salonId,
+                    name: salonName,
+                    total: 0,
+                    items: []
+                };
+            }
+            salonMap[salonId].items.push({
+                ...item,
+                type: 'appointment',
+                item_name: item.service_name,
+                line_total: item.service_price
+            });
+            salonMap[salonId].total += parseFloat(item.service_price);
+        });
+        
         console.log('Items grouped by salon:', salonMap);
         return salonMap;
-    }, [items]);
+    }, [items, appointmentItems]);
 
-    const calculateSalonTotalWithDiscount = (salonTotal, salonId) => {
-        const reward = appliedRewards[salonId];
-        if (!reward) return salonTotal;
-        
-        let discount = 0;
-        if (reward.is_percentage) {
-            discount = salonTotal * (reward.discount_value / 100);
-        } else {
-            discount = Math.min(reward.discount_value, salonTotal);
+        useEffect(() => {
+        if (currentStep === 2 && Object.keys(itemsGroupedBySalon).length > 0) {
+            const salonIds = Object.keys(itemsGroupedBySalon).map(id => parseInt(id));
+            console.log('Fetching rewards for salons:', salonIds);
+            fetchEligibleRewards(salonIds);
         }
-        return salonTotal - discount;
-    };
+    }, [currentStep, itemsGroupedBySalon, fetchEligibleRewards]);
 
     const totalWithDiscounts = useMemo(() => {
         let total = 0;
@@ -108,7 +264,7 @@ function Cart() {
             total += calculateSalonTotalWithDiscount(salon.total, salon.id);
         });
         return total;
-    }, [items, appliedRewards, itemsGroupedBySalon]);
+    }, [items, appointmentItems, appliedRewards, itemsGroupedBySalon]);
 
     const [openRewards, setOpenRewards] = useState({});
 
@@ -299,6 +455,16 @@ function Cart() {
         }
     };
 
+    const handleRemoveAppointment = (cartItemId) => {
+        console.log('Removing appointment:', cartItemId);
+        
+        const updatedCart = appointmentItems.filter(item => item.cart_item_id !== cartItemId);
+        setAppointmentItems(updatedCart);
+        sessionStorage.setItem('appointmentCart', JSON.stringify(updatedCart));
+        
+        console.log('Appointment removed successfully');
+    };
+
     const validatePaymentForm = () => {
         if (!paymentFormData.firstName.trim()) {
             alert("Please enter your first name.");
@@ -388,7 +554,7 @@ function Cart() {
     };
 
     const handleContinue = () => {
-        if (items.length === 0) {
+        if (allCartItems.length === 0) {
             alert("Your cart is empty. Please add items before continuing.");
             return;
         }
@@ -417,6 +583,76 @@ function Cart() {
         }
 
         try {
+            console.log('=== PROCESSING ORDER ===');
+            console.log('Products:', items.length);
+            console.log('Appointments:', appointmentItems.length);
+            
+            // First, process payment for products if any exist
+            if (items.length > 0) {
+                const response = await fetch("/api/cart/processPayment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_id: user.user_id,
+                    payment_data: {
+                        ...paymentFormData,
+                        remember_address: paymentFormData.rememberAddress,
+                        remember_card: paymentFormData.rememberCard
+                    },
+                    applied_rewards: appliedRewards,
+                    applied_promos: appliedPromos  // Add this line
+                }),
+            });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    alert(`Payment failed: ${errorData.error}`);
+                    return;
+                }
+
+                const result = await response.json();
+                console.log("Product payment successful. Invoice IDs:", result.invoice_ids);
+            }
+            
+            // Then, create appointments
+            if (appointmentItems.length > 0) {
+                console.log('Booking appointments...');
+                
+                const appointmentPromises = appointmentItems.map(async (appt) => {
+                    const appointmentData = {
+                        salon_id: appt.salon_id,
+                        customer_id: user.user_id,
+                        employee_id: appt.employee_id,
+                        service_id: appt.service_id,
+                        appointment_date: appt.appointment_date,
+                        start_time: appt.start_time,
+                        notes: appt.notes || ''
+                    };
+                    
+                    console.log('Booking appointment:', appointmentData);
+                    
+                    const response = await fetch(`/api/appointments/book`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(appointmentData)
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`Appointment booking failed: ${errorData.error || 'Unknown error'}`);
+                    }
+                    
+                    return await response.json();
+                });
+                
+                const appointmentResults = await Promise.all(appointmentPromises);
+                console.log('All appointments booked successfully:', appointmentResults);
+                sessionStorage.removeItem('appointmentCart');
+                setAppointmentItems([]);
+            }
+            
             const receiptData = {
                 orderDate: new Date().toLocaleDateString(),
                 items: Object.values(itemsGroupedBySalon),
@@ -433,29 +669,6 @@ function Cart() {
                 },
                 cardLast4: paymentFormData.card_number.slice(-4)
             };
-
-            const response = await fetch("/api/cart/processPayment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    user_id: user.user_id,
-                    payment_data: {
-                        ...paymentFormData,
-                        remember_address: paymentFormData.rememberAddress,
-                        remember_card: paymentFormData.rememberCard
-                    },
-                    applied_rewards: appliedRewards
-                }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                alert(`Payment failed: ${errorData.error}`);
-                return;
-            }
-
-            const result = await response.json();
-            console.log("Invoice IDs:", result.invoice_ids);
             
             setOrderDetails(receiptData);
             setOrderComplete(true);
@@ -463,9 +676,11 @@ function Cart() {
             setItems([]);
             setCurrentStep(4);
             
+            console.log('✅ ORDER COMPLETED SUCCESSFULLY');
+            
         } catch (error) {
             console.error("Error placing order:", error);
-            alert("An error occurred while placing your order. Please try again.");
+            alert(`An error occurred while placing your order: ${error.message}`);
         }
     };
 
@@ -480,47 +695,71 @@ function Cart() {
             {/* CART PAGE (Step 1) */}
             {currentStep === 1 && (
                 <div className='step-cart'>
-                {items.length === 0 ? (
+                {allCartItems.length === 0 ? (
                     <p>Your cart is empty.</p>
                 ) : (
                     <div className="cart-container">
                         
                         {/* Cart */}
                         <div className="cart-items-list">
-                            <h2>Your Items ({items.length})</h2>
-                            {items.map((item) => (
-                                <div key={item.cart_item_id} className="cart-item-card">
-                                    <div className="item-header">
-                                        <h3>{item.product_name}</h3>
-                                        <button 
-                                            className="remove-button"
-                                            onClick={() => handleRemoveItem(item.cart_item_id)}
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
-                                    <p className="item-description">{item.description}</p>
-                                    <div className="item-details-row">
-                                        <span className="retail-price">
-                                            Retail Price: ${parseFloat(item.unit_price).toFixed(2)}
-                                        </span>
-                                        <div className="quantity-control">
-                                            <span>Qty:</span>
-                                            <select
-                                                value={item.quantity}
-                                                onChange={(e) => handleQuantityChange(item.cart_item_id, e.target.value)}
-                                                className="qty-dropdown"
+                            <h2>Your Items ({allCartItems.length})</h2>
+                            {allCartItems.map((item) => (
+                                item.type === 'product' ? (
+                                    <div key={item.cart_item_id} className="cart-item-card">
+                                        <div className="item-header">
+                                            <h3>{item.product_name}</h3>
+                                            <button 
+                                                className="remove-button"
+                                                onClick={() => handleRemoveItem(item.cart_item_id)}
                                             >
-                                                {Array.from({ length: item.stock_quantity }, (_, i) => i + 1).map(qty => (
-                                                    <option key={qty} value={qty}>{qty}</option>
-                                                ))}
-                                            </select>
+                                                Remove
+                                            </button>
+                                        </div>
+                                        <p className="item-description">{item.description}</p>
+                                        <div className="item-details-row">
+                                            <span className="retail-price">
+                                                Retail Price: ${parseFloat(item.unit_price).toFixed(2)}
+                                            </span>
+                                            <div className="quantity-control">
+                                                <span>Qty:</span>
+                                                <select
+                                                    value={item.quantity}
+                                                    onChange={(e) => handleQuantityChange(item.cart_item_id, e.target.value)}
+                                                    className="qty-dropdown"
+                                                >
+                                                    {Array.from({ length: item.stock_quantity }, (_, i) => i + 1).map(qty => (
+                                                        <option key={qty} value={qty}>{qty}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="item-total">
+                                            Total: ${parseFloat(item.line_total).toFixed(2)}
                                         </div>
                                     </div>
-                                    <div className="item-total">
-                                    Total: ${parseFloat(item.line_total).toFixed(2)}
+                                ) : (
+                                    <div key={item.cart_item_id} className="cart-item-card appointment-card">
+                                        <div className="item-header">
+                                            <h3>Appointment {item.service_name}</h3>
+                                            <button 
+                                                className="remove-button"
+                                                onClick={() => handleRemoveAppointment(item.cart_item_id)}
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                        <div className="appointment-details">
+                                            <p><strong>Salon:</strong> {item.salon_name}</p>
+                                            <p><strong>Stylist:</strong> {item.employee_name}</p>
+                                            <p><strong>Date:</strong> {item.appointment_date}</p>
+                                            <p><strong>Time:</strong> {item.start_time.slice(0,5)} - {item.end_time.slice(0,5)}</p>
+                                            {item.notes && <p><strong>Notes:</strong> {item.notes}</p>}
+                                        </div>
+                                        <div className="item-total">
+                                            Price: ${parseFloat(item.service_price).toFixed(2)}
+                                        </div>
                                     </div>
-                                </div>
+                                )
                             ))}
                         </div>
 
@@ -660,7 +899,34 @@ function Cart() {
                                             <span className="salon-total">${salon.total.toFixed(2)}</span> 
                                         </div>
                                         
-                                        <input type="text" placeholder="Promo code" className="promo-input" />
+                                        <div className="promo-input-wrapper">
+                                            <input 
+                                                type="text" 
+                                                placeholder="Promo code" 
+                                                className={`promo-input ${
+                                                    promoValidation[salon.id]?.valid ? 'promo-valid' : 
+                                                    promoValidation[salon.id]?.valid === false ? 'promo-invalid' : ''
+                                                }`}
+                                                value={promoInputs[salon.id] || ''}
+                                                onChange={(e) => handlePromoInput(salon.id, e.target.value)}
+                                                onBlur={() => validatePromoCode(salon.id)}
+                                                onKeyPress={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        validatePromoCode(salon.id);
+                                                    }
+                                                }}
+                                            />
+                                            {promoValidation[salon.id]?.valid === false && (
+                                                <span className="promo-error-message">
+                                                    {promoValidation[salon.id]?.message || 'Invalid code'}
+                                                </span>
+                                            )}
+                                            {promoValidation[salon.id]?.valid && (
+                                                <span className="promo-success-message">
+                                                    ✓ {appliedPromos[salon.id]?.name} applied
+                                                </span>
+                                            )}
+                                        </div>
                                         
                                         {hasRewards && (
                                             <>
@@ -681,7 +947,7 @@ function Cart() {
                                                             salonRewards.rewards.map(reward => {
                                                                 const discountLabel = reward.is_percentage 
                                                                     ? `${reward.discount_value}% Off`
-                                                                    : `${reward.discount_value} Off`;
+                                                                    : `$${reward.discount_value} Off`;
                                                                 
                                                                 const isSelected = appliedRewards[salon.id]?.loyalty_program_id === reward.loyalty_program_id;
                                                                 
@@ -706,9 +972,45 @@ function Cart() {
                                             <p className="no-rewards-message">No rewards available for this salon</p>
                                         )}
                                         
-                                        {appliedRewards[salon.id] && (
-                                            <div className="applied-discount">
-                                                Discount Applied: -${(salon.total - calculateSalonTotalWithDiscount(salon.total, salon.id)).toFixed(2)}
+                                        {(appliedRewards[salon.id] || appliedPromos[salon.id]) && (
+                                            <div className="applied-discounts">
+                                                {appliedRewards[salon.id] && (
+                                                    <div className="applied-discount">
+                                                        <span>Loyalty Reward:</span>
+                                                        <span>-${(() => {
+                                                            const reward = appliedRewards[salon.id];
+                                                            if (reward.is_percentage) {
+                                                                return (salon.total * (reward.discount_value / 100)).toFixed(2);
+                                                            }
+                                                            return Math.min(reward.discount_value, salon.total).toFixed(2);
+                                                        })()}</span>
+                                                    </div>
+                                                )}
+                                                {appliedPromos[salon.id] && (
+                                                    <div className="applied-discount">
+                                                        <span>Promo Code ({appliedPromos[salon.id].name}):</span>
+                                                        <span>-${(() => {
+                                                            let afterReward = salon.total;
+                                                            const reward = appliedRewards[salon.id];
+                                                            if (reward) {
+                                                                if (reward.is_percentage) {
+                                                                    afterReward -= salon.total * (reward.discount_value / 100);
+                                                                } else {
+                                                                    afterReward -= Math.min(reward.discount_value, salon.total);
+                                                                }
+                                                            }
+                                                            const promo = appliedPromos[salon.id];
+                                                            if (promo.is_percentage) {
+                                                                return (afterReward * (promo.discount_value / 100)).toFixed(2);
+                                                            }
+                                                            return Math.min(promo.discount_value, afterReward).toFixed(2);
+                                                        })()}</span>
+                                                    </div>
+                                                )}
+                                                <div className="applied-discount total-after-discount">
+                                                    <span>After Discounts:</span>
+                                                    <span>${calculateSalonTotalWithDiscount(salon.total, salon.id).toFixed(2)}</span>
+                                                </div>
                                             </div>
                                         )}
                                         
@@ -757,7 +1059,12 @@ function Cart() {
                                         <h4>{salon.name}</h4>
                                         {salon.items.map(item => (
                                             <div key={item.cart_item_id} className="review-item">
-                                                <span>{item.product_name} (x{item.quantity})</span>
+                                                <span>
+                                                    {item.type === 'appointment' ? 'Appointment' : ''}
+                                                    {item.item_name} 
+                                                    {item.type === 'product' && ` (x${item.quantity})`}
+                                                    {item.type === 'appointment' && ` - ${item.appointment_date} at ${item.start_time.slice(0,5)}`}
+                                                </span>
                                                 <span>${parseFloat(item.line_total).toFixed(2)}</span>
                                             </div>
                                         ))}
@@ -829,7 +1136,12 @@ function Cart() {
                                     <h3 className="receipt-salon-name">{salon.name}</h3>
                                     {salon.items.map(item => (
                                         <div key={item.cart_item_id} className="receipt-line">
-                                            <span>{item.product_name} (x{item.quantity})</span>
+                                            <span>
+                                                {item.type === 'appointment' ? 'Appointment' : ''}
+                                                {item.item_name} 
+                                                {item.type === 'product' && ` (x${item.quantity})`}
+                                                {item.type === 'appointment' && ` - ${item.appointment_date}`}
+                                            </span>
                                             <span>${parseFloat(item.line_total).toFixed(2)}</span>
                                         </div>
                                     ))}

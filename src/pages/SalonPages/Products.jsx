@@ -208,6 +208,66 @@ function Products() {
         }
     }
 
+    const handleAddToCart = async (product_id, quantity = 1) => {
+        console.log('=== ADD TO CART INITIATED ===')
+        console.log('Product ID:', product_id)
+        console.log('Quantity:', quantity)
+        console.log('Full user object:', user)
+        console.log('User ID (user.id):', user.id)
+        console.log('User ID (user.user_id):', user.user_id)
+        console.log('Salon ID:', salon_id)
+        
+        try {
+            // Use user.user_id instead of user.id if that's what's available
+            const customer_id = user.user_id || user.id
+            
+            const requestBody = {
+                customer_id: customer_id,
+                salon_id: parseInt(salon_id),
+                product_id: parseInt(product_id),
+                quantity: parseInt(quantity)
+            }
+            console.log('Request body:', requestBody)
+            console.log('All values present?', {
+                has_customer_id: !!requestBody.customer_id,
+                has_salon_id: !!requestBody.salon_id,
+                has_product_id: !!requestBody.product_id
+            })
+            
+            const response = await fetch('/api/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestBody)
+            })
+
+            console.log('Response status:', response.status)
+            
+            if (!response.ok) {
+                const errorData = await response.json()
+                console.error('❌ ERROR RESPONSE:', errorData)
+                throw new Error(`Add to cart failed: ${errorData.error || 'Unknown error'}`)
+            }
+
+            const data = await response.json()
+            console.log('✅ SUCCESS RESPONSE:', data)
+            console.log('Cart ID:', data.cart_id)
+            
+            setModalMessage({
+                title: 'Success',
+                content: data.message || 'Product added to cart successfully!'
+            })
+        } catch (err) {
+            console.error('❌ CATCH ERROR:', err)
+            setModalMessage({
+                title: 'Error',
+                content: err.message || 'Could not add product to cart.'
+            })
+        }
+        console.log('=== ADD TO CART COMPLETED ===')
+    }
+
     return (
         <>
             {(!loading && error ? (
@@ -239,7 +299,8 @@ function Products() {
                                 salon={salon}
                                 product={product}
                                 onSaveEdit={handleSaveEdit}
-                                onDelete={() => handleDeleteClick(product)} 
+                                onDelete={() => handleDeleteClick(product)}
+                                onAddToCart={handleAddToCart}
                             />
                         ))}
                         {newProduct && (
