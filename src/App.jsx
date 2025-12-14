@@ -9,6 +9,7 @@ import { useUser } from "./context/UserContext";
 import SalonDashboard from './pages/SalonPages/SalonDashboard.jsx'
 import SalonServices from './pages/SalonPages/Services.jsx'
 import SalonProducts from './pages/SalonPages/Products.jsx'
+import SalonGallery from './pages/SalonPages/Gallery.jsx'
 import Reviews from './pages/SalonPages/Reviews.jsx'
 import ManageEmployeeSchedule from './pages/SalonPages/ManageEmployeeSchedule';
 import OperatingHours from './pages/SalonPages/OperatingHours.jsx'
@@ -65,6 +66,7 @@ function App() {
             <Route path="/salon/:salon_id" element={<SalonDashboard />} />
             <Route path="/salon/:salon_id/services" element={<SalonServices />} />
             <Route path="/salon/:salon_id/products" element={<SalonProducts />} />
+            <Route path="/salon/:salon_id/gallery" element={<SalonGallery />} />
             <Route path="/salon/:salon_id/reviews" element={<Reviews />} />
             <Route path="/salon/:salon_id/manage-schedules" element={<ManageEmployeeSchedule />} />
             <Route path="/salon/:salon_id/operating-hours" element={<OperatingHours />} />

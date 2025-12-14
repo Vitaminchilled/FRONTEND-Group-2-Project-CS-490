@@ -40,6 +40,7 @@ export default function MyAppointments() {
     useEffect(() => {
         if (user?.user_id) {
             retrieveAllAppointments()
+            retrievePaymentHistory()
         }
     }, [user?.user_id])
 
@@ -111,6 +112,28 @@ export default function MyAppointments() {
         setRescheduleOpen(true);
     }
 
+    const retrievePaymentHistory = async () => {
+        
+        try {
+            const history_response = await fetch(`/api/payments/history/${user?.user_id}`)
+
+            if(!history_response.ok) {
+                const errorText = await history_response.json()
+                throw new Error(`Appointments fetch failed: HTTP error ${history_response.status}: ${errorText.error || errorText}`)
+            }
+            
+            const history_data = await history_response.json()
+
+            const { 
+                payments: retrievedHistory=[]
+            } = history_data || {}
+            setPastPurchases(retrievedHistory)
+            console.log(retrievedHistory)
+        } catch (err) {
+            console.error('Fetch error:', err)
+        }
+    }
+
     return (
         <>
             {(user?.type !== "customer" ? (
@@ -173,15 +196,20 @@ export default function MyAppointments() {
                                 {pastPurchases.length !== 0 && (
                                     <>
                                         <h2 className="inner-title">Product Purchases</h2>
-                                        {pastPurchases.map((appt) => {
-                                            return (
-                                                <AppointmentItem
-                                                    key={appt.appointment_id}
-                                                    accountType = 'customer'
-                                                    appointment={appt}
-                                                />
-                                            )
-                                        })}
+                                        {pastPurchases.map((invoice) => (
+                                            invoice.items
+                                            .filter(item => item.type === 'product') // only show products
+                                            .map((item) => (
+                                            <div className="history-item" key={item.line_item_id}>
+                                                <div className="grid-layout">
+                                                <h3 className="salon-name">{item.product?.salon_name || "Unknown Salon"}</h3>
+                                                <p className="purchase-date">{invoice.issued_date}</p>
+                                                <p className="product-name">{item.product?.name || "Unnamed Product"}</p>
+                                                <p className="product-price">${item.unit_price.toFixed(2)}</p>
+                                                </div>
+                                            </div>
+                                            ))
+                                        ))}
                                     </>
                                 )}
                             </div>

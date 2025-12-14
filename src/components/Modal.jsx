@@ -372,6 +372,38 @@ export function ModalReplyDelete ({setModalOpen, reply, onConfirm}) {
     );
 };
 
+export function ModalImageDelete ({setModalOpen, image, onConfirm}) {
+    if (!image) return null /* might remove this later */
+
+    return (
+        <div className='TopModalBackground'>
+            <div className='TopModalContainer'>
+                <div className='ModalTitle'>
+                    <h2>Delete Image</h2>
+                </div>
+                <div className='ModalBody'>
+                    <label>Are you sure you want to delete this image?</label>
+                </div>
+                <div className='ModalFooter'>
+                    <button 
+                        onClick={() => setModalOpen(false)}
+                    >
+                        Cancel
+                    </button>
+                    <button 
+                        onClick={() => {
+                            onConfirm(image) //get image_url reuse for diff tables
+                            setModalOpen(false)
+                        }}
+                    >
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 /* use for alerts like "New service created", "user deleted", etc */
 export function ModalMessage ({setModalOpen, title, content}) {
     return (
