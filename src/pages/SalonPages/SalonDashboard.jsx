@@ -708,7 +708,7 @@ const enableLoyaltyProgram = async (loyalty_program_id) => {
                             {tags.map(tag => <span key={tag} className="tag-pill">{tag}</span>)}
                           </div>
                         </div>
-                        {user?.type === 'owner' && (
+                        {user?.type === 'owner' && Number(user?.salon_id) === Number(salon_id) && (
                           <div className="loyalty-actions">
                             <button onClick={() => editLoyaltyProgram(program.loyalty_program_id, {/* new data */})}>
                               Edit
