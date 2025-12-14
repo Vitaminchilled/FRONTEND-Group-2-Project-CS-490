@@ -38,14 +38,14 @@ function App() {
 
         <div className="AppContent"> 
           <Routes >
-            {(user.type === 'none' || user.type === 'customer') && (
+            {(user?.type === 'none' || user?.type === 'customer') && (
               <Route path="/" element={<Home />} />
             )}
             
-            {(user.type === 'owner') && (
+            {(user?.type === 'owner') && (
               <Route path="/" element={
-                user.salon_id ? (
-                  <Navigate to={`/salon/${user.salon_id}`} replace />
+                user?.salon_id ? (
+                  <Navigate to={`/salon/${user?.salon_id}`} replace />
                 ) : (
                   <div style={{padding: '20px', textAlign: 'center'}}>
                     <h2>No Salon Associated</h2>
@@ -55,7 +55,7 @@ function App() {
               } />
             )}
             
-            {(user.type === 'admin') && (
+            {(user?.type === 'admin') && (
               <Route path="/" element={<Salons />} />
             )}
 

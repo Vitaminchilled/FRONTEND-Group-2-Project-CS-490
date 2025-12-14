@@ -1,6 +1,6 @@
 .staff-item {
     width: 60vw;
-    max-width: 700px;
+    max-width: 520px;
     background-color: white;
     border: 1px solid #a4a4a4;
     border-radius: 10px;
@@ -11,6 +11,15 @@
 
 .staff-item:hover {
     background-color: #f1f1f1;
+}
+
+.staff-item.selected {
+    background-color: #f4e6d0;
+    border: 1px solid #e1ceaf;
+}
+
+.staff-item.selected:hover {
+    background-color: #ead6b6;
 }
 
 .staff-item .employee-grid-layout {
@@ -46,10 +55,11 @@
 .staff-item .employee-grid-layout .employee-description {
     grid-row: 2;
     grid-column: 2;
-    font-family: Kumbh Sans;
+    font-family: 'Kumbh Sans';
     font-size: 18px;
     margin: 0;
     width: 100%;
+    word-break: break-all;
 }
 
 .staff-item .tag-section {

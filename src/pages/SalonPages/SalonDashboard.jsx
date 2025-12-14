@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { useParams, NavLink, useNavigate, Navigate } from 'react-router-dom'
 import { useUser } from "../../context/UserContext";
 import SalonHeader from '../../components/SalonHeader.jsx'
-import employeeIcon from '../../assets/PersonIcon.png'
 import EmployeeItem from '../../components/EmployeeItem.jsx'
+
+import { Scissors, Store, Image, NotebookPen } from 'lucide-react'
 
 import './SalonDashboard.css'
 import {ModalEmployeeDelete, ModalMessage} from '../../components/Modal.jsx';
@@ -19,9 +20,7 @@ function SalonDashboard() {
   const [masterTags, setMasterTags] = useState([])
   const [employees, setEmployees] = useState([])
   const [reviews, setReviews] = useState([])
-  const [startIndex, setStartIndex] = useState(0)
-  const [reviewCount, setReviewCount] = useState(0)
-  const [rating, setRating] = useState()
+ const [rating, setRating] = useState()  
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -65,7 +64,7 @@ function SalonDashboard() {
     try {
       const salon_response = await fetch(`/api/salon/${salon_id}/header`)
       const employees_response = await fetch(`/api/salon/${salon_id}/employees`)
-      const reviews_response = await fetch(`/api/salon/${salon_id}/reviews`)
+      const reviews_response = await fetch(`/api/salon/${salon_id}/dashboard/reviews`)
 
       if (salon_response.status === 404) {
         setError("Salon not found")
@@ -102,15 +101,13 @@ function SalonDashboard() {
       } = employees_data || {}
 
       const { 
-        reviews: retrievedReviews=[],
-        review_count: retrievedReviewCount=0
+        reviews: retrievedReviews=[]
       } = reviews_data || {}
       
       setSalon(retrievedSalon)
       setTags(retrievedTags)
       setEmployees(retrievedEmployees)
       setReviews(retrievedReviews)
-      setReviewCount(retrievedReviewCount)
       setMasterTags(retrievedMasterTags)
 
       if (retrievedSalon?.average_rating != null) {
@@ -342,20 +339,6 @@ function SalonDashboard() {
     }
   }
 
-  /* reviews */
-  const reviewsPerPage = 3
-  const visibleReviews = reviews.slice(startIndex, startIndex + reviewsPerPage)
-
-  const handlePrev = () => {
-    setStartIndex((prev) => Math.max(0, prev - reviewsPerPage))
-  }
-
-  const handleNext = () => {
-    setStartIndex((prev) =>
-      Math.min(reviews.length - reviewsPerPage, prev + reviewsPerPage)
-    )
-  }
-
   return (
     <>
       {(!loading && error ? (
@@ -367,31 +350,48 @@ function SalonDashboard() {
               headerTitle={salon.salon_name}
               headerTags={tags}
               headerRatingValue={salon.average_rating}
+              isHome={true}
             />
 
             <div className='dashboard-cards'>
               <NavLink className='card'
                 to={`/salon/${salon_id}/services`}
                 end={false}>
-                Services
+                <Scissors className='card-logo'
+                  size={70}
+                  strokeWidth={1}
+                />
+                <p className="card-title">Services</p>
               </NavLink>
               
               <NavLink className='card'
                 to={`/salon/${salon_id}/products`}
                 end={false}>
-                Products
+                <Store className='card-logo'
+                  size={70}
+                  strokeWidth={1}
+                />
+                <p className="card-title">Products</p>
               </NavLink>
 
               <NavLink className='card'
                 to={`/salon/${salon_id}/gallery`} 
                 end={false}>
-                Gallery
+                <Image className='card-logo'
+                  size={70}
+                  strokeWidth={1}
+                />
+                <p className="card-title">Gallery</p>
               </NavLink>
 
               <NavLink className='card'
                 to={`/salon/${salon_id}/reviews`} 
                 end={false}>
-                Reviews
+                <NotebookPen className='card-logo'
+                  size={70}
+                  strokeWidth={1}
+                />
+                <p className="card-title">Reviews</p>
               </NavLink>
 
             </div>
@@ -415,12 +415,7 @@ function SalonDashboard() {
             </div>
 
             <p className='about-us'>
-              At this Salon, we believe great hair can change 
-              your day and your confidence. Our expert stylists 
-              specialize in modern cuts, vibrant color, and personalized 
-              care that brings out your unique style. Whether you're 
-              here for a quick refresh or a total transformation, we'll 
-              make sure you leave looking (and feeling) awesome
+              {salon.description}
             </p>
 
             <div className='dashboard-group'>
@@ -455,7 +450,7 @@ function SalonDashboard() {
                 />
               )}
             </div>
-            {(user.type === 'owner') && (
+            {(user?.type === 'owner' && user?.salon_id === salon_id) && (
               <button className='add-salon-item'
                 onClick={() => setNewEmployee({
                   employee_id: null,
@@ -478,9 +473,6 @@ function SalonDashboard() {
                 <h2 className="group-title">
                   Reviews
                 </h2>
-                <p className="group-extra">
-                  {`${reviewCount} Review(s)`}
-                </p>
                 <div className="rating-div">
                   <p className={salon.average_rating ? "rating-available" : "rating-unavailable"}>{rating}</p>
                 </div>
@@ -489,25 +481,11 @@ function SalonDashboard() {
             </div>
 
             <div className='review-content'>
-              <div className='review-btn'>
-                <button className='prev-next'
-                  onClick={handlePrev}
-                  disabled={startIndex === 0}
-                >
-                  Prev
-                </button>
-                <button className='prev-next'
-                  onClick={handleNext}
-                  disabled={startIndex + reviewsPerPage >= reviews.length}
-                >
-                  Next
-                </button>
-              </div>
               <div className='reviews'>
-                {!visibleReviews || visibleReviews.length === 0 ? (
+                {!reviews || reviews.length === 0 ? (
                   <p>No reviews available</p>
                 ) : (
-                  visibleReviews.map((review) => {
+                  reviews.map((review) => {
                     const stars = review.rating ? getStarString(review.rating) : "No rating available"
 
                     return (

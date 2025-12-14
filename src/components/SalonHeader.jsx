@@ -12,7 +12,7 @@ import { Pen, Pencil } from 'lucide-react'
 
 /* ({ salon_id, headerImage, headerTitle, headerTags, headerRating }) */
 function SalonHeader({ 
-  salonID, headerTitle, headerTags, headerRatingValue//,
+  salonID, headerTitle, headerTags, headerRatingValue, isHome = false//,
   //user, setModalMessage
 }) {
   const { user } = useUser();
@@ -149,13 +149,23 @@ function SalonHeader({
           backgroundImage: `url(${headerImage})` /* {{headerImage}}? */
         }}
       >
-        <NavLink to={`/salon/${salonID}`} end={false} className="header-btn">
-          <img
-            className='image'
-            src={homeIcon}
-            alt="<"
-          />
-        </NavLink>
+        {isHome ? (
+          <div className="header-btn disabled" title="You are currently on home">
+            <img src={homeIcon} alt="home" className="image" />
+          </div>
+        ) : (
+          <NavLink className="header-btn"
+            to={`/salon/${salonID}`} 
+            end={false}
+            title="Navigate back to Salon Home"
+          >
+            <img
+              className='image'
+              src={homeIcon}
+              alt="<"
+            />
+          </NavLink>
+        )}
         {user.type === 'customer' && (
           (isFavorite) ? (
             <button className="header-btn"

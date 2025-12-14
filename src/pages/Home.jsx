@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import background from '../assets/homePage_background.png';
 import './Home.css'
+import { useUser } from "./../context/UserContext";
 
 function Salon( {salon} ) {
   const stars = Array.from({ length: 5 }, (_, i) => {
@@ -74,6 +75,7 @@ function TagGroup( {tag} ){
 }
 
 function Home() {
+  const {user, setUser, loading: userLoading} = useUser();
   const tagRefs = useRef({});
 
   const scrollToTag = (tag) => {
@@ -133,8 +135,8 @@ function Home() {
   }
 
   useEffect(() => {
-    getFavoritedSalons()
-  },[])
+    if (user?.user_id) getFavoritedSalons()
+  },[user?.user_id])
 
   return (
     <div className="Home">
@@ -157,7 +159,7 @@ function Home() {
         ))}
       </div>
 
-      {favorites.length > 0 && (
+      {user?.type === 'customer' && favorites.length > 0 && (
         <div className="TagGroup">
           <h1>Favorites</h1>
           <hr />
