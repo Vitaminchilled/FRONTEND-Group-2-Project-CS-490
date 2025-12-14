@@ -9,7 +9,7 @@ import {ModalProductDelete, ModalMessage} from '../../components/Modal.jsx';
 
 function Products() {
     const { salon_id } = useParams()
-    const {user} = useUser()
+    const {user, setUser, loading: userLoading} = useUser();
     const [salon, setSalon] = useState({})
     const [tags, setTags] = useState([])
     const [products, setProducts] = useState([])
@@ -291,28 +291,34 @@ function Products() {
                     </div>
 
                     <div className="product-group">
-                        {products.map((product) => (
-                            <ProductCard
-                                key={product.product_id}
-                                accountType={user.type}
-                                user={user}
-                                salon={salon}
-                                product={product}
-                                onSaveEdit={handleSaveEdit}
-                                onDelete={() => handleDeleteClick(product)}
-                                onAddToCart={handleAddToCart}
-                            />
-                        ))}
-                        {newProduct && (
-                            <ProductCard
-                            accountType={user.type}
-                            product={newProduct}
-                            newItem={true}
-                            onSaveEdit={handleAddProduct}
-                            onCancelNew={handleCancelNewProduct}                        />
+                        {products.length === 0 ? (
+                            <p className='not-found'>No products listed on this salon.</p>
+                        ) : (
+                            <>
+                                {products.map((product) => (
+                                    <ProductCard
+                                        key={product.product_id}
+                                        accountType={user.type}
+                                        user={user}
+                                        salon={salon}
+                                        product={product}
+                                        onSaveEdit={handleSaveEdit}
+                                        onDelete={() => handleDeleteClick(product)}
+                                        onAddToCart={handleAddToCart}
+                                    />
+                                ))}
+                                {newProduct && (
+                                    <ProductCard
+                                    accountType={user.type}
+                                    product={newProduct}
+                                    newItem={true}
+                                    onSaveEdit={handleAddProduct}
+                                    onCancelNew={handleCancelNewProduct}                        />
+                                )}
+                            </>
                         )}
                     </div>
-                    {(user.type === 'owner') && (
+                    {(user?.type === 'owner' && user?.salon_id === salon_id) && (
                         <button className='add-salon-item'
                             onClick={() => setNewProduct({
                                 product_id: null,

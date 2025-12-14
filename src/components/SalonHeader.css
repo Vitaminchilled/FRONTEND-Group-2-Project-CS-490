@@ -24,6 +24,7 @@
     background-color: #b98a59;
     color: white;
     border-radius: 50px;
+    border: none;
     width: 30px;
     height: 30px;
     display: flex;
@@ -31,6 +32,34 @@
     justify-content: center;
     margin-bottom: 8px;
     text-decoration: none;
+    transition: all 0.5s ease;
+}
+
+.header-btn.disabled {
+    background-color: #dcbc99;
+    color: white;
+    border-radius: 50px;
+    border: none;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    text-decoration: none;
+    transition: all 0.5s ease;
+}
+
+.header-btn.disabled:hover {
+    background-color: #dcbc99;
+    color: white;
+    cursor: not-allowed;
+}
+
+
+.header-btn:hover {
+    background-color: #e1b78a;
+    color: white;
 }
 
 .header-btn .image {
