@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import './Modal.css';
 
 export function ModalView ({setModalOpen, salon}) {
@@ -31,14 +32,15 @@ export function ModalView ({setModalOpen, salon}) {
 async function handleVerification(salonId, isVerified, setModalOpen, verifyChange) {
     try {
         const response = await fetch("/api/admin/verifySalon", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            salon_id: salonId,
-            is_verified: isVerified,
-        }),
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify({
+                salon_id: salonId,
+                is_verified: isVerified,
+            })
         });
 
         if (!response.ok) {
@@ -55,6 +57,34 @@ async function handleVerification(salonId, isVerified, setModalOpen, verifyChang
 }
 
 export function ModalVerify ({setModalOpen, salon, verifyChange}) {
+    const [loading, setLoading] = useState(false)
+    const [status, setStatus] = useState(null)
+
+    const handleConfirm = async () => {
+        setLoading(true);
+        setStatus(null);
+
+        try {
+            await handleVerification(
+                salon.salon_id,
+                true,
+                () => {}, // don't close immediately
+                verifyChange
+            )
+
+            setStatus("success")
+
+            // small delay so user sees success
+            setTimeout(() => {
+                setModalOpen(false)
+            }, 1000)
+        } catch {
+            setStatus("error")
+        } finally {
+            setLoading(false)
+        }
+    }
+
     return (
         <div className='ModalBackground'>
             <div className='ModalContainer'>
@@ -62,11 +92,20 @@ export function ModalVerify ({setModalOpen, salon, verifyChange}) {
                     <h2>{salon.name}</h2>
                 </div>
                 <div className='ModalBody'>
-                    <label>Are you sure you want to verify?</label>
+                    {loading && <p>Processing verification…</p>}
+                    {status === "success" && <p className="success">✔ Verified successfully</p>}
+                    {status === "error" && <p className="error">✖ Verification failed</p>}
+                    {!loading && !status && (
+                        <label>Are you sure you want to verify?</label>
+                    )}
                 </div>
                 <div className='ModalFooter'>
-                    <button onClick={() => setModalOpen(false)}>Cancel</button>
-                    <button onClick={() => handleVerification(salon.salon_id, true, setModalOpen, verifyChange)}>Confirm</button>
+                    <button onClick={() => setModalOpen(false)} disabled={loading}>
+                        Cancel
+                    </button>
+                    <button onClick={handleConfirm} disabled={loading}>
+                        {loading ? "Verifying..." : "Confirm"}
+                    </button>
                 </div>
             </div>
         </div>
@@ -74,6 +113,34 @@ export function ModalVerify ({setModalOpen, salon, verifyChange}) {
 };
 
 export function ModalReject ({setModalOpen, salon, verifyChange}) {
+    const [loading, setLoading] = useState(false)
+    const [status, setStatus] = useState(null)
+
+    const handleConfirm = async () => {
+        setLoading(true);
+        setStatus(null);
+
+        try {
+            await handleVerification(
+                salon.salon_id,
+                false,
+                () => {}, // don't close immediately
+                verifyChange
+            )
+
+            setStatus("success")
+
+            // small delay so user sees success
+            setTimeout(() => {
+                setModalOpen(false)
+            }, 1200)
+        } catch {
+            setStatus("error")
+        } finally {
+            setLoading(false)
+        }
+    }
+    
     return (
         <div className='ModalBackground'>
             <div className='ModalContainer'>
@@ -81,11 +148,20 @@ export function ModalReject ({setModalOpen, salon, verifyChange}) {
                     <h2>{salon.name}</h2>
                 </div>
                 <div className='ModalBody'>
-                    <label>Are you sure you want to reject?</label>
+                    {loading && <p>Processing verification…</p>}
+                    {status === "success" && <p className="success">✔ Rejected successfully</p>}
+                    {status === "error" && <p className="error">✖ Rejection failed</p>}
+                    {!loading && !status && (
+                        <label>Are you sure you want to reject?</label>
+                    )}
                 </div>
                 <div className='ModalFooter'>
-                    <button onClick={() => setModalOpen(false)}>Cancel</button>
-                    <button onClick={() => handleVerification(salon.salon_id, false, setModalOpen, verifyChange)}>Confirm</button>
+                    <button onClick={() => setModalOpen(false)} disabled={loading}>
+                        Cancel
+                    </button>
+                    <button onClick={handleConfirm} disabled={loading}>
+                        {loading ? "Rejecting..." : "Confirm"}
+                    </button>
                 </div>
             </div>
         </div>

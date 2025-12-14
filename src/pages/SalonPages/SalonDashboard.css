@@ -209,6 +209,7 @@
     grid-column: 2;
     margin: 0;
     justify-self: end;
+    font-size: 30px;
 }
 
 .review-item .grid-layout .review-rating.available {

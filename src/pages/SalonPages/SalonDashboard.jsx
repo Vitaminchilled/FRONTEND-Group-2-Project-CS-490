@@ -20,7 +20,13 @@ function SalonDashboard() {
   const [masterTags, setMasterTags] = useState([])
   const [employees, setEmployees] = useState([])
   const [reviews, setReviews] = useState([])
- const [rating, setRating] = useState()  
+  const [rating, setRating] = useState()
+
+  /* IF USER LOGGED IN GET CUSTOMER POINTS */
+  const [customerPoints, setCustomerPoints] = useState(0)
+  /* GET SALON LOYALTY PROGRAMS */
+  const [loyaltyPrograms, setLoyaltyPrograms] = useState([])
+  const [activePrograms, setActivePrograms] = useState([])
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -126,6 +132,7 @@ function SalonDashboard() {
 
   useEffect(() => {
     retrieveSalons()
+    retrieveSalonLoyalty()
   }, [salon_id])
 
   const handleLogout = async () => {
@@ -339,6 +346,66 @@ function SalonDashboard() {
     }
   }
 
+  /* loyalty */
+
+  const retrieveCustomerPoints = async () => {
+    
+
+    try {
+      const points_response = await fetch(`/api/loyalty/${salon_id}/points/${user?.user_id}`, {
+        credentials: 'include'
+      })
+
+      if(!points_response.ok) {
+        const errorText = await points_response.json()
+        throw new Error(`Points fetch failed: HTTP error ${points_response.status}: ${errorText.error || errorText}`)
+      }
+
+      const points_data = await points_response.json()
+
+      const { 
+        points_earned: retrievedEarned=[], 
+        points_redeemed: retrievedRedeemed=[], 
+        available_points: retrievedAvailable=[]
+      } = points_data || {}
+
+      setCustomerPoints(retrievedAvailable)
+      console.log(points_data)
+
+    } catch (err) {
+      console.error('Fetch error:', err)
+    }
+  }
+
+  const retrieveSalonLoyalty = async () => {
+    try {
+      const loyalty_response = await fetch(`/api/loyalty/viewall/${salon_id}`)
+
+      if(!loyalty_response.ok) {
+        const errorText = await loyalty_response.json()
+        throw new Error(`Loyalty fetch failed: HTTP error ${loyalty_response.status}: ${errorText.error || errorText}`)
+      }
+
+      const loyalty_data = await loyalty_response.json()
+
+      const { 
+        loyalty: retrievedLoyalty=[]
+      } = loyalty_data || {}
+
+      setLoyaltyPrograms(retrievedLoyalty)
+      console.log(loyalty_data)
+
+      const activeLoyalty = retrievedLoyalty.filter(program => program.is_active)
+      setActivePrograms(activeLoyalty)
+    } catch (err) {
+      console.error('Fetch error:', err)
+    }
+  }
+
+  useEffect(() => {
+    if (user?.type === 'customer' && user?.user_id) retrieveCustomerPoints()
+  }, [user?.user_id])
+
   return (
     <>
       {(!loading && error ? (
@@ -510,15 +577,52 @@ function SalonDashboard() {
                 <h2 className="group-title">
                   Loyalty Rewards
                 </h2>
-                <p className="group-extra">
-                  200 Points in Account 
-                </p>
+                {user?.type === "customer" && (
+                  <p className="group-extra">
+                    {customerPoints} Points Currently Available
+                  </p>
+                )}
               </div>
               <div className='grey-divider'></div>
             </div>
 
             <div className='loyalty-rewards'>
-              {/* loyalty goes here */}
+              {user?.type === 'owner' ? (
+                loyaltyPrograms.map((program) => (
+                  <div key={program.loyalty_program_id} className="salon-card expanded">
+                    <div className="salon-summary">
+                      <div className="salon-name-points">
+                        <span className="salon-name-text">{salon.salon_name}</span>
+                        <span className="current-points">{customerPoints} Points</span>
+                      </div>
+                      <div className="rewards-detail-list">
+                        <div key={program.loyalty_program_id} className="reward-item-row">
+                          <span className="reward-text">{program.name}</span>
+                          <div className="reward-tags">{program.tags}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                activePrograms.map((program) => (
+                  <div key={program.loyalty_program_id} className="salon-card expanded">
+                    <div className="salon-summary">
+                      <div className="salon-name-points">
+                        <span className="salon-name-text">{salon.salon_name}</span>
+                        <span className="current-points">{customerPoints} Points</span>
+                      </div>
+                      <div className="rewards-detail-list">
+                        <div key={program.loyalty_program_id} className="reward-item-row">
+                          <span className="reward-text">{program.name}</span>
+                          <div className="reward-tags">{program.tags}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+              
             </div>
 
             {ModalEmployee && (
