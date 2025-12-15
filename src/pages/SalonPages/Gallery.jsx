@@ -77,8 +77,6 @@ function Gallery() {
         try {
             const gallery_response = await fetch(`/api/salon/${salon_id}/gallery`)
 
-            //const gallery_response = await fetch(`/api/live/salon/${salon_id}/gallery`)
-
             if (gallery_response.status === 404) {
                 setGalleryImages([])
                 setImageError(null)
@@ -136,13 +134,6 @@ function Gallery() {
                     body: formData
                 }
             )
-            /*
-            const upload_response = await fetch(`/api/live/salon/${salon_id}/gallery/upload`,{
-                    method: "POST",
-                    body: formData
-                }
-            )
-            */
 
             if (!upload_response.ok) {
                 const errorText = await upload_response.json()
@@ -186,18 +177,11 @@ function Gallery() {
         formData.append("description", editData.description || "")
 
         try {
-            /*const update_response = await fetch(`/api/salon/gallery/${galleryID}/update`,{
-                    method: "PUT",
-                    body: formData
-                }
-            )*/
-            
-            const update_response = await fetch(`/api/live/salon/gallery/${galleryID}/update`,{
+            const update_response = await fetch(`/api/salon/gallery/${galleryID}/update`,{
                     method: "PUT",
                     body: formData
                 }
             )
-            
 
             if (update_response.status === 404) {
                 setGalleryImages([])
@@ -232,12 +216,6 @@ function Gallery() {
             const delete_response = await fetch(`/api/salon/gallery/${galleryID}/delete`,
                 { method: "DELETE" }
             )
-
-            /*
-            const delete_response = await fetch(`/api/live/salon/gallery/${galleryID}/delete`,
-                { method: "DELETE" }
-            )
-            */
 
             if (!delete_response.ok) {
                 const errorText = await delete_response.json()
@@ -361,5 +339,6 @@ function Gallery() {
         </>
     )
 }
+
 
 export default Gallery
