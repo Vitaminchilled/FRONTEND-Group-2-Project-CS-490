@@ -638,7 +638,7 @@ export function RescheduleAppointmentVer2({
     setError(null);
 
     try {
-      /*const formData = new FormData()
+      const formData = new FormData()
       formData.append("appointment_id", appointment.appointment_id)
       formData.append("new_date", chosenDateTime.appointment_date);
       formData.append("new_start_time", chosenDateTime.start_time);
@@ -664,7 +664,7 @@ export function RescheduleAppointmentVer2({
         method: "PUT",
         credentials: 'include',
         body: formData
-      });*/
+      });/*
       const payload = {
           appointment_id: appointment.appointment_id,
           new_date: chosenDateTime.appointment_date,       // YYYY-MM-DD
@@ -679,7 +679,7 @@ export function RescheduleAppointmentVer2({
             "Content-Type": "application/json"
         },
         body: JSON.stringify(payload)
-      })
+      })*/
 
       if (!rescheduleResponse.ok) {
         const errorData = await rescheduleResponse.json();
