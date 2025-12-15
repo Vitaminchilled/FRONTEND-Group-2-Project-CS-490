@@ -4,6 +4,8 @@ import { useUser } from "../../context/UserContext";
 import SalonHeader from '../../components/SalonHeader.jsx'
 import EmployeeItem from '../../components/EmployeeItem.jsx'
 
+import LoyaltyProgramForm from '../../components/LoyaltyProgramForm.jsx';
+
 import { Scissors, Store, Image, NotebookPen } from 'lucide-react'
 
 import './SalonDashboard.css'
@@ -20,7 +22,28 @@ function SalonDashboard() {
   const [masterTags, setMasterTags] = useState([])
   const [employees, setEmployees] = useState([])
   const [reviews, setReviews] = useState([])
- const [rating, setRating] = useState()  
+  const [rating, setRating] = useState()
+
+  /* IF USER LOGGED IN GET CUSTOMER POINTS */
+  const [customerPoints, setCustomerPoints] = useState(0)
+  /* GET SALON LOYALTY PROGRAMS */
+  const [loyaltyPrograms, setLoyaltyPrograms] = useState([])
+  const [activePrograms, setActivePrograms] = useState([])
+
+  const [expandedLoyalty, setExpandedLoyalty] = useState(null);
+
+  const toggleLoyalty = (id) => {
+    setExpandedLoyalty(prev => prev === id ? null : id);
+  };
+
+  const [newLoyaltyProgram, setNewLoyaltyProgram] = useState(null)
+  const handleAddLoyaltySubmit = async (programData) => {
+    await addLoyaltyProgram(salon_id, programData);
+    setNewLoyaltyProgram(null); // close modal/form
+    await retrieveSalonLoyalty(); // refresh the list
+  };
+
+  /* END OF LOYALTY */
 
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -126,6 +149,7 @@ function SalonDashboard() {
 
   useEffect(() => {
     retrieveSalons()
+    retrieveSalonLoyalty()
   }, [salon_id])
 
   const handleLogout = async () => {
@@ -339,6 +363,153 @@ function SalonDashboard() {
     }
   }
 
+  /* loyalty */
+
+  const retrieveCustomerPoints = async () => {
+    
+
+    try {
+      const points_response = await fetch(`/api/loyalty/${salon_id}/points/${user?.user_id}`, {
+        credentials: 'include'
+      })
+
+      if(!points_response.ok) {
+        const errorText = await points_response.json()
+        throw new Error(`Points fetch failed: HTTP error ${points_response.status}: ${errorText.error || errorText}`)
+      }
+
+      const points_data = await points_response.json()
+
+      const { 
+        points_earned: retrievedEarned=[], 
+        points_redeemed: retrievedRedeemed=[], 
+        available_points: retrievedAvailable=[]
+      } = points_data || {}
+
+      setCustomerPoints(retrievedAvailable)
+      console.log(points_data)
+
+    } catch (err) {
+      console.error('Fetch error:', err)
+    }
+  }
+
+  const retrieveSalonLoyalty = async () => {
+    try {
+      const loyalty_response = await fetch(`/api/loyalty/viewall/${salon_id}`)
+
+      if(!loyalty_response.ok) {
+        const errorText = await loyalty_response.json()
+        throw new Error(`Loyalty fetch failed: HTTP error ${loyalty_response.status}: ${errorText.error || errorText}`)
+      }
+
+      const loyalty_data = await loyalty_response.json()
+
+      const { 
+        loyalty: retrievedLoyalty=[]
+      } = loyalty_data || {}
+
+      setLoyaltyPrograms(retrievedLoyalty)
+      console.log(loyalty_data)
+
+      const activeLoyalty = retrievedLoyalty.filter(program => program.is_active)
+      setActivePrograms(activeLoyalty)
+    } catch (err) {
+      console.error('Fetch error:', err)
+    }
+  }
+
+  const addLoyaltyProgram = async (salon_id, programData) => {
+  try {
+    const response = await fetch(`/api/loyalty/${salon_id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(programData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Backend response:', errorData); // <- log full response
+      throw new Error(
+        `Add loyalty failed: HTTP ${response.status}: ${errorData.error || errorData.error}. ` +
+        (errorData.missing_fields ? `Missing fields: ${errorData.missing_fields.join(', ')}` : '')
+      );
+    }
+
+    const result = await response.json();
+    console.log(result.message);
+    // Optionally refresh list
+    retrieveSalonLoyalty(salon_id);
+  } catch (err) {
+    console.error(err.message);
+  }
+};
+
+// Edit an existing loyalty program
+const editLoyaltyProgram = async (loyalty_program_id, programData) => {
+  try {
+    const response = await fetch(`/api/loyalty/${loyalty_program_id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(programData),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Edit loyalty failed: HTTP ${response.status}: ${errorData.error || errorData}`);
+    }
+
+    const result = await response.json();
+    console.log(result.message);
+    // Optionally refresh list (if salon_id is available)
+    // retrieveSalonLoyalty(salon_id);
+  } catch (err) {
+    console.error(err.message);
+  }
+};
+
+// Disable a loyalty program
+const disableLoyaltyProgram = async (loyalty_program_id) => {
+  try {
+    const response = await fetch(`/api/loyalty/${loyalty_program_id}/disable`, {
+      method: 'PATCH',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Disable loyalty failed: HTTP ${response.status}: ${errorData.error || errorData}`);
+    }
+
+    const result = await response.json();
+    console.log(result.message);
+  } catch (err) {
+    console.error(err.message);
+  }
+};
+
+// Enable a loyalty program
+const enableLoyaltyProgram = async (loyalty_program_id) => {
+  try {
+    const response = await fetch(`/api/loyalty/${loyalty_program_id}/enable`, {
+      method: 'PATCH',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Enable loyalty failed: HTTP ${response.status}: ${errorData.error || errorData}`);
+    }
+
+    const result = await response.json();
+    console.log(result.message);
+  } catch (err) {
+    console.error(err.message);
+  }
+};
+
+  useEffect(() => {
+    if (user?.type === 'customer' && user?.user_id) retrieveCustomerPoints()
+  }, [user?.user_id])
+
   return (
     <>
       {(!loading && error ? (
@@ -450,7 +621,7 @@ function SalonDashboard() {
                 />
               )}
             </div>
-            {(user?.type === 'owner' && user?.salon_id === salon_id) && (
+            {(user?.type === 'owner' && Number(user?.salon_id) === Number(salon_id)) && (
               <button className='add-salon-item'
                 onClick={() => setNewEmployee({
                   employee_id: null,
@@ -510,16 +681,73 @@ function SalonDashboard() {
                 <h2 className="group-title">
                   Loyalty Rewards
                 </h2>
-                <p className="group-extra">
-                  200 Points in Account 
-                </p>
               </div>
               <div className='grey-divider'></div>
             </div>
 
             <div className='loyalty-rewards'>
-              {/* loyalty goes here */}
+              {(user?.type === 'owner' ? loyaltyPrograms : activePrograms).map(program => {
+                const tags = program.tags ? program.tags.split(',').map(t => t.trim()) : [];
+                const isExpanded = expandedLoyalty === program.loyalty_program_id;
+                return (
+                  <div key={program.loyalty_program_id} className={`salon-card ${isExpanded ? 'expanded' : ''}`}>
+                    <div className="salon-summary" onClick={() => toggleLoyalty(program.loyalty_program_id)}>
+                      <div className="salon-name-points">
+                        <span className="salon-name-text">{salon.salon_name}</span>
+                        {user?.type === 'customer' && (<span className="current-points">{customerPoints} Points</span>)}
+                      </div>
+                      <button className="view-rewards-btn">{isExpanded ? '▲' : '▼'}</button>
+                    </div>
+                    {isExpanded && (
+                      <div className="rewards-detail-list">
+                        <div className="reward-item-row">
+                          <span className="reward-text">
+                            {program.name} – {program.discount_display} – {program.points_required} Points
+                          </span>
+                          <div className="reward-tags">
+                            {tags.map(tag => <span key={tag} className="tag-pill">{tag}</span>)}
+                          </div>
+                        </div>
+                        {user?.type === 'owner' && Number(user?.salon_id) === Number(salon_id) && (
+                          <div className="loyalty-actions">
+                            <button onClick={() => editLoyaltyProgram(program.loyalty_program_id, {/* new data */})}>
+                              Edit
+                            </button>
+                            {program.is_active ? (
+                              <button onClick={() => disableLoyaltyProgram(program.loyalty_program_id)}>
+                                Disable
+                              </button>
+                            ) : (
+                              <button onClick={() => enableLoyaltyProgram(program.loyalty_program_id)}>
+                                Enable
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
             </div>
+            {(user?.type === 'owner' && Number(user?.salon_id) === Number(salon_id)) && (
+                <button className='add-salon-item'
+                  onClick={() => {
+                    // Open a modal or form to enter new loyalty program details
+                    setNewLoyaltyProgram({
+                      name: '',
+                      points_required: 0,
+                      discount_value: 0,
+                      is_percentage: false,
+                      tags: [],
+                      start_date: new Date().toISOString().split('T')[0],
+                      end_date: null
+                    });
+                  }}
+                >
+                  Add Loyalty Program
+                </button>
+              )}
 
             {ModalEmployee && (
               <ModalEmployeeDelete
@@ -528,6 +756,19 @@ function SalonDashboard() {
                 onConfirm={handleDeleteEmployee}
               />
             )}
+            {newLoyaltyProgram && (
+              <LoyaltyProgramForm
+                program={newLoyaltyProgram}
+                onSubmit={async (programData) => {
+                  await addLoyaltyProgram(salon_id, programData);
+                  setNewLoyaltyProgram(null);
+                  await retrieveSalonLoyalty();
+                }}
+                onCancel={() => setNewLoyaltyProgram(null)}
+                tags={tags}
+              />
+            )}
+
             {modalMessage && (
               <ModalMessage
                 content={modalMessage.content}

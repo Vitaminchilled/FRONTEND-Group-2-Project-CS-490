@@ -21,6 +21,8 @@ function SalonHeader({
   const [galleryID, setGalleryID] = useState(0)
   const [bannerImg, setBannerImg] = useState(null)
   const [modifiedOn, setModifiedOn] = useState(null)
+
+  const tagNames = headerTags?.map(tag => tag.name).join(", ");
   
   function getStarString(rating) {
     let stars = ''
@@ -33,6 +35,7 @@ function SalonHeader({
   }
 
   useEffect(() => {
+    //getSalonPrimaryImage()
     if (user?.user_id && user?.type === 'customer' && salonID) {
       getFavoritedSalons();
     }
@@ -146,7 +149,7 @@ function SalonHeader({
     <div className="salon-header">
       <div className="header-image"
         style={{
-          backgroundImage: `url(${headerImage})` /* {{headerImage}}? */
+          backgroundImage: `url(${bannerImg || headerImage})`
         }}
       >
         {isHome ? (
@@ -206,7 +209,7 @@ function SalonHeader({
 
       {headerTags && 
         <p className="header-tags">
-          {headerTags.map((tag) => tag.name).join(", ")}
+          {tagNames}
         </p>
       }
       
