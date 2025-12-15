@@ -44,7 +44,8 @@ async function handleVerification(salonId, isVerified, setModalOpen, verifyChang
         });
 
         if (!response.ok) {
-        throw new Error("Failed update verification");
+                const errorText = await response.json()
+                throw new Error(`Verify/Reject failed HTTP error ${response.status}: ${errorText.error || errorText}`)
         }
 
         const result = await response.json();
