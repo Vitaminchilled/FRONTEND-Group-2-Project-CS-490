@@ -1,0 +1,117 @@
+/* Modal Background */
+.modal-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal Content Box */
+.modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 2rem;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.3s ease-in-out;
+  
+}
+
+/* Form inside the modal */
+.loyalty-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: scroll;
+}
+
+/* Form Labels */
+.loyalty-form label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* Input Fields */
+.loyalty-form input[type="text"],
+.loyalty-form input[type="number"],
+.loyalty-form input[type="date"] {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 0.25rem;
+  outline: none;
+  transition: border-color 0.2s ease-in-out;
+}
+
+.loyalty-form input[type="text"]:focus,
+.loyalty-form input[type="number"]:focus,
+.loyalty-form input[type="date"]:focus {
+  border-color: #cb8e4d;
+}
+
+/* Checkbox */
+.loyalty-form input[type="checkbox"] {
+  margin-top: 0.5rem;
+  width: 16px;
+  height: 16px;
+}
+
+/* Form Buttons */
+.form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.submit-btn,
+.cancel-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.submit-btn {
+  background-color: #ce965a;
+  color: white;
+}
+
+.submit-btn:hover {
+  background-color: #d8ae82;
+}
+
+.cancel-btn {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.cancel-btn:hover {
+  background-color: #c7c7c7;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
