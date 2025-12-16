@@ -9,7 +9,7 @@ import {ModalProductDelete, ModalMessage} from '../../components/Modal.jsx';
 
 function Products() {
     const { salon_id } = useParams()
-    const {user} = useUser()
+    const {user, setUser, loading: userLoading} = useUser();
     const [salon, setSalon] = useState({})
     const [tags, setTags] = useState([])
     const [products, setProducts] = useState([])
@@ -101,7 +101,7 @@ function Products() {
 
     const handleAddProduct = async (productData) => {
         try {
-            const cleanedData = {
+            /*const cleanedData = {
                 name: productData.name.trim(),
                 description: productData.description.trim(),
                 price: parseFloat(productData.price),
@@ -109,15 +109,31 @@ function Products() {
                 salon_id: parseInt(salon_id)
             }
 
-            console.log(cleanedData)
+            console.log(cleanedData)*/
 
-            const response = await fetch(`/api/products`, {
+            const productForm = new FormData()
+            productForm.append("salon_id", salon_id)
+            productForm.append("name", productData.name.trim())
+            productForm.append("description", productData.description?.trim() || "")
+            productForm.append("price", parseFloat(productData.price))
+            productForm.append("stock_quantity", parseInt(productData.stock_quantity || 0))
+
+            if (productData.new_image instanceof File) {
+                productForm.append("image", productData.new_image)
+            }
+
+            const response = await fetch("/api/products", {
+                method: "POST",
+                body: productForm
+            })
+
+            /*const response = await fetch(`/api/products`, {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(cleanedData)
-            })
+            })*/
 
             if (!response.ok) {
                 const errorData = await response.json()
@@ -151,6 +167,25 @@ function Products() {
                 price: parseFloat(udpatedProduct.price),
                 stock_quantity: parseInt(udpatedProduct.stock_quantity)
             }
+
+            /*
+            const productForm = new FormData()
+
+            productForm.append("salon_id", salon_id)
+            productForm.append("name", updatedProduct.name.trim())
+            productForm.append("description", updatedProduct.description?.trim() || "")
+            productForm.append("price", parseFloat(updatedProduct.price))
+            productForm.append("stock_quantity", parseInt(updatedProduct.stock_quantity))
+
+            if (updatedProduct.new_image instanceof File) {
+                productForm.append("image", updatedProduct.new_image)
+            }
+
+            const response = await fetch(`/api/products/${updatedProduct.product_id}`, {
+                method: "PUT",
+                body: productForm
+            })
+            */
 
             const editResponse = await fetch(`/api/products/${udpatedProduct.product_id}`, {
                 method: 'PUT',
@@ -279,6 +314,7 @@ function Products() {
                         headerTitle={salon.salon_name}
                         headerTags={tags}
                         headerRatingValue={salon.average_rating}
+                        hasPrimaryImg={salon.has_primary_img}
                     />
                     
                     <div className='title-group'>
@@ -286,33 +322,39 @@ function Products() {
                             Products
                         </h2>
                         <p className='page-counts'>
-                            1 of 1
+                            ({products.length} {products.length === 1 ? "Product" : "Products"})
                         </p>
                     </div>
 
                     <div className="product-group">
-                        {products.map((product) => (
-                            <ProductCard
-                                key={product.product_id}
-                                accountType={user.type}
-                                user={user}
-                                salon={salon}
-                                product={product}
-                                onSaveEdit={handleSaveEdit}
-                                onDelete={() => handleDeleteClick(product)}
-                                onAddToCart={handleAddToCart}
-                            />
-                        ))}
-                        {newProduct && (
-                            <ProductCard
-                            accountType={user.type}
-                            product={newProduct}
-                            newItem={true}
-                            onSaveEdit={handleAddProduct}
-                            onCancelNew={handleCancelNewProduct}                        />
+                        {products.length === 0 ? (
+                            <p className='not-found'>No products listed on this salon.</p>
+                        ) : (
+                            <>
+                                {products.map((product) => (
+                                    <ProductCard
+                                        key={product.product_id}
+                                        user={user}
+                                        salon={salon}
+                                        product={product}
+                                        onSaveEdit={handleSaveEdit}
+                                        onDelete={() => handleDeleteClick(product)}
+                                        onAddToCart={handleAddToCart}
+                                    />
+                                ))}
+                                {newProduct && (
+                                    <ProductCard
+                                    user={user}
+                                    salon={salon}
+                                    product={newProduct}
+                                    newItem={true}
+                                    onSaveEdit={handleAddProduct}
+                                    onCancelNew={handleCancelNewProduct}                        />
+                                )}
+                            </>
                         )}
                     </div>
-                    {(user.type === 'owner') && (
+                    {(user?.type === 'owner' && Number(user?.salon_id) === Number(salon_id)) && (
                         <button className='add-salon-item'
                             onClick={() => setNewProduct({
                                 product_id: null,
