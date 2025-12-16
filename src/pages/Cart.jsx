@@ -586,40 +586,11 @@ const handlePlaceOrder = async () => {
         console.log('=== PROCESSING ORDER ===');
         console.log('Products:', items.length);
         console.log('Appointments:', appointmentItems.length);
-        console.log('Appointment items to send:', appointmentItems);
         
-        // Process payment for BOTH products AND appointments
-        // This must happen BEFORE we book appointments and clear the array
-        if (items.length > 0 || appointmentItems.length > 0) {
-            const response = await fetch("/api/cart/processPayment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    user_id: user.user_id,
-                    payment_data: {
-                        ...paymentFormData,
-                        remember_address: paymentFormData.rememberAddress,
-                        remember_card: paymentFormData.rememberCard
-                    },
-                    applied_rewards: appliedRewards,
-                    applied_promos: appliedPromos,
-                    appointment_items: appointmentItems  // Send appointments here
-                }),
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                alert(`Payment failed: ${errorData.error}`);
-                return;
-            }
-
-            const result = await response.json();
-            console.log("Payment processed successfully. Invoice IDs:", result.invoice_ids);
-        }
-        
-        // AFTER payment is processed, book the appointments in the appointments table
+        // STEP 1: Book appointments FIRST to get appointment IDs
+        let appointmentsWithIds = [];
         if (appointmentItems.length > 0) {
-            console.log('Booking appointments...');
+            console.log('Booking appointments first to get IDs...');
             
             const appointmentPromises = appointmentItems.map(async (appt) => {
                 const appointmentData = {
@@ -647,16 +618,52 @@ const handlePlaceOrder = async () => {
                     throw new Error(`Appointment booking failed: ${errorData.error || 'Unknown error'}`);
                 }
                 
-                return await response.json();
+                const result = await response.json();
+                
+                // Return appointment with its new ID
+                return {
+                    ...appt,
+                    appointment_id: result.appointment_id
+                };
             });
             
-            const appointmentResults = await Promise.all(appointmentPromises);
-            console.log('All appointments booked successfully:', appointmentResults);
-            
-            // NOW clear the appointments after everything is done
-            sessionStorage.removeItem('appointmentCart');
-            setAppointmentItems([]);
+            appointmentsWithIds = await Promise.all(appointmentPromises);
+            console.log('All appointments booked with IDs:', appointmentsWithIds);
         }
+        
+        // STEP 2: Process payment with appointment IDs included
+        if (items.length > 0 || appointmentsWithIds.length > 0) {
+            console.log('Processing payment with appointments:', appointmentsWithIds);
+            
+            const response = await fetch("/api/cart/processPayment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_id: user.user_id,
+                    payment_data: {
+                        ...paymentFormData,
+                        remember_address: paymentFormData.rememberAddress,
+                        remember_card: paymentFormData.rememberCard
+                    },
+                    applied_rewards: appliedRewards,
+                    applied_promos: appliedPromos,
+                    appointment_items: appointmentsWithIds  // Send appointments WITH IDs
+                }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                alert(`Payment failed: ${errorData.error}`);
+                return;
+            }
+
+            const result = await response.json();
+            console.log("Payment processed successfully. Invoice IDs:", result.invoice_ids);
+        }
+        
+        // STEP 3: Clear cart after everything is complete
+        sessionStorage.removeItem('appointmentCart');
+        setAppointmentItems([]);
         
         const receiptData = {
             orderDate: new Date().toLocaleDateString(),
