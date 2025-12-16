@@ -181,7 +181,7 @@ function Products() {
                 productForm.append("image", updatedProduct.new_image)
             }
 
-            const response = await fetch(`/api/products/${updatedProduct.product_id}`, {
+            const editResponse = await fetch(`/api/products/${updatedProduct.product_id}`, {
                 method: "PUT",
                 body: productForm
             })
