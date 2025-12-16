@@ -587,7 +587,6 @@ const calculateSalonTotalWithDiscount = (salonTotal, salonId) => {
             console.log('Products:', items.length);
             console.log('Appointments:', appointmentItems.length);
             
-            // First, process payment for products if any exist
             if (items.length > 0) {
                 const response = await fetch("/api/cart/processPayment", {
                 method: "POST",
@@ -600,7 +599,8 @@ const calculateSalonTotalWithDiscount = (salonTotal, salonId) => {
                         remember_card: paymentFormData.rememberCard
                     },
                     applied_rewards: appliedRewards,
-                    applied_promos: appliedPromos  // Add this line
+                    applied_promos: appliedPromos,
+                    appointment_items: appointmentItems
                 }),
             });
 
@@ -614,7 +614,6 @@ const calculateSalonTotalWithDiscount = (salonTotal, salonId) => {
                 console.log("Product payment successful. Invoice IDs:", result.invoice_ids);
             }
             
-            // Then, create appointments
             if (appointmentItems.length > 0) {
                 console.log('Booking appointments...');
                 
@@ -676,7 +675,7 @@ const calculateSalonTotalWithDiscount = (salonTotal, salonId) => {
             setItems([]);
             setCurrentStep(4);
             
-            console.log('✅ ORDER COMPLETED SUCCESSFULLY');
+            console.log('ORDER COMPLETED SUCCESSFULLY');
             
         } catch (error) {
             console.error("Error placing order:", error);
