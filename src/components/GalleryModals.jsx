@@ -107,7 +107,9 @@ export function ViewGalleryImage({
                         <br/>
                         <br/>
                         {(imagePreview || editData.image_url) && (
-                            <img className="new-preview" src={imagePreview || editData.original_url} />
+                            <img className="new-preview" 
+                                src={imagePreview || editData.original_url} 
+                            />
                         )}
                         <br/>
                         <br/>
