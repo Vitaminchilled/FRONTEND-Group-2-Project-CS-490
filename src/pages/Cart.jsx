@@ -568,27 +568,30 @@ const calculateSalonTotalWithDiscount = (salonTotal, salonId) => {
         setCurrentStep(prevStep => prevStep + 1);
     };
 
-    const handlePlaceOrder = async () => {
-        if (!paymentFormData.firstName || !paymentFormData.lastName) {
-            alert("Please enter your name.");
-            return;
-        }
-        if (!paymentFormData.address || !paymentFormData.city || !paymentFormData.state || !paymentFormData.postal_code) {
-            alert("Please enter your billing address.");
-            return;
-        }
-        if (!paymentFormData.card_number || !paymentFormData.exp_month || !paymentFormData.exp_year || !paymentFormData.cvv) {
-            alert("Please enter your payment information.");
-            return;
-        }
+const handlePlaceOrder = async () => {
+    if (!paymentFormData.firstName || !paymentFormData.lastName) {
+        alert("Please enter your name.");
+        return;
+    }
+    if (!paymentFormData.address || !paymentFormData.city || !paymentFormData.state || !paymentFormData.postal_code) {
+        alert("Please enter your billing address.");
+        return;
+    }
+    if (!paymentFormData.card_number || !paymentFormData.exp_month || !paymentFormData.exp_year || !paymentFormData.cvv) {
+        alert("Please enter your payment information.");
+        return;
+    }
 
-        try {
-            console.log('=== PROCESSING ORDER ===');
-            console.log('Products:', items.length);
-            console.log('Appointments:', appointmentItems.length);
-            
-            if (items.length > 0) {
-                const response = await fetch("/api/cart/processPayment", {
+    try {
+        console.log('=== PROCESSING ORDER ===');
+        console.log('Products:', items.length);
+        console.log('Appointments:', appointmentItems.length);
+        console.log('Appointment items to send:', appointmentItems);
+        
+        // Process payment for BOTH products AND appointments
+        // This must happen BEFORE we book appointments and clear the array
+        if (items.length > 0 || appointmentItems.length > 0) {
+            const response = await fetch("/api/cart/processPayment", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -600,88 +603,91 @@ const calculateSalonTotalWithDiscount = (salonTotal, salonId) => {
                     },
                     applied_rewards: appliedRewards,
                     applied_promos: appliedPromos,
-                    appointment_items: appointmentItems
+                    appointment_items: appointmentItems  // Send appointments here
                 }),
             });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    alert(`Payment failed: ${errorData.error}`);
-                    return;
-                }
-
-                const result = await response.json();
-                console.log("Product payment successful. Invoice IDs:", result.invoice_ids);
+            if (!response.ok) {
+                const errorData = await response.json();
+                alert(`Payment failed: ${errorData.error}`);
+                return;
             }
+
+            const result = await response.json();
+            console.log("Payment processed successfully. Invoice IDs:", result.invoice_ids);
+        }
+        
+        // AFTER payment is processed, book the appointments in the appointments table
+        if (appointmentItems.length > 0) {
+            console.log('Booking appointments...');
             
-            if (appointmentItems.length > 0) {
-                console.log('Booking appointments...');
+            const appointmentPromises = appointmentItems.map(async (appt) => {
+                const appointmentData = {
+                    salon_id: appt.salon_id,
+                    customer_id: user.user_id,
+                    employee_id: appt.employee_id,
+                    service_id: appt.service_id,
+                    appointment_date: appt.appointment_date,
+                    start_time: appt.start_time,
+                    notes: appt.notes || ''
+                };
                 
-                const appointmentPromises = appointmentItems.map(async (appt) => {
-                    const appointmentData = {
-                        salon_id: appt.salon_id,
-                        customer_id: user.user_id,
-                        employee_id: appt.employee_id,
-                        service_id: appt.service_id,
-                        appointment_date: appt.appointment_date,
-                        start_time: appt.start_time,
-                        notes: appt.notes || ''
-                    };
-                    
-                    console.log('Booking appointment:', appointmentData);
-                    
-                    const response = await fetch(`/api/appointments/book`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(appointmentData)
-                    });
-                    
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`Appointment booking failed: ${errorData.error || 'Unknown error'}`);
-                    }
-                    
-                    return await response.json();
+                console.log('Booking appointment:', appointmentData);
+                
+                const response = await fetch(`/api/appointments/book`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(appointmentData)
                 });
                 
-                const appointmentResults = await Promise.all(appointmentPromises);
-                console.log('All appointments booked successfully:', appointmentResults);
-                sessionStorage.removeItem('appointmentCart');
-                setAppointmentItems([]);
-            }
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Appointment booking failed: ${errorData.error || 'Unknown error'}`);
+                }
+                
+                return await response.json();
+            });
             
-            const receiptData = {
-                orderDate: new Date().toLocaleDateString(),
-                items: Object.values(itemsGroupedBySalon),
-                appliedRewards: appliedRewards,
-                subtotal: totalWithDiscounts,
-                tax: totalWithDiscounts * 0.07,
-                total: totalWithDiscounts * 1.07,
-                billingAddress: {
-                    name: `${paymentFormData.firstName} ${paymentFormData.lastName}`,
-                    address: paymentFormData.address,
-                    city: paymentFormData.city,
-                    state: paymentFormData.state,
-                    postal_code: paymentFormData.postal_code
-                },
-                cardLast4: paymentFormData.card_number.slice(-4)
-            };
+            const appointmentResults = await Promise.all(appointmentPromises);
+            console.log('All appointments booked successfully:', appointmentResults);
             
-            setOrderDetails(receiptData);
-            setOrderComplete(true);
-            
-            setItems([]);
-            setCurrentStep(4);
-            
-            console.log('ORDER COMPLETED SUCCESSFULLY');
-            
-        } catch (error) {
-            console.error("Error placing order:", error);
-            alert(`An error occurred while placing your order: ${error.message}`);
+            // NOW clear the appointments after everything is done
+            sessionStorage.removeItem('appointmentCart');
+            setAppointmentItems([]);
         }
-    };
+        
+        const receiptData = {
+            orderDate: new Date().toLocaleDateString(),
+            items: Object.values(itemsGroupedBySalon),
+            appliedRewards: appliedRewards,
+            subtotal: totalWithDiscounts,
+            tax: totalWithDiscounts * 0.07,
+            total: totalWithDiscounts * 1.07,
+            billingAddress: {
+                name: `${paymentFormData.firstName} ${paymentFormData.lastName}`,
+                address: paymentFormData.address,
+                city: paymentFormData.city,
+                state: paymentFormData.state,
+                postal_code: paymentFormData.postal_code
+            },
+            cardLast4: paymentFormData.card_number.slice(-4)
+        };
+        
+        setOrderDetails(receiptData);
+        setOrderComplete(true);
+        
+        setItems([]);
+        setCurrentStep(4);
+        
+        console.log('✅ ORDER COMPLETED SUCCESSFULLY');
+        
+    } catch (error) {
+        console.error("Error placing order:", error);
+        alert(`An error occurred while placing your order: ${error.message}`);
+    }
+};
 
     if (isLoading) {
         return <div className="cart-page"><h1>Shopping Cart</h1><hr /><p>Loading cart items...</p></div>;
