@@ -482,6 +482,7 @@ const disableLoyaltyProgram = async (loyalty_program_id) => {
 
     const result = await response.json();
     console.log(result.message);
+    retrieveSalonLoyalty(salon_id);
   } catch (err) {
     console.error(err.message);
   }
@@ -501,6 +502,7 @@ const enableLoyaltyProgram = async (loyalty_program_id) => {
 
     const result = await response.json();
     console.log(result.message);
+    retrieveSalonLoyalty(salon_id);
   } catch (err) {
     console.error(err.message);
   }
@@ -712,7 +714,10 @@ const enableLoyaltyProgram = async (loyalty_program_id) => {
                         {user?.type === 'owner' && Number(user?.salon_id) === Number(salon_id) && (
                           <div className="loyalty-actions">
                             {program.is_active ? (
-                              <button onClick={() => disableLoyaltyProgram(program.loyalty_program_id)}>
+                              <button 
+                                onClick={() => disableLoyaltyProgram(program.loyalty_program_id)}
+                                className={disabledPrograms.has(program.loyalty_program_id) ? 'disabled-button' : ''}
+                              >
                                 Disable
                               </button>
                             ) : (
