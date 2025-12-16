@@ -94,7 +94,7 @@ export function ViewAppointment({
         setError(null);
 
         try {
-            /*const formData = new FormData()
+            const formData = new FormData()
             formData.append("appointment_id", appointment.appointment_id)
             formData.append("new_date", appointment.appointment_date);
             formData.append("new_start_time", appointment.start_time);
@@ -120,9 +120,9 @@ export function ViewAppointment({
                 method: "PUT",
                 credentials: 'include',
                 body: formData
-            });*/
+            });
 
-            const payload = {
+            /*const payload = {
                 appointment_id: appointment.appointment_id,
                 new_date: appointment.appointment_date,       // YYYY-MM-DD
                 new_start_time: appointment.start_time,       // HH:MM:SS
@@ -136,7 +136,7 @@ export function ViewAppointment({
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify(payload)
-            })
+            })*/
 
             if (!rescheduleResponse.ok) {
                 const errorData = await rescheduleResponse.json();
