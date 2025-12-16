@@ -491,7 +491,7 @@ const disableLoyaltyProgram = async (loyalty_program_id) => {
 // Enable a loyalty program
 const enableLoyaltyProgram = async (loyalty_program_id) => {
   try {
-    const response = await fetch(`/api/loyalty/${loyalty_program_id}/enable`, {
+    const response = await fetch(`/api/loyalty/viewall/${loyalty_program_id}/enable`, {
       method: 'PATCH',
     });
 
