@@ -158,6 +158,10 @@
   background-color: #d8ae82;
   cursor: pointer;
 }
+.disabled-button {
+  background-color: red;
+  color: white;
+}
 
 .review-btn .prev-next:disabled {
   color: #a5a5a5ff;
