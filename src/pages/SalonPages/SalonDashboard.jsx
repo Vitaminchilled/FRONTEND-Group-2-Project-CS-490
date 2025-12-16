@@ -712,11 +712,8 @@ const enableLoyaltyProgram = async (loyalty_program_id) => {
                         {user?.type === 'owner' && Number(user?.salon_id) === Number(salon_id) && (
                           <div className="loyalty-actions">
                             {program.is_active ? (
-                              <button 
-                                onClick={() => toggleLoyaltyProgram(program.loyalty_program_id)}
-                                className={disabledPrograms.has(program.loyalty_program_id) ? 'disabled-button' : ''}
-                              >
-                                {disabledPrograms.has(program.loyalty_program_id) ? 'Enable' : 'Disable'}
+                              <button onClick={() => disableLoyaltyProgram(program.loyalty_program_id)}>
+                                Disable
                               </button>
                             ) : (
                               <button onClick={() => enableLoyaltyProgram(program.loyalty_program_id)}>
