@@ -157,15 +157,15 @@ function Products() {
         }
     }
 
-    const handleSaveEdit = async (udpatedProduct) => {
+    const handleSaveEdit = async (updatedProduct) => {
         try {
             /*const cleanedData = {
-                product_id: parseInt(udpatedProduct.product_id),
+                product_id: parseInt(updatedProduct.product_id),
                 salon_id: parseInt(salon_id),
-                name: udpatedProduct.name.trim(),
-                description: udpatedProduct.description.trim(),
-                price: parseFloat(udpatedProduct.price),
-                stock_quantity: parseInt(udpatedProduct.stock_quantity)
+                name: updatedProduct.name.trim(),
+                description: updatedProduct.description.trim(),
+                price: parseFloat(updatedProduct.price),
+                stock_quantity: parseInt(updatedProduct.stock_quantity)
             }*/
 
             
@@ -187,7 +187,7 @@ function Products() {
             })
             
 
-            /*const editResponse = await fetch(`/api/products/${udpatedProduct.product_id}`, {
+            /*const editResponse = await fetch(`/api/products/${updatedProduct.product_id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
