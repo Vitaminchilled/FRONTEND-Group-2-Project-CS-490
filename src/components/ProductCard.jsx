@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import './ProductCard.css'
 import deleteIcon from '../assets/BlackXIcon.png'
 import productImg from '../assets/ProductPlaceholder.jpg' /* default img */
+import { Trash2 } from 'lucide-react'
 
 function ProductItem({ 
     user, salon,
@@ -33,6 +34,11 @@ function ProductItem({
 
     const handleStartEdit = () => setIsEditing(true)
     const handleCancelEdit = () => {
+        if (imagePreview) {
+            URL.revokeObjectURL(imagePreview);
+            setImagePreview(null);
+        }
+
         if (newItem) {
             onCancelNew?.()
         } else {
@@ -100,9 +106,17 @@ function ProductItem({
             {(owner) ? (
                 isEditing ? (
                     <div className='edit-grid-layout'>
-                        <img className='edit-remove'
+                        {/*<img className='edit-remove'
                             src={deleteIcon}
                             alt='X'
+                            onClick={() => {
+                                if (product.product_id === null) return
+                                onDelete(product)
+                            }}
+                            style={{ opacity: product.product_id === null ? 0.2 : 1, cursor: product.product_id === null ? 'not-allowed' : 'pointer' }}
+                        />*/}
+                        <Trash2 className='edit-remove'
+                            size={20}
                             onClick={() => {
                                 if (product.product_id === null) return
                                 onDelete(product)
@@ -116,12 +130,17 @@ function ProductItem({
                                 accept='image/*'
                             />
                         </div>
-                        {imagePreview && 
-                            <img className='img-preview'
-                                src={imagePreview || editData.image_url || productImg} 
-                                alt="Preview"
-                            />
-                        }
+                        <img className='img-preview'
+                            src={imagePreview ||
+                                editData?.image_url ||
+                                product?.image_url ||
+                                productImg
+                            } 
+                            alt="Preview"
+                            onError={(e) => {
+                                e.currentTarget.src = productImg;
+                            }}
+                        />
                         <div className='title-section'>
                             <label className='edit-label prod-title'>Name:</label>
                             <input className='edit-input prod-title'
@@ -217,8 +236,12 @@ function ProductItem({
                 ) : (
                     <div className='grid-layout'>
                         <img className='item-img'
-                            src={productImg}
+                            src={product?.image_url || productImg}
                             alt='img'
+                            onError={(e) => {
+                                e.currentTarget.onerror = null
+                                e.currentTarget.src = productImg
+                            }}
                         />
                         <h3 className='item-title'>
                             {product.name}
@@ -242,8 +265,12 @@ function ProductItem({
             ) : (
                 <div className="grid-layout">
                     <img className='item-img'
-                        src={productImg}
+                        src={product?.image_url || productImg}
                         alt='img'
+                        onError={(e) => {
+                            e.currentTarget.onerror = null
+                            e.currentTarget.src = productImg
+                        }}
                     />
                     <h3 className='item-title'>
                         {product.name}
