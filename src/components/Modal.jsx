@@ -43,12 +43,18 @@ async function handleVerification(salonId, isVerified, setModalOpen, verifyChang
             })
         });
 
-        if (!response.ok) {
+        /*if (!response.ok) {
                 const errorText = await response.json()
                 throw new Error(`Verify/Reject failed HTTP error ${response.status}: ${errorText.error || errorText}`)
-        }
+        }*/
+        const text = await response.text();
+        const data = text ? JSON.parse(text) : {};
+        
+        if (!response.ok) {
+            throw new Error(data.error || `HTTP ${response.status}`);
+        }    
 
-        const result = await response.json();
+        /*const result = await response.json();*/
         console.log("Verification success:", result);
         setModalOpen(false);
         verifyChange(salonId);
