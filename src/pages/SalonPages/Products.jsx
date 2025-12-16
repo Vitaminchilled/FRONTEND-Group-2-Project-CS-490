@@ -159,16 +159,16 @@ function Products() {
 
     const handleSaveEdit = async (udpatedProduct) => {
         try {
-            const cleanedData = {
+            /*const cleanedData = {
                 product_id: parseInt(udpatedProduct.product_id),
                 salon_id: parseInt(salon_id),
                 name: udpatedProduct.name.trim(),
                 description: udpatedProduct.description.trim(),
                 price: parseFloat(udpatedProduct.price),
                 stock_quantity: parseInt(udpatedProduct.stock_quantity)
-            }
+            }*/
 
-            /*
+            
             const productForm = new FormData()
 
             productForm.append("salon_id", salon_id)
@@ -185,15 +185,15 @@ function Products() {
                 method: "PUT",
                 body: productForm
             })
-            */
+            
 
-            const editResponse = await fetch(`/api/products/${udpatedProduct.product_id}`, {
+            /*const editResponse = await fetch(`/api/products/${udpatedProduct.product_id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(cleanedData)
-            })
+            })*/
 
             if (!editResponse.ok) {
                 const errorData = await editResponse.json()
