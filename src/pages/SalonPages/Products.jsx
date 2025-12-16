@@ -328,7 +328,18 @@ function Products() {
 
                     <div className="product-group">
                         {products.length === 0 ? (
-                            <p className='not-found'>No products listed on this salon.</p>
+                            <>
+                                <p className='not-found'>No products listed on this salon.</p>
+                                {newProduct && (
+                                    <ProductCard
+                                    user={user}
+                                    salon={salon}
+                                    product={newProduct}
+                                    newItem={true}
+                                    onSaveEdit={handleAddProduct}
+                                    onCancelNew={handleCancelNewProduct}                        />
+                                )}
+                            </>
                         ) : (
                             <>
                                 {products.map((product) => (
