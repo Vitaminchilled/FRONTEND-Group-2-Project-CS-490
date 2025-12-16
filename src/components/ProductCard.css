@@ -105,6 +105,11 @@
     cursor: pointer;
 }
 
+.product-item .item-btn:disabled {
+    background-color: #e0b98f;
+    cursor: not-allowed;
+}
+
 /*Edit mode product card*/
 
 .product-item .edit-grid-layout {
