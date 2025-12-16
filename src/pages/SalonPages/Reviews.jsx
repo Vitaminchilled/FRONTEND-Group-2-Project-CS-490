@@ -320,6 +320,7 @@ export default function Reviews() {
                     headerTitle={salon.salon_name}
                     headerTags={tags}
                     headerRatingValue={salon.average_rating}
+                    hasPrimaryImg={salon.has_primary_img}
                 />
 
                 <div className="page-header">
