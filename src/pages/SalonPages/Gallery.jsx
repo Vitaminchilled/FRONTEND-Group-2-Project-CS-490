@@ -13,6 +13,7 @@ function Gallery() {
     const [salon, setSalon] = useState({})
     const [tags, setTags] = useState([])
     const [masterTags, setMasterTags] = useState([])
+    const [bannerImg, setBannerImg] = useState({})
     const [galleryImages, setGalleryImages] = useState([])
 
     const [loading, setLoading] = useState(false)
@@ -55,7 +56,7 @@ function Gallery() {
             const salon_data = await salon_response.json()
 
             const { 
-                salon: retrievedSalon=[], 
+                salon: retrievedSalon={}, 
                 tags: retrievedTags=[], 
                 master_tags: retrievedMasterTags=[]
             } = salon_data || {}
@@ -90,8 +91,12 @@ function Gallery() {
             
             const gallery_data = await gallery_response.json()
 
-            const { gallery = [] } = gallery_data || {}
-            setGalleryImages(gallery)
+            const { 
+                gallery: retrievedGallery=[], 
+                primary_image: retrievedBanner={}
+            } = gallery_data || {}
+            setGalleryImages(retrievedGallery)
+            setBannerImg(retrievedBanner)
         } catch (err) {
             console.error('Fetch error:', err)
             setImageError(err.message || "Unexpected Error Occurred")
@@ -152,7 +157,6 @@ function Gallery() {
             return upload_data //????
         } catch (err) {
             console.error("Upload error:", err)
-            setImageError(err.message || "Unexpected Error Occurred")
             setNewGalleryImage(null)
             setModalMessage({
                 title: 'Error',
@@ -165,7 +169,6 @@ function Gallery() {
 
     const updateGalleryImage = async (galleryID, editData) => {
         setImageLoading(true)
-        setImageError(null)
 
         const formData = new FormData()
 
@@ -195,12 +198,19 @@ function Gallery() {
             }
 
             const update_data = await update_response.json()
+            setModalMessage({
+                title: 'Success',
+                content: update_data.message
+            })
+            setViewGalleryImage(null)
             await retrieveGalleryImages()
-            return update_data //?????
-
+            return update_data //????
         } catch (err) {
             console.error("Update error:", err)
-            setImageError(err.message || "Unexpected Error Occurred")
+            setModalMessage({
+                title: 'Error',
+                content: err.message || 'This image could not be added.'
+            })
         } finally {
             setImageLoading(false)
         }
@@ -223,6 +233,10 @@ function Gallery() {
             }
 
             const delete_data = await delete_response.json()
+            setModalMessage({
+                title: 'Success',
+                content: delete_data.message
+            })
             setModalImageDelete(null)
             setViewGalleryImage(null)
             await retrieveGalleryImages()
@@ -230,13 +244,16 @@ function Gallery() {
 
         } catch (err) {
             console.error("Delete error:", err)
-            setImageError(err.message || "Unexpected Error Occurred")
+            setModalMessage({
+                title: 'Error',
+                content: err.message || 'This image could not be added.'
+            })
         } finally {
             setImageLoading(false)
         }
     }
 
-    
+    if (loading) return <p>Loading...</p>
 
     return (
         <>
@@ -249,6 +266,7 @@ function Gallery() {
                         headerTitle={salon.salon_name}
                         headerTags={tags}
                         headerRatingValue={salon.average_rating}
+                        hasPrimaryImg={salon.has_primary_img}
                     />
                     
                     <div className='title-group'>
@@ -256,10 +274,8 @@ function Gallery() {
                             Gallery
                         </h2>
                     </div>
-
+                    {imageLoading && <p>Loading gallery...</p>}
                     <div className="gallery-group">
-                        {imageLoading && <p>Loading gallery...</p>}
-                        {!imageLoading && imageError && galleryImages.length > 0 && <p>{imageError}</p>}
                         {galleryImages.length === 0 ? (
                             <p className='no-images'>No gallery images uploaded on this salon.</p>
                         ) : (
@@ -339,6 +355,5 @@ function Gallery() {
         </>
     )
 }
-
 
 export default Gallery
