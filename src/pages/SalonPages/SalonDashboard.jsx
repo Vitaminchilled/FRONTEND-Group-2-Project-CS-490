@@ -716,7 +716,7 @@ const enableLoyaltyProgram = async (loyalty_program_id) => {
                             {program.is_active ? (
                               <button 
                                 onClick={() => disableLoyaltyProgram(program.loyalty_program_id)}
-                                className={disabledPrograms.has(program.loyalty_program_id) ? 'disabled-button' : ''}
+                                className='disabled-button'
                               >
                                 Disable
                               </button>
