@@ -1,148 +1,234 @@
-.salon-header {
+.ModalBackground {
+    position: fixed;
+    z-index: 1000;
+    width: 100vw;
+    height: 100vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ModalContainer {
+    position: fixed;
+    z-index: 2000;
+    width: 45vw;
+    max-height: 36vw;
+    border-radius: 20px;
+    background-color: #fffaf5;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    justify-content: center;
-}
-
-/*changed from the image container to a wrapper ig*/
-.header-image {
-    box-shadow: inset 0 0 4px #a69385ff;
-    width: 90vw;
-    max-width: 1100px;
-    height: 220px;
-    background-color: #fff8f4ff; 
-    border-radius: 10px;
-    position: relative;
-}
-
-.header-image::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    z-index: 1;
-}
-
-.actual-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-    display: block;
-}
-
-.header-overlay {
-    position: absolute;
-    inset: 0;
-    padding: 18px; /* matches .header-image padding */
-    display: flex;
-    gap: 8px;
-    z-index: 2;
-    pointer-events: none;
-}
-
-.header-overlay > * {
-    pointer-events: auto;
-}
-
-.header-btn {
-    background-color: #b98a59;
-    color: white;
-    border-radius: 50px;
-    border: none;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 8px;
-    text-decoration: none;
-    transition: all 0.5s ease;
-}
-
-.header-btn.disabled {
-    background-color: #dcbc99;
-    color: white;
-    border-radius: 50px;
-    border: none;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 8px;
-    text-decoration: none;
-    transition: all 0.5s ease;
-}
-
-.header-btn.disabled:hover {
-    background-color: #dcbc99;
-    color: white;
-    cursor: not-allowed;
-}
-
-
-.header-btn:hover {
-    background-color: #e1b78a;
-    color: white;
-}
-
-.header-btn .image {
-    color: white;
-    text-decoration: none;
-    width: 20px;
-}
-
-.header-title {
-    font-family: Lateef;
-    font-weight: 500;
-    font-size: 70px;
-    height: 80px;
-    margin: 0;
-}
-
-.header-tags {
-    margin: 0;
-    display: inline-block;
-    width: 70vw;
-    font-family: Kumbh Sans;
-    color: #4c4c4c;
-    font-size: 16px;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    animation: fadeIn 0.25s ease-out;
+}
+
+.ModalContainer .ModalTitle {
+    background-color: #efe6da;
+    height: auto;
+    padding: 20px;
+    display: flex;  
+    align-items: center;
+    justify-content: center;
     text-align: center;
 }
 
-.header-rating {
-    height: 25px;
-    font-family: Kumbh Sans;
-    font-size: 16px;
-    margin: 0 0 10px 0;
-    padding: 0;
-}
-
-.header-rating .rating-unavailable {
-    color: #4c4c4c;
-    font-size: 16px;
-    margin: 10px 0 0 0;
-    padding: 0;
-}
-
-.header-rating .rating-available {
+.ModalContainer .ModalTitle h2 {
+    font-size: 2vw;
+    color: #3b2b1e;
     margin: 0;
     padding: 0;
-    color: #E6AF50;
-    font-size: 25px;
 }
 
-.grey-divider {
-    width: 80vw;
-    max-width: 900px;
-    height: 2px;
-    background-color: #b6b6b6;
-    margin: 10px 0 0 0;
+.ModalContainer .ModalBody {
+    flex: 1;
+    padding: 25px 30px;
+    overflow-y: auto;
+    text-align: left;
+    line-height: 1.5;
+}
+
+.ModalContainer .ModalBody h3 {
+    margin: 4px 0;
+    color: #6d4c41;
+    font-size: 1.2vw;
+}
+.ModalContainer .ModalBody label {
+    margin: 4px 0;
+    color: #6d4c41;
+    font-size: 1.2vw;
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+}
+.ModalContainer .ModalBody p {
+    margin: 4px 0;
+    font-size: 1.1vw;
+}
+
+.ModalContainer .ModalFooter {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    border-top: 1px solid #e8dccc;
+}
+
+.ModalContainer .ModalFooter button {
+    width: 9vw;
+    height: 3vw;
+    font-size: 1.2vw;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: white;
+    background-color: #bfa47c;
+}
+
+.ModalContainer .ModalFooter button:hover {
+    background-color: #a18763;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(191, 164, 124, 0.4);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -48%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+.ModalContainer .ModalBody::-webkit-scrollbar {
+    width: 8px;
+}
+.ModalContainer .ModalBody::-webkit-scrollbar-thumb {
+    background-color: #d1bca0;
+    border-radius: 6px;
+}
+
+/*stuff for modal message disregard for now 
+its mostly copy paste with new z indexes
+necessary to have modal message appear above other modals.
+*/
+
+.TopModalBackground {
+    position: fixed;
+    z-index: 3000;
+    width: 100vw;
+    height: 100vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(3px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.TopModalContainer {
+    position: fixed;
+    z-index: 4000;
+    width: 45vw;
+    max-height: 36vw;
+    border-radius: 20px;
+    background-color: #fffaf5;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: fadeIn 0.25s ease-out;
+}
+
+.TopModalContainer .ModalTitle {
+    background-color: #efe6da;
+    height: auto;
+    padding: 20px;
+    display: flex;  
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.TopModalContainer .ModalTitle h2 {
+    font-size: 2vw;
+    color: #3b2b1e;
+    margin: 0;
+    padding: 0;
+}
+
+.TopModalContainer .ModalBody {
+    flex: 1;
+    padding: 25px 30px;
+    overflow-y: auto;
+    text-align: left;
+    line-height: 1.5;
+}
+
+.TopModalContainer .ModalBody h3 {
+    margin: 4px 0;
+    color: #6d4c41;
+    font-size: 1.2vw;
+}
+.TopModalContainer .ModalBody label {
+    margin: 4px 0;
+    color: #6d4c41;
+    font-size: 1.2vw;
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
+}
+.TopModalContainer .ModalBody p {
+    margin: 4px 0;
+    font-size: 1.1vw;
+}
+
+.TopModalContainer .ModalFooter {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    border-top: 1px solid #e8dccc;
+}
+
+.TopModalContainer .ModalFooter button {
+    width: 9vw;
+    height: 3vw;
+    font-size: 1.2vw;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: white;
+    background-color: #bfa47c;
+}
+
+.TopModalContainer .ModalFooter button:hover {
+    background-color: #a18763;
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(191, 164, 124, 0.4);
+}
+
+.TopModalContainer .ModalBody::-webkit-scrollbar {
+    width: 8px;
+}
+.TopModalContainer .ModalBody::-webkit-scrollbar-thumb {
+    background-color: #d1bca0;
+    border-radius: 6px;
 }
