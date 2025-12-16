@@ -21,11 +21,6 @@ export default function MyAppointments() {
 
     /* PURCHASES SECTION */
     const [allAppts, setAllAppts] = useState([])
-    /* ------------- */
-    const [pendingAppts, setPendingAppts] = useState([]) 
-    /* PENDING APPOINTMENTS ARE THOSE WITH NO PAYMENT 
-    SHOULD BE DELETED AFTER A SET AMOUNT OF TIME 
-    ------------------ */
     const [upcomingAppts, setUpcomingAppts] = useState([])
     const [pastAppts, setPastAppts] = useState([])
     /* PURCHASES SECTION */
@@ -45,6 +40,7 @@ export default function MyAppointments() {
     useEffect(() => {
         if (user?.user_id) {
             retrieveAllAppointments()
+            retrievePaymentHistory()
         }
     }, [user?.user_id])
 
@@ -116,6 +112,28 @@ export default function MyAppointments() {
         setRescheduleOpen(true);
     }
 
+    const retrievePaymentHistory = async () => {
+        
+        try {
+            const history_response = await fetch(`/api/payments/history/${user?.user_id}`)
+
+            if(!history_response.ok) {
+                const errorText = await history_response.json()
+                throw new Error(`Appointments fetch failed: HTTP error ${history_response.status}: ${errorText.error || errorText}`)
+            }
+            
+            const history_data = await history_response.json()
+
+            const { 
+                payments: retrievedHistory=[]
+            } = history_data || {}
+            setPastPurchases(retrievedHistory)
+            console.log(retrievedHistory)
+        } catch (err) {
+            console.error('Fetch error:', err)
+        }
+    }
+
     return (
         <>
             {(user?.type !== "customer" ? (
@@ -125,88 +143,78 @@ export default function MyAppointments() {
                         : 'Not authorized'
                     }
                 </p>
-            ) : allAppts.length === 0 ? (
-                <p className='not-found'>You currently have no records of making appointments at any salon.</p>
             ) : (
                 <div className="my-appts-page">
                     <h1 className="appt-title">Appointments & Rewards</h1>
                     <div className="new-div"></div>
-                    <div className="type-section">
-                        {pendingAppts.length !== 0 && (
-                            <>
-                                <h2 className="inner-title">Pending Appointments</h2>
-                                {pendingAppts.map((appt) => {
-                                    return (
-                                        <AppointmentItem 
-                                            key={appt.appointment_id}
-                                            accountType = 'customer'
-                                            appointment={appt}
-                                            onViewMore={() => handleApptView(appt)}
-                                            onCancel={() => handleApptCancel(appt)}
-                                            onReschedule={() => handleApptReschedule(appt)}
-                                        />
-                                    )
-                                })}
-                            </>
-                        )}
-                    </div>
-                    <div className="type-section">
-                        {upcomingAppts.length !== 0 && (
-                            <>
-                                <h2 className="inner-title">Upcoming Appointments</h2>
-                                {upcomingAppts.map((appt) => {
-                                    return (
-                                        <AppointmentItem
-                                            key={appt.appointment_id}
-                                            accountType = 'customer'
-                                            appointment={appt}
-                                            onViewMore={() => handleApptView(appt)}
-                                            onCancel={() => handleApptCancel(appt)}
-                                            onReschedule={() => handleApptReschedule(appt)}
-                                        />
-                                    )
-                                })}
-                            </>
-                        )}
-                    </div>
-                    <div className="type-section">
-                        {pastAppts.length !== 0 && (
-                            <>
-                                <h2 className="inner-title">Past Appointments</h2>
-                                {pastAppts.map((appt) => {
-                                    return (
-                                        <AppointmentItem 
-                                            key={appt.appointment_id}
-                                            accountType = 'customer'
-                                            appointment={appt}
-                                            onViewMore={() => handleApptView(appt)}
-                                        />
-                                    )
-                                })}
-                            </>
-                        )}
-                    </div>
-                    
-                    {pastPurchases.length !== 0 && (
-                        <div className="appt-divider"></div>
-                    )}
+                    {allAppts.length === 0 ? (
+                        <p className="no-rewards">You currently have no records of making appointments at any salon.</p>
+                    ) : (
+                        <>
+                            <div className="type-section">
+                                {upcomingAppts.length !== 0 && (
+                                    <>
+                                        <h2 className="inner-title">Upcoming Appointments</h2>
+                                        {upcomingAppts.map((appt) => {
+                                            return (
+                                                <AppointmentItem
+                                                    key={appt.appointment_id}
+                                                    accountType = 'customer'
+                                                    appointment={appt}
+                                                    onViewMore={() => handleApptView(appt)}
+                                                    onCancel={() => handleApptCancel(appt)}
+                                                    onReschedule={() => handleApptReschedule(appt)}
+                                                />
+                                            )
+                                        })}
+                                    </>
+                                )}
+                            </div>
+                            <div className="type-section">
+                                {pastAppts.length !== 0 && (
+                                    <>
+                                        <h2 className="inner-title">Past Appointments</h2>
+                                        {pastAppts.map((appt) => {
+                                            return (
+                                                <AppointmentItem 
+                                                    key={appt.appointment_id}
+                                                    accountType = 'customer'
+                                                    appointment={appt}
+                                                    onViewMore={() => handleApptView(appt)}
+                                                />
+                                            )
+                                        })}
+                                    </>
+                                )}
+                            </div>
+                            
+                            {pastPurchases.length !== 0 && (
+                                <div className="appt-divider"></div>
+                            )}
 
-                    <div className="type-section">
-                        {pastPurchases.length !== 0 && (
-                            <>
-                                <h2 className="inner-title">Product Purchases</h2>
-                                {pastPurchases.map((appt) => {
-                                    return (
-                                        <AppointmentItem
-                                            key={appt.appointment_id}
-                                            accountType = 'customer'
-                                            appointment={appt}
-                                        />
-                                    )
-                                })}
-                            </>
-                        )}
-                    </div>
+                            <div className="type-section">
+                                {pastPurchases.length !== 0 && (
+                                    <>
+                                        <h2 className="inner-title">Product Purchases</h2>
+                                        {pastPurchases.map((invoice) => (
+                                            invoice.items
+                                            .filter(item => item.type === 'product') // only show products
+                                            .map((item) => (
+                                            <div className="history-item" key={item.line_item_id}>
+                                                <div className="grid-layout">
+                                                <h3 className="salon-name">{item.product?.salon_name || "Unknown Salon"}</h3>
+                                                <p className="purchase-date">{invoice.issued_date}</p>
+                                                <p className="product-name">{item.product?.name || "Unnamed Product"}</p>
+                                                <p className="product-price">${item.unit_price.toFixed(2)}</p>
+                                                </div>
+                                            </div>
+                                            ))
+                                        ))}
+                                    </>
+                                )}
+                            </div>
+                        </>
+                    )}
                     {modalMessage && (
                         <ModalMessage
                             content={modalMessage.content}
