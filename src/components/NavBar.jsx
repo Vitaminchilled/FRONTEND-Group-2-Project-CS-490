@@ -73,11 +73,6 @@ function NavBar() {
       cName: 'dropdown-link'
     },
     {
-      title: 'Manage Employees',
-      path: '/manage-employee',
-      cName: 'dropdown-link'
-    },
-    {
       title: 'Manage Schedules',
       path: user.salon_id ? `/salon/${user.salon_id}/manage-schedules` : '/',
       cName: 'dropdown-link'
